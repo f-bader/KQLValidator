@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.7
-FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0.302-alpine3.23 AS build
 WORKDIR /src
 
 COPY global.json Directory.Build.props ./
@@ -13,7 +13,7 @@ RUN dotnet publish src/KqlValidator.Api/KqlValidator.Api.csproj \
     --output /app/publish \
     /p:UseAppHost=false
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS final
+FROM mcr.microsoft.com/dotnet/aspnet:10.0.10-alpine3.23 AS final
 WORKDIR /app
 COPY --from=build /app/publish ./
 
