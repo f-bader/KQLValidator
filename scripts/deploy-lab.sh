@@ -25,13 +25,19 @@ az acr build \
   --file Dockerfile \
   .
 
+image_digest="$(az acr manifest show-metadata \
+  --registry "$AZURE_ACR_NAME" \
+  --name "$image_name" \
+  --query digest \
+  --output tsv)"
+
 deployment="$(az deployment group create \
   --resource-group "$AZURE_RESOURCE_GROUP" \
   --template-file infra/main.bicep \
   --parameters \
     appName="$AZURE_APP_NAME" \
     location="$AZURE_LOCATION" \
-    image="$registry_server/$image_name" \
+    image="$registry_server/kql-validator@$image_digest" \
     registryName="$AZURE_ACR_NAME" \
     registryResourceGroupName="$AZURE_ACR_RESOURCE_GROUP" \
   --query properties.outputs.url.value \

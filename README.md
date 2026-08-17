@@ -85,6 +85,8 @@ dotnet publish src/KqlValidator.Api/KqlValidator.Api.csproj --no-restore --confi
 
 Azure deployment and public publishing are intentionally separate, explicit stages. Nothing in the application publishes images or modifies Azure resources by itself.
 
+See [docs/lab-deployment.md](docs/lab-deployment.md) for the isolated ACR build, immutable deployment, validation, budget, and cleanup runbook.
+
 The lab deployment expects an existing Azure Container Registry, which may be in a different resource group. In West Europe a separate Basic registry has a current public retail floor of approximately US$5.07/month; reusing an existing registry avoids that incremental fixed cost. Light Container Apps usage normally remains inside the monthly Consumption free grant. `infra/budget.bicep` therefore defaults to a US$10-equivalent monthly alert threshold. Budget alerts do not stop spending.
 
 ## Schema updates
