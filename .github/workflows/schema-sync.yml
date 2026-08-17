@@ -1,0 +1,31 @@
+name: schema-sync
+
+on:
+  schedule:
+    - cron: '17 4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.302
+      - run: dotnet restore tools/KqlValidator.SchemaSync/KqlValidator.SchemaSync.csproj --locked-mode
+      - run: dotnet run --project tools/KqlValidator.SchemaSync --no-restore -- --out src/KqlValidator.Api/Schemas
+      - run: dotnet test tests/KqlValidator.Tests/KqlValidator.Tests.csproj
+      - uses: peter-evans/create-pull-request@v7
+        with:
+          branch: automation/schema-update
+          delete-branch: true
+          commit-message: 'chore: update KQL schema snapshots'
+          title: 'chore: update KQL schema snapshots'
+          body: |
+            Automated schema review PR. Source digests are recorded in `Schemas/manifest.json`.
+            Large table drops, duplicate tables, and duplicate columns are rejected before this PR is opened.

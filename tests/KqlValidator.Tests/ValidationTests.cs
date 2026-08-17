@@ -111,6 +111,35 @@ public sealed class ValidationTests
     }
 
     [Fact]
+    public void Sentinel_detection_requires_time_generated_in_output_not_only_filter()
+    {
+        var result = Validate("SecurityAlert | where TimeGenerated > ago(1h) | project DisplayName", KqlEnvironment.Sentinel, LintProfile.Detection);
+
+        Assert.False(result.Valid);
+        Assert.Contains(result.Diagnostics, x => x.RuleId == "KQLD001");
+    }
+
+    [Fact]
+    public void Seen_by_preserves_device_row_scope()
+    {
+        var result = Validate("DeviceInfo | invoke SeenBy() | project DeviceId, DeviceName");
+
+        Assert.True(result.Valid, Messages(result));
+    }
+
+    [Fact]
+    public void Request_scoped_watchlist_columns_are_available()
+    {
+        var extensions = new ValidationExtensions(Watchlists:
+        [
+            new WatchlistDeclaration("high_value", [new ColumnDeclaration("AccountUpn", "string")])
+        ]);
+
+        var result = Validate("_GetWatchlist('high_value') | project SearchKey, AccountUpn", KqlEnvironment.Sentinel, extensions: extensions);
+        Assert.True(result.Valid, Messages(result));
+    }
+
+    [Fact]
     public void Request_scoped_table_is_available_only_to_that_validation()
     {
         var extensions = new ValidationExtensions(Tables:

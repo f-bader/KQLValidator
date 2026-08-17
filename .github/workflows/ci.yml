@@ -1,0 +1,40 @@
+name: ci
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.302
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+      - name: Locked restore
+        run: dotnet restore kql-validator.slnx --locked-mode
+      - name: Format
+        run: dotnet format kql-validator.slnx --verify-no-changes --no-restore
+      - name: Build
+        run: dotnet build kql-validator.slnx --configuration Release --no-restore
+      - name: Test
+        run: dotnet test tests/KqlValidator.Tests/KqlValidator.Tests.csproj --configuration Release --no-build --no-restore
+      - name: Dependency audit
+        run: |
+          dotnet list kql-validator.slnx package --vulnerable --include-transitive --format json --output-version 1 --no-restore > vulnerabilities.json
+          jq --exit-status '[.. | objects | .vulnerabilities? // empty] | flatten | length == 0' vulnerabilities.json >/dev/null
+      - name: Publish
+        run: dotnet publish src/KqlValidator.Api/KqlValidator.Api.csproj --configuration Release --no-restore --output artifacts/publish /p:UseAppHost=false
+      - name: Build container
+        run: docker build --tag kql-validator:${{ github.sha }} .
+      - uses: azure/CLI@v2
+        with:
+          inlineScript: |
+            az bicep build --file infra/main.bicep --outfile /tmp/main.json
+            az bicep build --file infra/budget.bicep --outfile /tmp/budget.json

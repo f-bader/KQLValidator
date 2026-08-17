@@ -1,0 +1,8 @@
+**/bin
+**/obj
+.git
+.github
+.azure
+artifacts
+TestResults
+README.md

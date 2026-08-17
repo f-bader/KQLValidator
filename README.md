@@ -85,6 +85,8 @@ dotnet publish src/KqlValidator.Api/KqlValidator.Api.csproj --no-restore --confi
 
 Azure deployment and public publishing are intentionally separate, explicit stages. Nothing in the application publishes images or modifies Azure resources by itself.
 
+The lab deployment expects an existing Basic Azure Container Registry in the target resource group. In West Europe its current public retail floor is approximately US$5.07/month; light Container Apps usage normally remains inside the monthly Consumption free grant. `infra/budget.bicep` therefore defaults to a US$10-equivalent monthly alert threshold. Budget alerts do not stop spending.
+
 ## Schema updates
 
 `KqlValidator.SchemaSync` normalizes the public XDR schema and ActionType feeds and applies duplicate and large-drop safeguards:

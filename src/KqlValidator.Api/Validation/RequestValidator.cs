@@ -24,12 +24,22 @@ public sealed partial class RequestValidator(SchemaCatalog catalog)
 
         var schema = catalog.Get(request.Environment);
         var names = new HashSet<string>(schema.Tables.Keys.Concat(schema.Functions.Keys), StringComparer.OrdinalIgnoreCase);
-        foreach (var name in extensionNames())
+        foreach (var name in symbolNames())
         {
             if (!Identifier().IsMatch(name))
                 throw new RequestValidationException("extensions", $"'{name}' is not a valid KQL identifier.");
             if (!names.Add(name))
                 throw new RequestValidationException("extensions", $"Extension name '{name}' collides with another declaration or built-in.");
+        }
+
+        var watchlistNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var watchlist in extensions.Watchlists ?? [])
+        {
+            if (!Identifier().IsMatch(watchlist.Name))
+                throw new RequestValidationException("extensions", $"'{watchlist.Name}' is not a valid watchlist alias.");
+            if (!watchlistNames.Add(watchlist.Name))
+                throw new RequestValidationException("extensions", $"Duplicate watchlist alias '{watchlist.Name}'.");
+            foreach (var column in watchlist.Columns) ValidateColumn(column);
         }
 
         foreach (var column in extensions.Tables?.SelectMany(x => x.Columns)
@@ -50,11 +60,10 @@ public sealed partial class RequestValidator(SchemaCatalog catalog)
                 throw new RequestValidationException("extensions", $"Function '{function.Name}' return kind must be scalar or tabular.");
         }
 
-        IEnumerable<string> extensionNames()
+        IEnumerable<string> symbolNames()
         {
             foreach (var table in extensions.Tables ?? []) yield return table.Name;
             foreach (var function in extensions.Functions ?? []) yield return function.Name;
-            foreach (var watchlist in extensions.Watchlists ?? []) yield return $"watchlist:{watchlist.Name}";
         }
     }
 

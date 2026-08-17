@@ -11,7 +11,7 @@ public sealed class AnalysisExecutor(KqlValidationService validator, AnalysisHea
 
     public async Task<ValidationResponse> ExecuteAsync(ValidateRequest request, CancellationToken cancellationToken)
     {
-        if (Interlocked.Increment(ref queued) > 10)
+        if (Interlocked.Increment(ref queued) > 8)
         {
             Interlocked.Decrement(ref queued);
             throw new AnalysisQueueFullException();

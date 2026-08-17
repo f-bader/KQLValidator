@@ -32,7 +32,9 @@ public sealed class SchemaCatalog
             pair.Value.Version,
             pair.Value.Tables.Count,
             pair.Value.Functions.Count,
-            Enum.GetNames<LintProfile>().Select(x => x.ToLowerInvariant()).ToArray()))
+            Enum.GetValues<LintProfile>()
+                .Where(profile => pair.Key != KqlEnvironment.Unified || profile != LintProfile.Detection)
+                .Select(x => x.ToString().ToLowerInvariant()).ToArray()))
         .ToArray();
 
     private static EnvironmentSchema BuildXdr()

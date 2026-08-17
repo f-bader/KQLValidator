@@ -57,7 +57,7 @@ public sealed partial class KqlLinter
 
         AddActionTypeDiagnostics(diagnostics, searchable);
         AddAnomalousBehaviorLiteralDiagnostics(diagnostics, searchable);
-        AddDetectionDiagnostics(diagnostics, searchable, environment, profile);
+        AddDetectionTextDiagnostics(diagnostics, searchable, environment, profile);
         return diagnostics;
     }
 
@@ -141,26 +141,15 @@ public sealed partial class KqlLinter
         }
     }
 
-    private static void AddDetectionDiagnostics(List<ValidationDiagnostic> diagnostics, string query, KqlEnvironment environment, LintProfile profile)
+    private static void AddDetectionTextDiagnostics(List<ValidationDiagnostic> diagnostics, string query, KqlEnvironment environment, LintProfile profile)
     {
         if (profile != LintProfile.Detection)
             return;
 
-        if (environment == KqlEnvironment.Sentinel && !Regex.IsMatch(query, @"(?i)\bTimeGenerated\b"))
-            diagnostics.Add(Diagnostic(query, 0, "KQLD001", DiagnosticSeverity.Error,
-                "Sentinel detection queries must retain TimeGenerated in their output.",
-                "https://learn.microsoft.com/en-us/azure/sentinel/scheduled-rules-overview"));
-
         if (environment == KqlEnvironment.Xdr)
         {
-            foreach (var column in new[] { "Timestamp", "ReportId" })
-                if (!Regex.IsMatch(query, $@"(?i)\b{column}\b"))
-                    diagnostics.Add(Diagnostic(query, 0, $"KQLD00{(column == "Timestamp" ? 2 : 3)}", DiagnosticSeverity.Warning,
-                        $"Retain {column} when available so XDR detection results can identify the source event."));
-
-            if (!Regex.IsMatch(query, @"(?i)\b(?:DeviceId|DeviceName|AccountObjectId|AccountSid|RemoteIP|SHA256)\b"))
-                diagnostics.Add(Diagnostic(query, 0, "KQLD004", DiagnosticSeverity.Warning,
-                    "Retain at least one useful device, account, IP, or file entity column for XDR detection results."));
+            Match(diagnostics, query, ExactCommandLine(), "KQLD005", DiagnosticSeverity.Warning,
+                "Detection command-line logic should tolerate benign quoting, spacing, and argument ordering differences.", BestPractices);
         }
     }
 
