@@ -14,8 +14,12 @@ param image string
 @description('Existing Azure Container Registry name containing the image.')
 param registryName string
 
+@description('Resource group containing the existing registry.')
+param registryResourceGroupName string = resourceGroup().name
+
 resource registry 'Microsoft.ContainerRegistry/registries@2023-07-01' existing = {
   name: registryName
+  scope: resourceGroup(registryResourceGroupName)
 }
 
 resource environment 'Microsoft.App/managedEnvironments@2025-01-01' = {
@@ -114,13 +118,12 @@ resource app 'Microsoft.App/containerApps@2025-01-01' = {
   }
 }
 
-resource acrPull 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(registry.id, app.id, '7f951dda-4ed3-4680-a7ca-43fe172d538d')
-  scope: registry
-  properties: {
+module registryAccess './registry-access.bicep' = {
+  name: '${appName}-acr-pull'
+  scope: resourceGroup(registryResourceGroupName)
+  params: {
+    registryName: registryName
     principalId: app.identity.principalId
-    principalType: 'ServicePrincipal'
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d')
   }
 }
 

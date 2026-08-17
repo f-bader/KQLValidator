@@ -10,15 +10,16 @@ cd "$repo_root"
 
 AZURE_LOCATION="${AZURE_LOCATION:-westeurope}"
 AZURE_APP_NAME="${AZURE_APP_NAME:-kql-validator-lab}"
+AZURE_ACR_RESOURCE_GROUP="${AZURE_ACR_RESOURCE_GROUP:-$AZURE_RESOURCE_GROUP}"
 image_tag="$(git rev-parse --short=12 HEAD)"
 image_name="kql-validator:$image_tag"
 
 az account set --subscription "$AZURE_SUBSCRIPTION_ID"
 az group show --name "$AZURE_RESOURCE_GROUP" >/dev/null
-registry_server="$(az acr show --resource-group "$AZURE_RESOURCE_GROUP" --name "$AZURE_ACR_NAME" --query loginServer --output tsv)"
+registry_server="$(az acr show --resource-group "$AZURE_ACR_RESOURCE_GROUP" --name "$AZURE_ACR_NAME" --query loginServer --output tsv)"
 
 az acr build \
-  --resource-group "$AZURE_RESOURCE_GROUP" \
+  --resource-group "$AZURE_ACR_RESOURCE_GROUP" \
   --registry "$AZURE_ACR_NAME" \
   --image "$image_name" \
   --file Dockerfile \
@@ -32,6 +33,7 @@ deployment="$(az deployment group create \
     location="$AZURE_LOCATION" \
     image="$registry_server/$image_name" \
     registryName="$AZURE_ACR_NAME" \
+    registryResourceGroupName="$AZURE_ACR_RESOURCE_GROUP" \
   --query properties.outputs.url.value \
   --output tsv)"
 
