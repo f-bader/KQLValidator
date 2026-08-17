@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <AssemblyName>KqlValidator.Api</AssemblyName>
+    <RootNamespace>KqlValidator</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.11" />
+    <PackageReference Include="Microsoft.Azure.Kusto.Language" Version="12.4.1" />
+    <PackageReference Include="ModelContextProtocol.AspNetCore" Version="2.2.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="Schemas/*.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

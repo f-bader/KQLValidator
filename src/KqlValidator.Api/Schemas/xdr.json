@@ -1,0 +1,5523 @@
+{
+  "source": "https://xdrinternals.com/FullSchema-latest.json",
+  "tables": [
+    {
+      "name": "AADSignInEventsBeta",
+      "columns": [
+        {
+          "name": "AadDeviceId",
+          "type": "string"
+        },
+        {
+          "name": "AccountDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "AccountObjectId",
+          "type": "string"
+        },
+        {
+          "name": "AccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "AlternateSignInName",
+          "type": "string"
+        },
+        {
+          "name": "Application",
+          "type": "string"
+        },
+        {
+          "name": "ApplicationId",
+          "type": "string"
+        },
+        {
+          "name": "AuthenticationProcessingDetails",
+          "type": "string"
+        },
+        {
+          "name": "AuthenticationRequirement",
+          "type": "string"
+        },
+        {
+          "name": "Browser",
+          "type": "string"
+        },
+        {
+          "name": "City",
+          "type": "string"
+        },
+        {
+          "name": "ClientAppUsed",
+          "type": "string"
+        },
+        {
+          "name": "ConditionalAccessPolicies",
+          "type": "string"
+        },
+        {
+          "name": "ConditionalAccessStatus",
+          "type": "int"
+        },
+        {
+          "name": "CorrelationId",
+          "type": "string"
+        },
+        {
+          "name": "Country",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "DeviceTrustType",
+          "type": "string"
+        },
+        {
+          "name": "EndpointCall",
+          "type": "string"
+        },
+        {
+          "name": "EntraIdDeviceId",
+          "type": "string"
+        },
+        {
+          "name": "ErrorCode",
+          "type": "int"
+        },
+        {
+          "name": "IPAddress",
+          "type": "string"
+        },
+        {
+          "name": "IsCompliant",
+          "type": "int"
+        },
+        {
+          "name": "IsExternalUser",
+          "type": "int"
+        },
+        {
+          "name": "IsGuestUser",
+          "type": "bool"
+        },
+        {
+          "name": "IsManaged",
+          "type": "int"
+        },
+        {
+          "name": "LastPasswordChangeTimestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "Latitude",
+          "type": "string"
+        },
+        {
+          "name": "LogonType",
+          "type": "string"
+        },
+        {
+          "name": "Longitude",
+          "type": "string"
+        },
+        {
+          "name": "NetworkLocationDetails",
+          "type": "string"
+        },
+        {
+          "name": "OSPlatform",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "RequestId",
+          "type": "string"
+        },
+        {
+          "name": "ResourceDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "ResourceId",
+          "type": "string"
+        },
+        {
+          "name": "ResourceTenantId",
+          "type": "string"
+        },
+        {
+          "name": "RiskEventTypes",
+          "type": "string"
+        },
+        {
+          "name": "RiskLevelAggregated",
+          "type": "int"
+        },
+        {
+          "name": "RiskLevelDuringSignIn",
+          "type": "int"
+        },
+        {
+          "name": "RiskState",
+          "type": "int"
+        },
+        {
+          "name": "SessionId",
+          "type": "string"
+        },
+        {
+          "name": "State",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "TokenIssuerType",
+          "type": "string"
+        },
+        {
+          "name": "UserAgent",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "AADSpnSignInEventsBeta",
+      "columns": [
+        {
+          "name": "Application",
+          "type": "string"
+        },
+        {
+          "name": "ApplicationId",
+          "type": "string"
+        },
+        {
+          "name": "City",
+          "type": "string"
+        },
+        {
+          "name": "CorrelationId",
+          "type": "string"
+        },
+        {
+          "name": "Country",
+          "type": "string"
+        },
+        {
+          "name": "ErrorCode",
+          "type": "int"
+        },
+        {
+          "name": "IPAddress",
+          "type": "string"
+        },
+        {
+          "name": "IsConfidentialClient",
+          "type": "bool"
+        },
+        {
+          "name": "IsManagedIdentity",
+          "type": "bool"
+        },
+        {
+          "name": "Latitude",
+          "type": "string"
+        },
+        {
+          "name": "Longitude",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "RequestId",
+          "type": "string"
+        },
+        {
+          "name": "ResourceDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "ResourceId",
+          "type": "string"
+        },
+        {
+          "name": "ResourceTenantId",
+          "type": "string"
+        },
+        {
+          "name": "ServicePrincipalId",
+          "type": "string"
+        },
+        {
+          "name": "ServicePrincipalName",
+          "type": "string"
+        },
+        {
+          "name": "State",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "AIAgentsInfo",
+      "columns": [
+        {
+          "name": "AccessCapabilities",
+          "type": "dynamic"
+        },
+        {
+          "name": "AccessControlPolicy",
+          "type": "string"
+        },
+        {
+          "name": "AgentActionTriggers",
+          "type": "string"
+        },
+        {
+          "name": "AgentAppId",
+          "type": "string"
+        },
+        {
+          "name": "AgentCreationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "AgentDescription",
+          "type": "string"
+        },
+        {
+          "name": "AgentStatus",
+          "type": "string"
+        },
+        {
+          "name": "AgentToolsDetails",
+          "type": "dynamic"
+        },
+        {
+          "name": "AgentTopicsDetails",
+          "type": "dynamic"
+        },
+        {
+          "name": "AIAgentId",
+          "type": "string"
+        },
+        {
+          "name": "AIAgentName",
+          "type": "string"
+        },
+        {
+          "name": "AIModel",
+          "type": "string"
+        },
+        {
+          "name": "AuthenticationTrigger",
+          "type": "string"
+        },
+        {
+          "name": "AuthorizedSecurityGroupIds",
+          "type": "dynamic"
+        },
+        {
+          "name": "ChildAgentsSchemaNames",
+          "type": "dynamic"
+        },
+        {
+          "name": "ConnectedAgentsSchemaNames",
+          "type": "dynamic"
+        },
+        {
+          "name": "CreatorAccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "ElementTypes",
+          "type": "dynamic"
+        },
+        {
+          "name": "EntraBlueprintId",
+          "type": "string"
+        },
+        {
+          "name": "EntraObjectId",
+          "type": "string"
+        },
+        {
+          "name": "EnvironmentId",
+          "type": "string"
+        },
+        {
+          "name": "Instructions",
+          "type": "string"
+        },
+        {
+          "name": "IsBlocked",
+          "type": "bool"
+        },
+        {
+          "name": "IsGenerativeOrchestrationEnabled",
+          "type": "bool"
+        },
+        {
+          "name": "KnowledgeDetails",
+          "type": "dynamic"
+        },
+        {
+          "name": "LastModifiedByUpn",
+          "type": "string"
+        },
+        {
+          "name": "LastModifiedTime",
+          "type": "datetime"
+        },
+        {
+          "name": "LastPublishedTime",
+          "type": "datetime"
+        },
+        {
+          "name": "OwnerAccountUpns",
+          "type": "string"
+        },
+        {
+          "name": "Platform",
+          "type": "string"
+        },
+        {
+          "name": "RawAgentInfo",
+          "type": "string"
+        },
+        {
+          "name": "RegistrySource",
+          "type": "string"
+        },
+        {
+          "name": "SourceAgentId",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "UserAuthenticationType",
+          "type": "string"
+        },
+        {
+          "name": "Version",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "AlertEvidence",
+      "columns": [
+        {
+          "name": "AccountDomain",
+          "type": "string"
+        },
+        {
+          "name": "AccountName",
+          "type": "string"
+        },
+        {
+          "name": "AccountObjectId",
+          "type": "string"
+        },
+        {
+          "name": "AccountSid",
+          "type": "string"
+        },
+        {
+          "name": "AccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "AdditionalFields",
+          "type": "string"
+        },
+        {
+          "name": "AlertId",
+          "type": "string"
+        },
+        {
+          "name": "Application",
+          "type": "string"
+        },
+        {
+          "name": "ApplicationId",
+          "type": "int"
+        },
+        {
+          "name": "AttackTechniques",
+          "type": "string"
+        },
+        {
+          "name": "Categories",
+          "type": "string"
+        },
+        {
+          "name": "CloudPlatform",
+          "type": "string"
+        },
+        {
+          "name": "CloudResource",
+          "type": "string"
+        },
+        {
+          "name": "DetectionSource",
+          "type": "string"
+        },
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "EmailSubject",
+          "type": "string"
+        },
+        {
+          "name": "EntityType",
+          "type": "string"
+        },
+        {
+          "name": "EvidenceDirection",
+          "type": "string"
+        },
+        {
+          "name": "EvidenceRole",
+          "type": "string"
+        },
+        {
+          "name": "FileName",
+          "type": "string"
+        },
+        {
+          "name": "FileSize",
+          "type": "long"
+        },
+        {
+          "name": "FolderPath",
+          "type": "string"
+        },
+        {
+          "name": "LocalIP",
+          "type": "string"
+        },
+        {
+          "name": "NetworkMessageId",
+          "type": "string"
+        },
+        {
+          "name": "OAuthApplicationId",
+          "type": "string"
+        },
+        {
+          "name": "ProcessCommandLine",
+          "type": "string"
+        },
+        {
+          "name": "RegistryKey",
+          "type": "string"
+        },
+        {
+          "name": "RegistryValueData",
+          "type": "string"
+        },
+        {
+          "name": "RegistryValueName",
+          "type": "string"
+        },
+        {
+          "name": "RemoteIP",
+          "type": "string"
+        },
+        {
+          "name": "RemoteUrl",
+          "type": "string"
+        },
+        {
+          "name": "ResourceID",
+          "type": "string"
+        },
+        {
+          "name": "ResourceType",
+          "type": "string"
+        },
+        {
+          "name": "SentinelWorkspaceIds",
+          "type": "string"
+        },
+        {
+          "name": "ServiceSource",
+          "type": "string"
+        },
+        {
+          "name": "Severity",
+          "type": "string"
+        },
+        {
+          "name": "SHA1",
+          "type": "string"
+        },
+        {
+          "name": "SHA256",
+          "type": "string"
+        },
+        {
+          "name": "SubscriptionId",
+          "type": "string"
+        },
+        {
+          "name": "ThreatFamily",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "Title",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "AlertInfo",
+      "columns": [
+        {
+          "name": "AlertId",
+          "type": "string"
+        },
+        {
+          "name": "AttackTechniques",
+          "type": "string"
+        },
+        {
+          "name": "Category",
+          "type": "string"
+        },
+        {
+          "name": "DetectionSource",
+          "type": "string"
+        },
+        {
+          "name": "SentinelWorkspaceIds",
+          "type": "string"
+        },
+        {
+          "name": "ServiceSource",
+          "type": "string"
+        },
+        {
+          "name": "Severity",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "Title",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "BehaviorEntities",
+      "columns": [
+        {
+          "name": "AccountDomain",
+          "type": "string"
+        },
+        {
+          "name": "AccountName",
+          "type": "string"
+        },
+        {
+          "name": "AccountObjectId",
+          "type": "string"
+        },
+        {
+          "name": "AccountSid",
+          "type": "string"
+        },
+        {
+          "name": "AccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "AdditionalFields",
+          "type": "string"
+        },
+        {
+          "name": "Application",
+          "type": "string"
+        },
+        {
+          "name": "ApplicationId",
+          "type": "int"
+        },
+        {
+          "name": "BehaviorId",
+          "type": "string"
+        },
+        {
+          "name": "Categories",
+          "type": "string"
+        },
+        {
+          "name": "DataSources",
+          "type": "string"
+        },
+        {
+          "name": "DetailedEntityRole",
+          "type": "string"
+        },
+        {
+          "name": "DetectionSource",
+          "type": "string"
+        },
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "EmailClusterId",
+          "type": "string"
+        },
+        {
+          "name": "EmailSubject",
+          "type": "string"
+        },
+        {
+          "name": "EntityRole",
+          "type": "string"
+        },
+        {
+          "name": "EntityType",
+          "type": "string"
+        },
+        {
+          "name": "FileName",
+          "type": "string"
+        },
+        {
+          "name": "FileSize",
+          "type": "long"
+        },
+        {
+          "name": "FolderPath",
+          "type": "string"
+        },
+        {
+          "name": "LocalIP",
+          "type": "string"
+        },
+        {
+          "name": "NetworkMessageId",
+          "type": "string"
+        },
+        {
+          "name": "OAuthApplicationId",
+          "type": "string"
+        },
+        {
+          "name": "ProcessCommandLine",
+          "type": "string"
+        },
+        {
+          "name": "RegistryKey",
+          "type": "string"
+        },
+        {
+          "name": "RegistryValueData",
+          "type": "string"
+        },
+        {
+          "name": "RegistryValueName",
+          "type": "string"
+        },
+        {
+          "name": "RemoteIP",
+          "type": "string"
+        },
+        {
+          "name": "RemoteUrl",
+          "type": "string"
+        },
+        {
+          "name": "ServiceSource",
+          "type": "string"
+        },
+        {
+          "name": "SHA1",
+          "type": "string"
+        },
+        {
+          "name": "SHA256",
+          "type": "string"
+        },
+        {
+          "name": "ThreatFamily",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "BehaviorInfo",
+      "columns": [
+        {
+          "name": "AccountObjectId",
+          "type": "string"
+        },
+        {
+          "name": "AccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "AdditionalFields",
+          "type": "string"
+        },
+        {
+          "name": "AttackTechniques",
+          "type": "string"
+        },
+        {
+          "name": "BehaviorId",
+          "type": "string"
+        },
+        {
+          "name": "Categories",
+          "type": "string"
+        },
+        {
+          "name": "DataSources",
+          "type": "string"
+        },
+        {
+          "name": "Description",
+          "type": "string"
+        },
+        {
+          "name": "DetectionSource",
+          "type": "string"
+        },
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "EndTime",
+          "type": "datetime"
+        },
+        {
+          "name": "ServiceSource",
+          "type": "string"
+        },
+        {
+          "name": "StartTime",
+          "type": "datetime"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "CampaignInfo",
+      "columns": [
+        {
+          "name": "CampaignId",
+          "type": "string"
+        },
+        {
+          "name": "CampaignName",
+          "type": "string"
+        },
+        {
+          "name": "CampaignSubType",
+          "type": "string"
+        },
+        {
+          "name": "CampaignType",
+          "type": "string"
+        },
+        {
+          "name": "NetworkMessageId",
+          "type": "string"
+        },
+        {
+          "name": "RecipientEmailAddress",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "CloudAppEvents",
+      "columns": [
+        {
+          "name": "AccountDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "AccountId",
+          "type": "string"
+        },
+        {
+          "name": "AccountObjectId",
+          "type": "string"
+        },
+        {
+          "name": "AccountType",
+          "type": "string"
+        },
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "ActivityObjects",
+          "type": "dynamic"
+        },
+        {
+          "name": "ActivityType",
+          "type": "string"
+        },
+        {
+          "name": "AdditionalFields",
+          "type": "dynamic"
+        },
+        {
+          "name": "AppInstanceId",
+          "type": "int"
+        },
+        {
+          "name": "Application",
+          "type": "string"
+        },
+        {
+          "name": "ApplicationId",
+          "type": "int"
+        },
+        {
+          "name": "AuditSource",
+          "type": "string"
+        },
+        {
+          "name": "City",
+          "type": "string"
+        },
+        {
+          "name": "CountryCode",
+          "type": "string"
+        },
+        {
+          "name": "DeviceType",
+          "type": "string"
+        },
+        {
+          "name": "IPAddress",
+          "type": "string"
+        },
+        {
+          "name": "IPCategory",
+          "type": "string"
+        },
+        {
+          "name": "IPTags",
+          "type": "dynamic"
+        },
+        {
+          "name": "IsAdminOperation",
+          "type": "bool"
+        },
+        {
+          "name": "IsAnonymousProxy",
+          "type": "bool"
+        },
+        {
+          "name": "IsExternalUser",
+          "type": "bool"
+        },
+        {
+          "name": "IsImpersonated",
+          "type": "bool"
+        },
+        {
+          "name": "ISP",
+          "type": "string"
+        },
+        {
+          "name": "LastSeenForUser",
+          "type": "dynamic"
+        },
+        {
+          "name": "OAuthAppId",
+          "type": "string"
+        },
+        {
+          "name": "ObjectId",
+          "type": "string"
+        },
+        {
+          "name": "ObjectName",
+          "type": "string"
+        },
+        {
+          "name": "ObjectType",
+          "type": "string"
+        },
+        {
+          "name": "OSPlatform",
+          "type": "string"
+        },
+        {
+          "name": "RawEventData",
+          "type": "dynamic"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "SessionData",
+          "type": "dynamic"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "UncommonForUser",
+          "type": "dynamic"
+        },
+        {
+          "name": "UserAgent",
+          "type": "string"
+        },
+        {
+          "name": "UserAgentTags",
+          "type": "dynamic"
+        }
+      ]
+    },
+    {
+      "name": "ConnectorStatusInfo",
+      "columns": [
+        {
+          "name": "AdditionalFields",
+          "type": "dynamic"
+        },
+        {
+          "name": "ConnectionName",
+          "type": "string"
+        },
+        {
+          "name": "ConnectorId",
+          "type": "string"
+        },
+        {
+          "name": "ConnectorName",
+          "type": "string"
+        },
+        {
+          "name": "CurrentConnectionStatus",
+          "type": "string"
+        },
+        {
+          "name": "Description",
+          "type": "string"
+        },
+        {
+          "name": "InstanceId",
+          "type": "string"
+        },
+        {
+          "name": "InstanceName",
+          "type": "string"
+        },
+        {
+          "name": "InternalMessageCode",
+          "type": "string"
+        },
+        {
+          "name": "MessageType",
+          "type": "string"
+        },
+        {
+          "name": "PreviousConnectionStatus",
+          "type": "string"
+        },
+        {
+          "name": "ProtectionTypes",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "SentinelWorkspaceId",
+          "type": "string"
+        },
+        {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "TimeGenerated",
+          "type": "datetime"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "DeviceEvents",
+      "columns": [
+        {
+          "name": "AccountDomain",
+          "type": "string"
+        },
+        {
+          "name": "AccountName",
+          "type": "string"
+        },
+        {
+          "name": "AccountSid",
+          "type": "string"
+        },
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "AdditionalFields",
+          "type": "string"
+        },
+        {
+          "name": "AppGuardContainerId",
+          "type": "string"
+        },
+        {
+          "name": "CreatedProcessSessionId",
+          "type": "long"
+        },
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "FileName",
+          "type": "string"
+        },
+        {
+          "name": "FileOriginIP",
+          "type": "string"
+        },
+        {
+          "name": "FileOriginUrl",
+          "type": "string"
+        },
+        {
+          "name": "FileSize",
+          "type": "long"
+        },
+        {
+          "name": "FolderPath",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountDomain",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountObjectId",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountSid",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessCommandLine",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessCreationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "InitiatingProcessFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessFileSize",
+          "type": "long"
+        },
+        {
+          "name": "InitiatingProcessFolderPath",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessId",
+          "type": "long"
+        },
+        {
+          "name": "InitiatingProcessLogonId",
+          "type": "long"
+        },
+        {
+          "name": "InitiatingProcessMD5",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessParentCreationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "InitiatingProcessParentFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessParentId",
+          "type": "long"
+        },
+        {
+          "name": "InitiatingProcessRemoteSessionDeviceName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessRemoteSessionIP",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessSessionId",
+          "type": "long"
+        },
+        {
+          "name": "InitiatingProcessSHA1",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessSHA256",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessUniqueId",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoCompanyName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoFileDescription",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoInternalFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoOriginalFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoProductName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoProductVersion",
+          "type": "string"
+        },
+        {
+          "name": "IsInitiatingProcessRemoteSession",
+          "type": "bool"
+        },
+        {
+          "name": "IsProcessRemoteSession",
+          "type": "bool"
+        },
+        {
+          "name": "LocalIP",
+          "type": "string"
+        },
+        {
+          "name": "LocalPort",
+          "type": "int"
+        },
+        {
+          "name": "LogonId",
+          "type": "long"
+        },
+        {
+          "name": "MD5",
+          "type": "string"
+        },
+        {
+          "name": "ProcessCommandLine",
+          "type": "string"
+        },
+        {
+          "name": "ProcessCreationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "ProcessId",
+          "type": "long"
+        },
+        {
+          "name": "ProcessRemoteSessionDeviceName",
+          "type": "string"
+        },
+        {
+          "name": "ProcessRemoteSessionIP",
+          "type": "string"
+        },
+        {
+          "name": "ProcessTokenElevation",
+          "type": "string"
+        },
+        {
+          "name": "RegistryKey",
+          "type": "string"
+        },
+        {
+          "name": "RegistryValueData",
+          "type": "string"
+        },
+        {
+          "name": "RegistryValueName",
+          "type": "string"
+        },
+        {
+          "name": "RemoteDeviceName",
+          "type": "string"
+        },
+        {
+          "name": "RemoteIP",
+          "type": "string"
+        },
+        {
+          "name": "RemotePort",
+          "type": "int"
+        },
+        {
+          "name": "RemoteUrl",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "long"
+        },
+        {
+          "name": "SHA1",
+          "type": "string"
+        },
+        {
+          "name": "SHA256",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "DeviceFileCertificateInfo",
+      "columns": [
+        {
+          "name": "CertificateCountersignatureTime",
+          "type": "datetime"
+        },
+        {
+          "name": "CertificateCreationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "CertificateExpirationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "CertificateSerialNumber",
+          "type": "string"
+        },
+        {
+          "name": "CrlDistributionPointUrls",
+          "type": "string"
+        },
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "IsRootSignerMicrosoft",
+          "type": "bool"
+        },
+        {
+          "name": "IsSigned",
+          "type": "bool"
+        },
+        {
+          "name": "Issuer",
+          "type": "string"
+        },
+        {
+          "name": "IssuerHash",
+          "type": "string"
+        },
+        {
+          "name": "IsTrusted",
+          "type": "bool"
+        },
+        {
+          "name": "ReportId",
+          "type": "long"
+        },
+        {
+          "name": "SHA1",
+          "type": "string"
+        },
+        {
+          "name": "SignatureType",
+          "type": "string"
+        },
+        {
+          "name": "Signer",
+          "type": "string"
+        },
+        {
+          "name": "SignerHash",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "DeviceFileEvents",
+      "columns": [
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "AdditionalFields",
+          "type": "string"
+        },
+        {
+          "name": "AppGuardContainerId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "FileName",
+          "type": "string"
+        },
+        {
+          "name": "FileOriginIP",
+          "type": "string"
+        },
+        {
+          "name": "FileOriginReferrerUrl",
+          "type": "string"
+        },
+        {
+          "name": "FileOriginUrl",
+          "type": "string"
+        },
+        {
+          "name": "FileSize",
+          "type": "long"
+        },
+        {
+          "name": "FolderPath",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountDomain",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountObjectId",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountSid",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessCommandLine",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessCreationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "InitiatingProcessFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessFileSize",
+          "type": "long"
+        },
+        {
+          "name": "InitiatingProcessFolderPath",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessId",
+          "type": "long"
+        },
+        {
+          "name": "InitiatingProcessIntegrityLevel",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessMD5",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessParentCreationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "InitiatingProcessParentFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessParentId",
+          "type": "long"
+        },
+        {
+          "name": "InitiatingProcessRemoteSessionDeviceName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessRemoteSessionIP",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessSessionId",
+          "type": "long"
+        },
+        {
+          "name": "InitiatingProcessSHA1",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessSHA256",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessTokenElevation",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessUniqueId",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoCompanyName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoFileDescription",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoInternalFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoOriginalFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoProductName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoProductVersion",
+          "type": "string"
+        },
+        {
+          "name": "IsAzureInfoProtectionApplied",
+          "type": "bool"
+        },
+        {
+          "name": "IsInitiatingProcessRemoteSession",
+          "type": "bool"
+        },
+        {
+          "name": "MD5",
+          "type": "string"
+        },
+        {
+          "name": "PreviousFileName",
+          "type": "string"
+        },
+        {
+          "name": "PreviousFolderPath",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "long"
+        },
+        {
+          "name": "RequestAccountDomain",
+          "type": "string"
+        },
+        {
+          "name": "RequestAccountName",
+          "type": "string"
+        },
+        {
+          "name": "RequestAccountSid",
+          "type": "string"
+        },
+        {
+          "name": "RequestProtocol",
+          "type": "string"
+        },
+        {
+          "name": "RequestSourceIP",
+          "type": "string"
+        },
+        {
+          "name": "RequestSourcePort",
+          "type": "int"
+        },
+        {
+          "name": "SensitivityLabel",
+          "type": "string"
+        },
+        {
+          "name": "SensitivitySubLabel",
+          "type": "string"
+        },
+        {
+          "name": "SHA1",
+          "type": "string"
+        },
+        {
+          "name": "SHA256",
+          "type": "string"
+        },
+        {
+          "name": "ShareName",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "DeviceImageLoadEvents",
+      "columns": [
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "AppGuardContainerId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "FileName",
+          "type": "string"
+        },
+        {
+          "name": "FileSize",
+          "type": "long"
+        },
+        {
+          "name": "FolderPath",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountDomain",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountObjectId",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountSid",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessCommandLine",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessCreationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "InitiatingProcessFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessFileSize",
+          "type": "long"
+        },
+        {
+          "name": "InitiatingProcessFolderPath",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessId",
+          "type": "long"
+        },
+        {
+          "name": "InitiatingProcessIntegrityLevel",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessMD5",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessParentCreationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "InitiatingProcessParentFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessParentId",
+          "type": "long"
+        },
+        {
+          "name": "InitiatingProcessRemoteSessionDeviceName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessRemoteSessionIP",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessSessionId",
+          "type": "long"
+        },
+        {
+          "name": "InitiatingProcessSHA1",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessSHA256",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessTokenElevation",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessUniqueId",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoCompanyName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoFileDescription",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoInternalFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoOriginalFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoProductName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoProductVersion",
+          "type": "string"
+        },
+        {
+          "name": "IsInitiatingProcessRemoteSession",
+          "type": "bool"
+        },
+        {
+          "name": "MD5",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "long"
+        },
+        {
+          "name": "SHA1",
+          "type": "string"
+        },
+        {
+          "name": "SHA256",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "DeviceInfo",
+      "columns": [
+        {
+          "name": "AadDeviceId",
+          "type": "string"
+        },
+        {
+          "name": "AdditionalFields",
+          "type": "string"
+        },
+        {
+          "name": "AssetValue",
+          "type": "string"
+        },
+        {
+          "name": "AwsResourceName",
+          "type": "string"
+        },
+        {
+          "name": "AzureResourceId",
+          "type": "string"
+        },
+        {
+          "name": "AzureVmId",
+          "type": "string"
+        },
+        {
+          "name": "AzureVmSubscriptionId",
+          "type": "string"
+        },
+        {
+          "name": "ClientVersion",
+          "type": "string"
+        },
+        {
+          "name": "CloudPlatforms",
+          "type": "string"
+        },
+        {
+          "name": "ConnectivityType",
+          "type": "string"
+        },
+        {
+          "name": "DeviceCategory",
+          "type": "string"
+        },
+        {
+          "name": "DeviceDynamicTags",
+          "type": "string"
+        },
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceManualTags",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "DeviceSubtype",
+          "type": "string"
+        },
+        {
+          "name": "DeviceType",
+          "type": "string"
+        },
+        {
+          "name": "DiscoverySources",
+          "type": "string"
+        },
+        {
+          "name": "DlpInfo",
+          "type": "string"
+        },
+        {
+          "name": "ExclusionReason",
+          "type": "string"
+        },
+        {
+          "name": "ExposureLevel",
+          "type": "string"
+        },
+        {
+          "name": "FirmwareVersions",
+          "type": "string"
+        },
+        {
+          "name": "GcpFullResourceName",
+          "type": "string"
+        },
+        {
+          "name": "HardwareUuid",
+          "type": "string"
+        },
+        {
+          "name": "HostDeviceId",
+          "type": "string"
+        },
+        {
+          "name": "IsAzureADJoined",
+          "type": "bool"
+        },
+        {
+          "name": "IsExcluded",
+          "type": "bool"
+        },
+        {
+          "name": "IsInternetFacing",
+          "type": "bool"
+        },
+        {
+          "name": "IsTransient",
+          "type": "bool"
+        },
+        {
+          "name": "JoinType",
+          "type": "string"
+        },
+        {
+          "name": "LoggedOnUsers",
+          "type": "string"
+        },
+        {
+          "name": "MachineGroup",
+          "type": "string"
+        },
+        {
+          "name": "MergedDeviceIds",
+          "type": "string"
+        },
+        {
+          "name": "MergedToDeviceId",
+          "type": "string"
+        },
+        {
+          "name": "MitigationStatus",
+          "type": "string"
+        },
+        {
+          "name": "Model",
+          "type": "string"
+        },
+        {
+          "name": "OnboardingStatus",
+          "type": "string"
+        },
+        {
+          "name": "OSArchitecture",
+          "type": "string"
+        },
+        {
+          "name": "OSBuild",
+          "type": "long"
+        },
+        {
+          "name": "OsBuildRevision",
+          "type": "string"
+        },
+        {
+          "name": "OSDistribution",
+          "type": "string"
+        },
+        {
+          "name": "OSPlatform",
+          "type": "string"
+        },
+        {
+          "name": "OSVersion",
+          "type": "string"
+        },
+        {
+          "name": "OSVersionInfo",
+          "type": "string"
+        },
+        {
+          "name": "PublicIP",
+          "type": "string"
+        },
+        {
+          "name": "RegistryDeviceTag",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "long"
+        },
+        {
+          "name": "RestrictedDeviceSecurityOperations",
+          "type": "string"
+        },
+        {
+          "name": "SensorHealthState",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "Vendor",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "DeviceLogonEvents",
+      "columns": [
+        {
+          "name": "AccountDomain",
+          "type": "string"
+        },
+        {
+          "name": "AccountName",
+          "type": "string"
+        },
+        {
+          "name": "AccountSid",
+          "type": "string"
+        },
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "AdditionalFields",
+          "type": "string"
+        },
+        {
+          "name": "AppGuardContainerId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "FailureReason",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountDomain",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountObjectId",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountSid",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessCommandLine",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessCreationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "InitiatingProcessFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessFileSize",
+          "type": "long"
+        },
+        {
+          "name": "InitiatingProcessFolderPath",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessId",
+          "type": "long"
+        },
+        {
+          "name": "InitiatingProcessIntegrityLevel",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessMD5",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessParentCreationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "InitiatingProcessParentFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessParentId",
+          "type": "long"
+        },
+        {
+          "name": "InitiatingProcessRemoteSessionDeviceName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessRemoteSessionIP",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessSessionId",
+          "type": "long"
+        },
+        {
+          "name": "InitiatingProcessSHA1",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessSHA256",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessTokenElevation",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessUniqueId",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoCompanyName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoFileDescription",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoInternalFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoOriginalFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoProductName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoProductVersion",
+          "type": "string"
+        },
+        {
+          "name": "IsInitiatingProcessRemoteSession",
+          "type": "bool"
+        },
+        {
+          "name": "IsLocalAdmin",
+          "type": "bool"
+        },
+        {
+          "name": "LogonId",
+          "type": "long"
+        },
+        {
+          "name": "LogonType",
+          "type": "string"
+        },
+        {
+          "name": "Protocol",
+          "type": "string"
+        },
+        {
+          "name": "RemoteDeviceName",
+          "type": "string"
+        },
+        {
+          "name": "RemoteIP",
+          "type": "string"
+        },
+        {
+          "name": "RemoteIPType",
+          "type": "string"
+        },
+        {
+          "name": "RemotePort",
+          "type": "int"
+        },
+        {
+          "name": "ReportId",
+          "type": "long"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "DeviceNetworkEvents",
+      "columns": [
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "AdditionalFields",
+          "type": "string"
+        },
+        {
+          "name": "AppGuardContainerId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountDomain",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountObjectId",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountSid",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessCommandLine",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessCreationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "InitiatingProcessFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessFileSize",
+          "type": "long"
+        },
+        {
+          "name": "InitiatingProcessFolderPath",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessId",
+          "type": "long"
+        },
+        {
+          "name": "InitiatingProcessIntegrityLevel",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessMD5",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessParentCreationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "InitiatingProcessParentFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessParentId",
+          "type": "long"
+        },
+        {
+          "name": "InitiatingProcessRemoteSessionDeviceName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessRemoteSessionIP",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessSessionId",
+          "type": "long"
+        },
+        {
+          "name": "InitiatingProcessSHA1",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessSHA256",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessTokenElevation",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessUniqueId",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoCompanyName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoFileDescription",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoInternalFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoOriginalFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoProductName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoProductVersion",
+          "type": "string"
+        },
+        {
+          "name": "IsInitiatingProcessRemoteSession",
+          "type": "bool"
+        },
+        {
+          "name": "LocalIP",
+          "type": "string"
+        },
+        {
+          "name": "LocalIPType",
+          "type": "string"
+        },
+        {
+          "name": "LocalPort",
+          "type": "int"
+        },
+        {
+          "name": "Protocol",
+          "type": "string"
+        },
+        {
+          "name": "RemoteIP",
+          "type": "string"
+        },
+        {
+          "name": "RemoteIPType",
+          "type": "string"
+        },
+        {
+          "name": "RemotePort",
+          "type": "int"
+        },
+        {
+          "name": "RemoteUrl",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "long"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "DeviceNetworkInfo",
+      "columns": [
+        {
+          "name": "ConnectedNetworks",
+          "type": "string"
+        },
+        {
+          "name": "DefaultGateways",
+          "type": "string"
+        },
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "DnsAddresses",
+          "type": "string"
+        },
+        {
+          "name": "IPAddresses",
+          "type": "string"
+        },
+        {
+          "name": "IPv4Dhcp",
+          "type": "string"
+        },
+        {
+          "name": "IPv6Dhcp",
+          "type": "string"
+        },
+        {
+          "name": "MacAddress",
+          "type": "string"
+        },
+        {
+          "name": "NetworkAdapterName",
+          "type": "string"
+        },
+        {
+          "name": "NetworkAdapterStatus",
+          "type": "string"
+        },
+        {
+          "name": "NetworkAdapterType",
+          "type": "string"
+        },
+        {
+          "name": "NetworkAdapterVendor",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "long"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "TunnelType",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "DeviceProcessEvents",
+      "columns": [
+        {
+          "name": "AccountDomain",
+          "type": "string"
+        },
+        {
+          "name": "AccountName",
+          "type": "string"
+        },
+        {
+          "name": "AccountObjectId",
+          "type": "string"
+        },
+        {
+          "name": "AccountSid",
+          "type": "string"
+        },
+        {
+          "name": "AccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "AdditionalFields",
+          "type": "string"
+        },
+        {
+          "name": "AppGuardContainerId",
+          "type": "string"
+        },
+        {
+          "name": "CreatedProcessSessionId",
+          "type": "long"
+        },
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "FileName",
+          "type": "string"
+        },
+        {
+          "name": "FileSize",
+          "type": "long"
+        },
+        {
+          "name": "FolderPath",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountDomain",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountObjectId",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountSid",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessCommandLine",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessCreationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "InitiatingProcessFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessFileSize",
+          "type": "long"
+        },
+        {
+          "name": "InitiatingProcessFolderPath",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessId",
+          "type": "long"
+        },
+        {
+          "name": "InitiatingProcessIntegrityLevel",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessLogonId",
+          "type": "long"
+        },
+        {
+          "name": "InitiatingProcessMD5",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessParentCreationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "InitiatingProcessParentFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessParentId",
+          "type": "long"
+        },
+        {
+          "name": "InitiatingProcessRemoteSessionDeviceName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessRemoteSessionIP",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessSessionId",
+          "type": "long"
+        },
+        {
+          "name": "InitiatingProcessSHA1",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessSHA256",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessSignatureStatus",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessSignerType",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessTokenElevation",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessUniqueId",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoCompanyName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoFileDescription",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoInternalFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoOriginalFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoProductName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoProductVersion",
+          "type": "string"
+        },
+        {
+          "name": "IsInitiatingProcessRemoteSession",
+          "type": "bool"
+        },
+        {
+          "name": "IsProcessRemoteSession",
+          "type": "bool"
+        },
+        {
+          "name": "LogonId",
+          "type": "long"
+        },
+        {
+          "name": "MD5",
+          "type": "string"
+        },
+        {
+          "name": "ProcessCommandLine",
+          "type": "string"
+        },
+        {
+          "name": "ProcessCreationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "ProcessId",
+          "type": "long"
+        },
+        {
+          "name": "ProcessIntegrityLevel",
+          "type": "string"
+        },
+        {
+          "name": "ProcessRemoteSessionDeviceName",
+          "type": "string"
+        },
+        {
+          "name": "ProcessRemoteSessionIP",
+          "type": "string"
+        },
+        {
+          "name": "ProcessTokenElevation",
+          "type": "string"
+        },
+        {
+          "name": "ProcessUniqueId",
+          "type": "string"
+        },
+        {
+          "name": "ProcessVersionInfoCompanyName",
+          "type": "string"
+        },
+        {
+          "name": "ProcessVersionInfoFileDescription",
+          "type": "string"
+        },
+        {
+          "name": "ProcessVersionInfoInternalFileName",
+          "type": "string"
+        },
+        {
+          "name": "ProcessVersionInfoOriginalFileName",
+          "type": "string"
+        },
+        {
+          "name": "ProcessVersionInfoProductName",
+          "type": "string"
+        },
+        {
+          "name": "ProcessVersionInfoProductVersion",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "long"
+        },
+        {
+          "name": "SHA1",
+          "type": "string"
+        },
+        {
+          "name": "SHA256",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "DeviceRegistryEvents",
+      "columns": [
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "AppGuardContainerId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountDomain",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountObjectId",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountSid",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessCommandLine",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessCreationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "InitiatingProcessFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessFileSize",
+          "type": "long"
+        },
+        {
+          "name": "InitiatingProcessFolderPath",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessId",
+          "type": "long"
+        },
+        {
+          "name": "InitiatingProcessIntegrityLevel",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessMD5",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessParentCreationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "InitiatingProcessParentFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessParentId",
+          "type": "long"
+        },
+        {
+          "name": "InitiatingProcessRemoteSessionDeviceName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessRemoteSessionIP",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessSessionId",
+          "type": "long"
+        },
+        {
+          "name": "InitiatingProcessSHA1",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessSHA256",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessTokenElevation",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessUniqueId",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoCompanyName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoFileDescription",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoInternalFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoOriginalFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoProductName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoProductVersion",
+          "type": "string"
+        },
+        {
+          "name": "IsInitiatingProcessRemoteSession",
+          "type": "bool"
+        },
+        {
+          "name": "PreviousRegistryKey",
+          "type": "string"
+        },
+        {
+          "name": "PreviousRegistryValueData",
+          "type": "string"
+        },
+        {
+          "name": "PreviousRegistryValueName",
+          "type": "string"
+        },
+        {
+          "name": "RegistryKey",
+          "type": "string"
+        },
+        {
+          "name": "RegistryValueData",
+          "type": "string"
+        },
+        {
+          "name": "RegistryValueName",
+          "type": "string"
+        },
+        {
+          "name": "RegistryValueType",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "long"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "DeviceTvmInfoGathering",
+      "columns": [
+        {
+          "name": "AdditionalFields",
+          "type": "dynamic"
+        },
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "LastSeenTime",
+          "type": "datetime"
+        },
+        {
+          "name": "OSPlatform",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "DeviceTvmInfoGatheringKB",
+      "columns": [
+        {
+          "name": "Categories",
+          "type": "string"
+        },
+        {
+          "name": "DataStructure",
+          "type": "string"
+        },
+        {
+          "name": "Description",
+          "type": "string"
+        },
+        {
+          "name": "FieldName",
+          "type": "datetime"
+        },
+        {
+          "name": "IgId",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "DeviceTvmSecureConfigurationAssessment",
+      "columns": [
+        {
+          "name": "ConfigurationCategory",
+          "type": "string"
+        },
+        {
+          "name": "ConfigurationId",
+          "type": "string"
+        },
+        {
+          "name": "ConfigurationImpact",
+          "type": "real"
+        },
+        {
+          "name": "ConfigurationSubcategory",
+          "type": "string"
+        },
+        {
+          "name": "Context",
+          "type": "dynamic"
+        },
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "IsApplicable",
+          "type": "bool"
+        },
+        {
+          "name": "IsCompliant",
+          "type": "bool"
+        },
+        {
+          "name": "IsExpectedUserImpact",
+          "type": "bool"
+        },
+        {
+          "name": "OSPlatform",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "DeviceTvmSecureConfigurationAssessmentKB",
+      "columns": [
+        {
+          "name": "ConfigurationBenchmarks",
+          "type": "dynamic"
+        },
+        {
+          "name": "ConfigurationCategory",
+          "type": "string"
+        },
+        {
+          "name": "ConfigurationDescription",
+          "type": "string"
+        },
+        {
+          "name": "ConfigurationId",
+          "type": "string"
+        },
+        {
+          "name": "ConfigurationImpact",
+          "type": "real"
+        },
+        {
+          "name": "ConfigurationName",
+          "type": "string"
+        },
+        {
+          "name": "ConfigurationSubcategory",
+          "type": "string"
+        },
+        {
+          "name": "RemediationOptions",
+          "type": "string"
+        },
+        {
+          "name": "RiskDescription",
+          "type": "string"
+        },
+        {
+          "name": "Tags",
+          "type": "dynamic"
+        }
+      ]
+    },
+    {
+      "name": "DeviceTvmSoftwareEvidenceBeta",
+      "columns": [
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "DiskPaths",
+          "type": "dynamic"
+        },
+        {
+          "name": "LastSeenTime",
+          "type": "datetime"
+        },
+        {
+          "name": "RegistryPaths",
+          "type": "dynamic"
+        },
+        {
+          "name": "SoftwareName",
+          "type": "string"
+        },
+        {
+          "name": "SoftwareVendor",
+          "type": "string"
+        },
+        {
+          "name": "SoftwareVersion",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "DeviceTvmSoftwareInventory",
+      "columns": [
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "EndOfSupportDate",
+          "type": "datetime"
+        },
+        {
+          "name": "EndOfSupportStatus",
+          "type": "string"
+        },
+        {
+          "name": "OSArchitecture",
+          "type": "string"
+        },
+        {
+          "name": "OSPlatform",
+          "type": "string"
+        },
+        {
+          "name": "OSVersion",
+          "type": "string"
+        },
+        {
+          "name": "ProductCodeCpe",
+          "type": "string"
+        },
+        {
+          "name": "SoftwareName",
+          "type": "string"
+        },
+        {
+          "name": "SoftwareVendor",
+          "type": "string"
+        },
+        {
+          "name": "SoftwareVersion",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "DeviceTvmSoftwareVulnerabilities",
+      "columns": [
+        {
+          "name": "AadDeviceId",
+          "type": "string"
+        },
+        {
+          "name": "CveId",
+          "type": "string"
+        },
+        {
+          "name": "CveMitigationStatus",
+          "type": "string"
+        },
+        {
+          "name": "CveTags",
+          "type": "dynamic"
+        },
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "OSArchitecture",
+          "type": "string"
+        },
+        {
+          "name": "OSPlatform",
+          "type": "string"
+        },
+        {
+          "name": "OSVersion",
+          "type": "string"
+        },
+        {
+          "name": "RecommendedSecurityUpdate",
+          "type": "string"
+        },
+        {
+          "name": "RecommendedSecurityUpdateId",
+          "type": "string"
+        },
+        {
+          "name": "SoftwareName",
+          "type": "string"
+        },
+        {
+          "name": "SoftwareVendor",
+          "type": "string"
+        },
+        {
+          "name": "SoftwareVersion",
+          "type": "string"
+        },
+        {
+          "name": "VulnerabilitySeverityLevel",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "DeviceTvmSoftwareVulnerabilitiesKB",
+      "columns": [
+        {
+          "name": "AffectedSoftware",
+          "type": "string"
+        },
+        {
+          "name": "CveId",
+          "type": "string"
+        },
+        {
+          "name": "CveSupportability",
+          "type": "string"
+        },
+        {
+          "name": "CvssScore",
+          "type": "real"
+        },
+        {
+          "name": "CvssVector",
+          "type": "string"
+        },
+        {
+          "name": "EpssScore",
+          "type": "real"
+        },
+        {
+          "name": "IsExploitAvailable",
+          "type": "bool"
+        },
+        {
+          "name": "LastModifiedTime",
+          "type": "datetime"
+        },
+        {
+          "name": "PublishedDate",
+          "type": "datetime"
+        },
+        {
+          "name": "VulnerabilityDescription",
+          "type": "string"
+        },
+        {
+          "name": "VulnerabilitySeverityLevel",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "DisruptionAndResponseEvents",
+      "columns": [
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "AuthenticationProtocol",
+          "type": "string"
+        },
+        {
+          "name": "CompromisedAccountCount",
+          "type": "int"
+        },
+        {
+          "name": "DataSource",
+          "type": "string"
+        },
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "DomainName",
+          "type": "string"
+        },
+        {
+          "name": "FileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessId",
+          "type": "long"
+        },
+        {
+          "name": "InterfaceFriendlyName",
+          "type": "string"
+        },
+        {
+          "name": "InterfaceUuid",
+          "type": "string"
+        },
+        {
+          "name": "IpAddress",
+          "type": "string"
+        },
+        {
+          "name": "IsPolicyOn",
+          "type": "bool"
+        },
+        {
+          "name": "LogonId",
+          "type": "long"
+        },
+        {
+          "name": "LogonType",
+          "type": "string"
+        },
+        {
+          "name": "PolicyHash",
+          "type": "string"
+        },
+        {
+          "name": "PolicyId",
+          "type": "string"
+        },
+        {
+          "name": "PolicyName",
+          "type": "string"
+        },
+        {
+          "name": "PolicyVersion",
+          "type": "string"
+        },
+        {
+          "name": "Port",
+          "type": "int"
+        },
+        {
+          "name": "ReportId",
+          "type": "long"
+        },
+        {
+          "name": "ReportType",
+          "type": "string"
+        },
+        {
+          "name": "Service",
+          "type": "string"
+        },
+        {
+          "name": "SessionId",
+          "type": "long"
+        },
+        {
+          "name": "ShareName",
+          "type": "string"
+        },
+        {
+          "name": "SourceDeviceId",
+          "type": "string"
+        },
+        {
+          "name": "SourceDeviceName",
+          "type": "string"
+        },
+        {
+          "name": "SourceDomainName",
+          "type": "string"
+        },
+        {
+          "name": "SourceIpAddress",
+          "type": "string"
+        },
+        {
+          "name": "SourcePort",
+          "type": "int"
+        },
+        {
+          "name": "SourceUserDomainName",
+          "type": "string"
+        },
+        {
+          "name": "SourceUserName",
+          "type": "string"
+        },
+        {
+          "name": "SourceUserSid",
+          "type": "string"
+        },
+        {
+          "name": "TargetDeviceId",
+          "type": "string"
+        },
+        {
+          "name": "TargetDeviceName",
+          "type": "string"
+        },
+        {
+          "name": "TargetDomainName",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "EmailAttachmentInfo",
+      "columns": [
+        {
+          "name": "DetectionMethods",
+          "type": "string"
+        },
+        {
+          "name": "FileExtension",
+          "type": "string"
+        },
+        {
+          "name": "FileName",
+          "type": "string"
+        },
+        {
+          "name": "FileSize",
+          "type": "long"
+        },
+        {
+          "name": "FileType",
+          "type": "string"
+        },
+        {
+          "name": "NetworkMessageId",
+          "type": "string"
+        },
+        {
+          "name": "RecipientEmailAddress",
+          "type": "string"
+        },
+        {
+          "name": "RecipientObjectId",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "SenderDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "SenderFromAddress",
+          "type": "string"
+        },
+        {
+          "name": "SenderObjectId",
+          "type": "string"
+        },
+        {
+          "name": "SHA256",
+          "type": "string"
+        },
+        {
+          "name": "ThreatNames",
+          "type": "string"
+        },
+        {
+          "name": "ThreatTypes",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "EmailEvents",
+      "columns": [
+        {
+          "name": "AdditionalFields",
+          "type": "string"
+        },
+        {
+          "name": "AttachmentCount",
+          "type": "int"
+        },
+        {
+          "name": "AuthenticationDetails",
+          "type": "string"
+        },
+        {
+          "name": "BulkComplaintLevel",
+          "type": "int"
+        },
+        {
+          "name": "Cc",
+          "type": "dynamic"
+        },
+        {
+          "name": "ConfidenceLevel",
+          "type": "string"
+        },
+        {
+          "name": "Connectors",
+          "type": "string"
+        },
+        {
+          "name": "Context",
+          "type": "string"
+        },
+        {
+          "name": "DeliveryAction",
+          "type": "string"
+        },
+        {
+          "name": "DeliveryLocation",
+          "type": "string"
+        },
+        {
+          "name": "DetectionMethods",
+          "type": "string"
+        },
+        {
+          "name": "DistributionList",
+          "type": "string"
+        },
+        {
+          "name": "EmailAction",
+          "type": "string"
+        },
+        {
+          "name": "EmailActionPolicy",
+          "type": "string"
+        },
+        {
+          "name": "EmailActionPolicyGuid",
+          "type": "string"
+        },
+        {
+          "name": "EmailClusterId",
+          "type": "long"
+        },
+        {
+          "name": "EmailDirection",
+          "type": "string"
+        },
+        {
+          "name": "EmailLanguage",
+          "type": "string"
+        },
+        {
+          "name": "EmailSize",
+          "type": "long"
+        },
+        {
+          "name": "ExchangeTransportRule",
+          "type": "string"
+        },
+        {
+          "name": "ForwardingInformation",
+          "type": "string"
+        },
+        {
+          "name": "InternetMessageId",
+          "type": "string"
+        },
+        {
+          "name": "IsFirstContact",
+          "type": "bool"
+        },
+        {
+          "name": "LatestDeliveryAction",
+          "type": "string"
+        },
+        {
+          "name": "LatestDeliveryLocation",
+          "type": "string"
+        },
+        {
+          "name": "NetworkMessageId",
+          "type": "string"
+        },
+        {
+          "name": "OrgLevelAction",
+          "type": "string"
+        },
+        {
+          "name": "OrgLevelPolicy",
+          "type": "string"
+        },
+        {
+          "name": "RecipientDomain",
+          "type": "string"
+        },
+        {
+          "name": "RecipientEmailAddress",
+          "type": "string"
+        },
+        {
+          "name": "RecipientObjectId",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "SenderDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "SenderFromAddress",
+          "type": "string"
+        },
+        {
+          "name": "SenderFromDomain",
+          "type": "string"
+        },
+        {
+          "name": "SenderIPv4",
+          "type": "string"
+        },
+        {
+          "name": "SenderIPv6",
+          "type": "string"
+        },
+        {
+          "name": "SenderMailFromAddress",
+          "type": "string"
+        },
+        {
+          "name": "SenderMailFromDomain",
+          "type": "string"
+        },
+        {
+          "name": "SenderObjectId",
+          "type": "string"
+        },
+        {
+          "name": "Subject",
+          "type": "string"
+        },
+        {
+          "name": "ThreatClassification",
+          "type": "string"
+        },
+        {
+          "name": "ThreatNames",
+          "type": "string"
+        },
+        {
+          "name": "ThreatTypes",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "To",
+          "type": "dynamic"
+        },
+        {
+          "name": "UrlCount",
+          "type": "int"
+        },
+        {
+          "name": "UserLevelAction",
+          "type": "string"
+        },
+        {
+          "name": "UserLevelPolicy",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "EmailPostDeliveryEvents",
+      "columns": [
+        {
+          "name": "Action",
+          "type": "string"
+        },
+        {
+          "name": "ActionResult",
+          "type": "string"
+        },
+        {
+          "name": "ActionTrigger",
+          "type": "string"
+        },
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "DeliveryLocation",
+          "type": "string"
+        },
+        {
+          "name": "DetectionMethods",
+          "type": "string"
+        },
+        {
+          "name": "EmailDirection",
+          "type": "string"
+        },
+        {
+          "name": "InternetMessageId",
+          "type": "string"
+        },
+        {
+          "name": "NetworkMessageId",
+          "type": "string"
+        },
+        {
+          "name": "RecipientEmailAddress",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "SenderFromAddress",
+          "type": "string"
+        },
+        {
+          "name": "SourceLocation",
+          "type": "string"
+        },
+        {
+          "name": "ThreatTypes",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "EmailUrlInfo",
+      "columns": [
+        {
+          "name": "NetworkMessageId",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "Url",
+          "type": "string"
+        },
+        {
+          "name": "UrlChainId",
+          "type": "string"
+        },
+        {
+          "name": "UrlChainPosition",
+          "type": "int"
+        },
+        {
+          "name": "UrlDomain",
+          "type": "string"
+        },
+        {
+          "name": "UrlLocation",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "EntraIdSignInEvents",
+      "columns": [
+        {
+          "name": "AccountDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "AccountObjectId",
+          "type": "string"
+        },
+        {
+          "name": "AccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "AlternateSignInName",
+          "type": "string"
+        },
+        {
+          "name": "Application",
+          "type": "string"
+        },
+        {
+          "name": "ApplicationId",
+          "type": "string"
+        },
+        {
+          "name": "AuthenticationProcessingDetails",
+          "type": "string"
+        },
+        {
+          "name": "AuthenticationRequirement",
+          "type": "string"
+        },
+        {
+          "name": "Browser",
+          "type": "string"
+        },
+        {
+          "name": "City",
+          "type": "string"
+        },
+        {
+          "name": "ClientAppUsed",
+          "type": "string"
+        },
+        {
+          "name": "ConditionalAccessPolicies",
+          "type": "string"
+        },
+        {
+          "name": "ConditionalAccessStatus",
+          "type": "int"
+        },
+        {
+          "name": "CorrelationId",
+          "type": "string"
+        },
+        {
+          "name": "Country",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "DeviceTrustType",
+          "type": "string"
+        },
+        {
+          "name": "EndpointCall",
+          "type": "string"
+        },
+        {
+          "name": "EntraIdDeviceId",
+          "type": "string"
+        },
+        {
+          "name": "ErrorCode",
+          "type": "int"
+        },
+        {
+          "name": "GatewayJA4",
+          "type": "string"
+        },
+        {
+          "name": "IPAddress",
+          "type": "string"
+        },
+        {
+          "name": "IsCompliant",
+          "type": "int"
+        },
+        {
+          "name": "IsExternalUser",
+          "type": "int"
+        },
+        {
+          "name": "IsGuestUser",
+          "type": "bool"
+        },
+        {
+          "name": "IsManaged",
+          "type": "int"
+        },
+        {
+          "name": "IsSignInThroughGlobalSecureAccess",
+          "type": "bool"
+        },
+        {
+          "name": "LastPasswordChangeTimestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "Latitude",
+          "type": "string"
+        },
+        {
+          "name": "LogonType",
+          "type": "string"
+        },
+        {
+          "name": "Longitude",
+          "type": "string"
+        },
+        {
+          "name": "NetworkLocationDetails",
+          "type": "string"
+        },
+        {
+          "name": "OSPlatform",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "RequestId",
+          "type": "string"
+        },
+        {
+          "name": "ResourceDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "ResourceId",
+          "type": "string"
+        },
+        {
+          "name": "ResourceTenantId",
+          "type": "string"
+        },
+        {
+          "name": "RiskEventTypes",
+          "type": "string"
+        },
+        {
+          "name": "RiskLevelAggregated",
+          "type": "int"
+        },
+        {
+          "name": "RiskLevelDuringSignIn",
+          "type": "int"
+        },
+        {
+          "name": "RiskState",
+          "type": "int"
+        },
+        {
+          "name": "SessionId",
+          "type": "string"
+        },
+        {
+          "name": "State",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "TokenIssuerType",
+          "type": "string"
+        },
+        {
+          "name": "UniqueTokenId",
+          "type": "string"
+        },
+        {
+          "name": "UserAgent",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "EntraIdSpnSignInEvents",
+      "columns": [
+        {
+          "name": "Application",
+          "type": "string"
+        },
+        {
+          "name": "ApplicationId",
+          "type": "string"
+        },
+        {
+          "name": "City",
+          "type": "string"
+        },
+        {
+          "name": "CorrelationId",
+          "type": "string"
+        },
+        {
+          "name": "Country",
+          "type": "string"
+        },
+        {
+          "name": "ErrorCode",
+          "type": "int"
+        },
+        {
+          "name": "GatewayJA4",
+          "type": "string"
+        },
+        {
+          "name": "IPAddress",
+          "type": "string"
+        },
+        {
+          "name": "IsConfidentialClient",
+          "type": "bool"
+        },
+        {
+          "name": "IsManagedIdentity",
+          "type": "bool"
+        },
+        {
+          "name": "Latitude",
+          "type": "string"
+        },
+        {
+          "name": "Longitude",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "RequestId",
+          "type": "string"
+        },
+        {
+          "name": "ResourceDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "ResourceId",
+          "type": "string"
+        },
+        {
+          "name": "ResourceTenantId",
+          "type": "string"
+        },
+        {
+          "name": "ServicePrincipalId",
+          "type": "string"
+        },
+        {
+          "name": "ServicePrincipalName",
+          "type": "string"
+        },
+        {
+          "name": "SessionId",
+          "type": "string"
+        },
+        {
+          "name": "State",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "UniqueTokenId",
+          "type": "string"
+        },
+        {
+          "name": "UserAgent",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "ExposureGraphEdges",
+      "columns": [
+        {
+          "name": "EdgeId",
+          "type": "string"
+        },
+        {
+          "name": "EdgeLabel",
+          "type": "string"
+        },
+        {
+          "name": "EdgeProperties",
+          "type": "dynamic"
+        },
+        {
+          "name": "SourceNodeCategories",
+          "type": "dynamic"
+        },
+        {
+          "name": "SourceNodeId",
+          "type": "string"
+        },
+        {
+          "name": "SourceNodeLabel",
+          "type": "string"
+        },
+        {
+          "name": "SourceNodeName",
+          "type": "string"
+        },
+        {
+          "name": "TargetNodeCategories",
+          "type": "dynamic"
+        },
+        {
+          "name": "TargetNodeId",
+          "type": "string"
+        },
+        {
+          "name": "TargetNodeLabel",
+          "type": "string"
+        },
+        {
+          "name": "TargetNodeName",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "ExposureGraphNodes",
+      "columns": [
+        {
+          "name": "Categories",
+          "type": "dynamic"
+        },
+        {
+          "name": "EntityIds",
+          "type": "dynamic"
+        },
+        {
+          "name": "NodeId",
+          "type": "string"
+        },
+        {
+          "name": "NodeLabel",
+          "type": "string"
+        },
+        {
+          "name": "NodeName",
+          "type": "string"
+        },
+        {
+          "name": "NodeProperties",
+          "type": "dynamic"
+        }
+      ]
+    },
+    {
+      "name": "FileMaliciousContentInfo",
+      "columns": [
+        {
+          "name": "DetectionMethods",
+          "type": "dynamic"
+        },
+        {
+          "name": "DocumentID",
+          "type": "string"
+        },
+        {
+          "name": "FileCreationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "FileName",
+          "type": "string"
+        },
+        {
+          "name": "FileOwnerDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "FileOwnerUpn",
+          "type": "string"
+        },
+        {
+          "name": "FileSize",
+          "type": "long"
+        },
+        {
+          "name": "FolderPath",
+          "type": "string"
+        },
+        {
+          "name": "LastModifiedTime",
+          "type": "datetime"
+        },
+        {
+          "name": "LastModifyingAccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "SHA256",
+          "type": "string"
+        },
+        {
+          "name": "ThreatNames",
+          "type": "string"
+        },
+        {
+          "name": "ThreatTypes",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "Workload",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "GraphAPIAuditEvents",
+      "columns": [
+        {
+          "name": "AccountObjectId",
+          "type": "string"
+        },
+        {
+          "name": "ApiVersion",
+          "type": "string"
+        },
+        {
+          "name": "ApplicationId",
+          "type": "string"
+        },
+        {
+          "name": "ClientRequestId",
+          "type": "string"
+        },
+        {
+          "name": "EntityType",
+          "type": "string"
+        },
+        {
+          "name": "IdentityProvider",
+          "type": "string"
+        },
+        {
+          "name": "IpAddress",
+          "type": "string"
+        },
+        {
+          "name": "Location",
+          "type": "string"
+        },
+        {
+          "name": "OperationId",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "RequestDuration",
+          "type": "string"
+        },
+        {
+          "name": "RequestId",
+          "type": "string"
+        },
+        {
+          "name": "RequestMethod",
+          "type": "string"
+        },
+        {
+          "name": "RequestUri",
+          "type": "string"
+        },
+        {
+          "name": "ResponseSize",
+          "type": "long"
+        },
+        {
+          "name": "ResponseStatusCode",
+          "type": "string"
+        },
+        {
+          "name": "Scopes",
+          "type": "string"
+        },
+        {
+          "name": "ServicePrincipalId",
+          "type": "string"
+        },
+        {
+          "name": "TargetWorkload",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "UniqueTokenIdentifier",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "IdentityAccountInfo",
+      "columns": [
+        {
+          "name": "AccountId",
+          "type": "string"
+        },
+        {
+          "name": "AccountStatus",
+          "type": "string"
+        },
+        {
+          "name": "AccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "AdditionalFields",
+          "type": "dynamic"
+        },
+        {
+          "name": "Address",
+          "type": "string"
+        },
+        {
+          "name": "AssignedRoles",
+          "type": "dynamic"
+        },
+        {
+          "name": "AuthenticationMethod",
+          "type": "string"
+        },
+        {
+          "name": "AuthenticationSourceAccountId",
+          "type": "string"
+        },
+        {
+          "name": "City",
+          "type": "string"
+        },
+        {
+          "name": "Country",
+          "type": "string"
+        },
+        {
+          "name": "CreatedDateTime",
+          "type": "datetime"
+        },
+        {
+          "name": "CriticalityLevel",
+          "type": "int"
+        },
+        {
+          "name": "DeletedDateTime",
+          "type": "datetime"
+        },
+        {
+          "name": "Department",
+          "type": "string"
+        },
+        {
+          "name": "DisplayName",
+          "type": "string"
+        },
+        {
+          "name": "EligibleRoles",
+          "type": "dynamic"
+        },
+        {
+          "name": "EmailAddress",
+          "type": "string"
+        },
+        {
+          "name": "EmployeeId",
+          "type": "string"
+        },
+        {
+          "name": "EnrolledMfas",
+          "type": "dynamic"
+        },
+        {
+          "name": "GivenName",
+          "type": "string"
+        },
+        {
+          "name": "GroupMembership",
+          "type": "dynamic"
+        },
+        {
+          "name": "IdentityId",
+          "type": "string"
+        },
+        {
+          "name": "IdentityLinkBy",
+          "type": "string"
+        },
+        {
+          "name": "IdentityLinkReason",
+          "type": "string"
+        },
+        {
+          "name": "IdentityLinkTime",
+          "type": "datetime"
+        },
+        {
+          "name": "IdentityLinkType",
+          "type": "string"
+        },
+        {
+          "name": "IsPrimary",
+          "type": "bool"
+        },
+        {
+          "name": "JobTitle",
+          "type": "string"
+        },
+        {
+          "name": "LastPasswordChangeTime",
+          "type": "datetime"
+        },
+        {
+          "name": "Manager",
+          "type": "string"
+        },
+        {
+          "name": "Phone",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "Sid",
+          "type": "string"
+        },
+        {
+          "name": "SourceProvider",
+          "type": "string"
+        },
+        {
+          "name": "SourceProviderAccountId",
+          "type": "string"
+        },
+        {
+          "name": "SourceProviderInstanceDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "SourceProviderInstanceId",
+          "type": "string"
+        },
+        {
+          "name": "SourceProviderRiskLevel",
+          "type": "string"
+        },
+        {
+          "name": "SourceProviderRiskLevelDetails",
+          "type": "string"
+        },
+        {
+          "name": "Surname",
+          "type": "string"
+        },
+        {
+          "name": "Tags",
+          "type": "dynamic"
+        },
+        {
+          "name": "TenantMembershipType",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "Type",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "IdentityDirectoryEvents",
+      "columns": [
+        {
+          "name": "AccountDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "AccountDomain",
+          "type": "string"
+        },
+        {
+          "name": "AccountName",
+          "type": "string"
+        },
+        {
+          "name": "AccountObjectId",
+          "type": "string"
+        },
+        {
+          "name": "AccountSid",
+          "type": "string"
+        },
+        {
+          "name": "AccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "AdditionalFields",
+          "type": "dynamic"
+        },
+        {
+          "name": "Application",
+          "type": "string"
+        },
+        {
+          "name": "DestinationDeviceName",
+          "type": "string"
+        },
+        {
+          "name": "DestinationIPAddress",
+          "type": "string"
+        },
+        {
+          "name": "DestinationPort",
+          "type": "int"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "IPAddress",
+          "type": "string"
+        },
+        {
+          "name": "ISP",
+          "type": "string"
+        },
+        {
+          "name": "Location",
+          "type": "string"
+        },
+        {
+          "name": "Port",
+          "type": "int"
+        },
+        {
+          "name": "Protocol",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "TargetAccountDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "TargetAccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "TargetDeviceName",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "IdentityEvents",
+      "columns": [
+        {
+          "name": "AccountDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "AccountId",
+          "type": "string"
+        },
+        {
+          "name": "AccountType",
+          "type": "string"
+        },
+        {
+          "name": "AccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "ActionFailureReason",
+          "type": "string"
+        },
+        {
+          "name": "ActionResult",
+          "type": "string"
+        },
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "AdditionalFields",
+          "type": "dynamic"
+        },
+        {
+          "name": "Application",
+          "type": "string"
+        },
+        {
+          "name": "ApplicationEventId",
+          "type": "string"
+        },
+        {
+          "name": "ApplicationInstanceId",
+          "type": "string"
+        },
+        {
+          "name": "ApplicationSessionId",
+          "type": "string"
+        },
+        {
+          "name": "IPAddress",
+          "type": "string"
+        },
+        {
+          "name": "RawEventData",
+          "type": "dynamic"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "TargetObjects",
+          "type": "dynamic"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "UserAgent",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "IdentityInfo",
+      "columns": [
+        {
+          "name": "AccountDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "AccountDomain",
+          "type": "string"
+        },
+        {
+          "name": "AccountName",
+          "type": "string"
+        },
+        {
+          "name": "AccountObjectId",
+          "type": "string"
+        },
+        {
+          "name": "AccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "Address",
+          "type": "string"
+        },
+        {
+          "name": "AssignedRoles",
+          "type": "dynamic"
+        },
+        {
+          "name": "BlastRadius",
+          "type": "string"
+        },
+        {
+          "name": "ChangeSource",
+          "type": "string"
+        },
+        {
+          "name": "City",
+          "type": "string"
+        },
+        {
+          "name": "CloudSid",
+          "type": "string"
+        },
+        {
+          "name": "CompanyName",
+          "type": "string"
+        },
+        {
+          "name": "Country",
+          "type": "string"
+        },
+        {
+          "name": "CreatedDateTime",
+          "type": "datetime"
+        },
+        {
+          "name": "CriticalityLevel",
+          "type": "int"
+        },
+        {
+          "name": "DeletedDateTime",
+          "type": "datetime"
+        },
+        {
+          "name": "Department",
+          "type": "string"
+        },
+        {
+          "name": "DistinguishedName",
+          "type": "string"
+        },
+        {
+          "name": "EmailAddress",
+          "type": "string"
+        },
+        {
+          "name": "EmployeeId",
+          "type": "string"
+        },
+        {
+          "name": "GivenName",
+          "type": "string"
+        },
+        {
+          "name": "GroupMembership",
+          "type": "dynamic"
+        },
+        {
+          "name": "IdentityEnvironment",
+          "type": "string"
+        },
+        {
+          "name": "IdentityId",
+          "type": "string"
+        },
+        {
+          "name": "IsAccountEnabled",
+          "type": "bool"
+        },
+        {
+          "name": "JobTitle",
+          "type": "string"
+        },
+        {
+          "name": "Manager",
+          "type": "string"
+        },
+        {
+          "name": "OnPremObjectId",
+          "type": "string"
+        },
+        {
+          "name": "OnPremSid",
+          "type": "string"
+        },
+        {
+          "name": "OtherMailAddresses",
+          "type": "dynamic"
+        },
+        {
+          "name": "Phone",
+          "type": "string"
+        },
+        {
+          "name": "PrivilegedEntraPimRoles",
+          "type": "dynamic"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "RiskLevel",
+          "type": "string"
+        },
+        {
+          "name": "RiskLevelDetails",
+          "type": "string"
+        },
+        {
+          "name": "RiskScore",
+          "type": "int"
+        },
+        {
+          "name": "RiskScoreUpdateTime",
+          "type": "datetime"
+        },
+        {
+          "name": "SipProxyAddress",
+          "type": "string"
+        },
+        {
+          "name": "SourceProvider",
+          "type": "string"
+        },
+        {
+          "name": "SourceProviders",
+          "type": "dynamic"
+        },
+        {
+          "name": "State",
+          "type": "string"
+        },
+        {
+          "name": "Surname",
+          "type": "string"
+        },
+        {
+          "name": "Tags",
+          "type": "dynamic"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "Type",
+          "type": "string"
+        },
+        {
+          "name": "UserAccountControl",
+          "type": "dynamic"
+        }
+      ]
+    },
+    {
+      "name": "IdentityLogonEvents",
+      "columns": [
+        {
+          "name": "AccountDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "AccountDomain",
+          "type": "string"
+        },
+        {
+          "name": "AccountName",
+          "type": "string"
+        },
+        {
+          "name": "AccountObjectId",
+          "type": "string"
+        },
+        {
+          "name": "AccountSid",
+          "type": "string"
+        },
+        {
+          "name": "AccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "AdditionalFields",
+          "type": "dynamic"
+        },
+        {
+          "name": "Application",
+          "type": "string"
+        },
+        {
+          "name": "DestinationDeviceName",
+          "type": "string"
+        },
+        {
+          "name": "DestinationIPAddress",
+          "type": "string"
+        },
+        {
+          "name": "DestinationPort",
+          "type": "int"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "DeviceType",
+          "type": "string"
+        },
+        {
+          "name": "FailureReason",
+          "type": "string"
+        },
+        {
+          "name": "IPAddress",
+          "type": "string"
+        },
+        {
+          "name": "ISP",
+          "type": "string"
+        },
+        {
+          "name": "LastSeenForUser",
+          "type": "dynamic"
+        },
+        {
+          "name": "Location",
+          "type": "string"
+        },
+        {
+          "name": "LogonType",
+          "type": "string"
+        },
+        {
+          "name": "OSPlatform",
+          "type": "string"
+        },
+        {
+          "name": "Port",
+          "type": "int"
+        },
+        {
+          "name": "Protocol",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "TargetAccountDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "TargetDeviceName",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "UncommonForUser",
+          "type": "dynamic"
+        }
+      ]
+    },
+    {
+      "name": "IdentityQueryEvents",
+      "columns": [
+        {
+          "name": "AccountDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "AccountDomain",
+          "type": "string"
+        },
+        {
+          "name": "AccountName",
+          "type": "string"
+        },
+        {
+          "name": "AccountObjectId",
+          "type": "string"
+        },
+        {
+          "name": "AccountSid",
+          "type": "string"
+        },
+        {
+          "name": "AccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "AdditionalFields",
+          "type": "dynamic"
+        },
+        {
+          "name": "Application",
+          "type": "string"
+        },
+        {
+          "name": "DestinationDeviceName",
+          "type": "string"
+        },
+        {
+          "name": "DestinationIPAddress",
+          "type": "string"
+        },
+        {
+          "name": "DestinationPort",
+          "type": "int"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "IPAddress",
+          "type": "string"
+        },
+        {
+          "name": "Location",
+          "type": "string"
+        },
+        {
+          "name": "Port",
+          "type": "int"
+        },
+        {
+          "name": "Protocol",
+          "type": "string"
+        },
+        {
+          "name": "Query",
+          "type": "string"
+        },
+        {
+          "name": "QueryTarget",
+          "type": "string"
+        },
+        {
+          "name": "QueryType",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "TargetAccountDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "TargetAccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "TargetDeviceName",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "MessageEvents",
+      "columns": [
+        {
+          "name": "ConfidenceLevel",
+          "type": "dynamic"
+        },
+        {
+          "name": "DeliveryAction",
+          "type": "string"
+        },
+        {
+          "name": "DeliveryLocation",
+          "type": "string"
+        },
+        {
+          "name": "DetectionMethods",
+          "type": "dynamic"
+        },
+        {
+          "name": "GroupId",
+          "type": "string"
+        },
+        {
+          "name": "GroupName",
+          "type": "string"
+        },
+        {
+          "name": "IsExternalThread",
+          "type": "bool"
+        },
+        {
+          "name": "IsOwnedThread",
+          "type": "bool"
+        },
+        {
+          "name": "LastEditedTime",
+          "type": "datetime"
+        },
+        {
+          "name": "MessageId",
+          "type": "string"
+        },
+        {
+          "name": "MessageSubtype",
+          "type": "string"
+        },
+        {
+          "name": "MessageType",
+          "type": "string"
+        },
+        {
+          "name": "MessageVersion",
+          "type": "string"
+        },
+        {
+          "name": "ParentMessageId",
+          "type": "string"
+        },
+        {
+          "name": "RecipientDetails",
+          "type": "dynamic"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "SafetyTip",
+          "type": "string"
+        },
+        {
+          "name": "SenderDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "SenderEmailAddress",
+          "type": "string"
+        },
+        {
+          "name": "SenderObjectId",
+          "type": "string"
+        },
+        {
+          "name": "SenderType",
+          "type": "string"
+        },
+        {
+          "name": "Subject",
+          "type": "string"
+        },
+        {
+          "name": "TeamsMessageId",
+          "type": "string"
+        },
+        {
+          "name": "ThreadId",
+          "type": "string"
+        },
+        {
+          "name": "ThreadName",
+          "type": "string"
+        },
+        {
+          "name": "ThreadSubType",
+          "type": "string"
+        },
+        {
+          "name": "ThreadType",
+          "type": "string"
+        },
+        {
+          "name": "ThreatTypes",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "MessagePostDeliveryEvents",
+      "columns": [
+        {
+          "name": "Action",
+          "type": "string"
+        },
+        {
+          "name": "ActionResult",
+          "type": "string"
+        },
+        {
+          "name": "ActionTrigger",
+          "type": "string"
+        },
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "ConfidenceLevel",
+          "type": "dynamic"
+        },
+        {
+          "name": "DetectionMethods",
+          "type": "dynamic"
+        },
+        {
+          "name": "IsExternalThread",
+          "type": "bool"
+        },
+        {
+          "name": "LatestDeliveryLocation",
+          "type": "string"
+        },
+        {
+          "name": "RecipientDetails",
+          "type": "dynamic"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "SafetyTip",
+          "type": "string"
+        },
+        {
+          "name": "SenderEmailAddress",
+          "type": "string"
+        },
+        {
+          "name": "TeamsMessageId",
+          "type": "string"
+        },
+        {
+          "name": "ThreatTypes",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "MessageUrlInfo",
+      "columns": [
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "TeamsMessageId",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "Url",
+          "type": "string"
+        },
+        {
+          "name": "UrlDomain",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "OAuthAppInfo",
+      "columns": [
+        {
+          "name": "AddedOnTime",
+          "type": "datetime"
+        },
+        {
+          "name": "AppName",
+          "type": "string"
+        },
+        {
+          "name": "AppOrigin",
+          "type": "string"
+        },
+        {
+          "name": "AppOwnerTenantId",
+          "type": "string"
+        },
+        {
+          "name": "AppStatus",
+          "type": "string"
+        },
+        {
+          "name": "AssignedRoles",
+          "type": "dynamic"
+        },
+        {
+          "name": "ConsentedUsersCount",
+          "type": "int"
+        },
+        {
+          "name": "IsAdminConsented",
+          "type": "bool"
+        },
+        {
+          "name": "LastModifiedTime",
+          "type": "datetime"
+        },
+        {
+          "name": "LastUsedTime",
+          "type": "datetime"
+        },
+        {
+          "name": "OAuthAppId",
+          "type": "string"
+        },
+        {
+          "name": "Permissions",
+          "type": "dynamic"
+        },
+        {
+          "name": "PrivilegeLevel",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "RiskScore",
+          "type": "int"
+        },
+        {
+          "name": "ServicePrincipalId",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "VerifiedPublisher",
+          "type": "dynamic"
+        }
+      ]
+    },
+    {
+      "name": "UrlClickEvents",
+      "columns": [
+        {
+          "name": "AccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "AppName",
+          "type": "string"
+        },
+        {
+          "name": "AppVersion",
+          "type": "string"
+        },
+        {
+          "name": "DetectionMethods",
+          "type": "string"
+        },
+        {
+          "name": "IPAddress",
+          "type": "string"
+        },
+        {
+          "name": "IsClickedThrough",
+          "type": "bool"
+        },
+        {
+          "name": "NetworkMessageId",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "SourceId",
+          "type": "string"
+        },
+        {
+          "name": "ThreatTypes",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "Url",
+          "type": "string"
+        },
+        {
+          "name": "UrlChain",
+          "type": "string"
+        },
+        {
+          "name": "Workload",
+          "type": "string"
+        }
+      ]
+    }
+  ]
+}

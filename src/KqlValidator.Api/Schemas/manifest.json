@@ -1,0 +1,12 @@
+{
+  "sources": [
+    {
+      "url": "https://xdrinternals.com/FullSchema-latest.json",
+      "sha256": "273ef2364461114ca84bd027a70291466e855b66a9db0ec6457007ec25478d84"
+    },
+    {
+      "url": "https://xdrinternals.com/ActionTypeSchema-latest.json",
+      "sha256": "a7e735ccfd2843eaa7c4fa040418f5d1870f91346ac60f6992d2ea5f120f8fb8"
+    }
+  ]
+}
