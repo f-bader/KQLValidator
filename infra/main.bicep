@@ -33,11 +33,28 @@ resource environment 'Microsoft.App/managedEnvironments@2025-01-01' = {
   }
 }
 
+resource pullIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
+  name: '${appName}-pull'
+  location: location
+}
+
+module registryAccess './registry-access.bicep' = {
+  name: '${appName}-acr-pull'
+  scope: resourceGroup(registryResourceGroupName)
+  params: {
+    registryName: registryName
+    principalId: pullIdentity.properties.principalId
+  }
+}
+
 resource app 'Microsoft.App/containerApps@2025-01-01' = {
   name: appName
   location: location
   identity: {
-    type: 'SystemAssigned'
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${pullIdentity.id}': {}
+    }
   }
   properties: {
     managedEnvironmentId: environment.id
@@ -52,7 +69,7 @@ resource app 'Microsoft.App/containerApps@2025-01-01' = {
       registries: [
         {
           server: registry.properties.loginServer
-          identity: 'system'
+          identity: pullIdentity.id
         }
       ]
     }
@@ -116,19 +133,13 @@ resource app 'Microsoft.App/containerApps@2025-01-01' = {
       }
     }
   }
-}
-
-module registryAccess './registry-access.bicep' = {
-  name: '${appName}-acr-pull'
-  scope: resourceGroup(registryResourceGroupName)
-  params: {
-    registryName: registryName
-    principalId: app.identity.principalId
-  }
+  dependsOn: [
+    registryAccess
+  ]
 }
 
 output appId string = app.id
 output fqdn string = app.properties.configuration.ingress.fqdn
 output url string = 'https://${app.properties.configuration.ingress.fqdn}'
-output principalId string = app.identity.principalId
+output principalId string = pullIdentity.properties.principalId
 output registryServer string = registry.properties.loginServer
