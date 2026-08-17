@@ -26,9 +26,6 @@ resource environment 'Microsoft.App/managedEnvironments@2025-01-01' = {
   name: '${appName}-env'
   location: location
   properties: {
-    appLogsConfiguration: {
-      destination: 'none'
-    }
     zoneRedundant: false
   }
 }
