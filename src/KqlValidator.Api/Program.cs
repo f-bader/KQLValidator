@@ -15,6 +15,7 @@ builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<ApiExceptionHandler>();
 builder.Services.AddOpenApi("v1");
 builder.Services.AddSingleton<SchemaCatalog>();
+builder.Services.AddSingleton<LintRuleCatalog>();
 builder.Services.AddSingleton<GlobalStateFactory>();
 builder.Services.AddSingleton<RequestValidator>();
 builder.Services.AddSingleton<KqlLinter>();
@@ -68,6 +69,9 @@ app.MapPost("/api/v1/validate", async (ValidateRequest request, AnalysisExecutor
     .ProducesProblem(StatusCodes.Status504GatewayTimeout);
 
 app.MapGet("/api/v1/environments", (SchemaQueryService schemas) => schemas.ListEnvironments());
+app.MapGet("/api/v1/lint-rules", (
+    string? ruleSet, string? category, string? profile, string? target, string? environment, LintRuleCatalog rules) =>
+    new LintRuleListResponse(rules.List(ruleSet, category, profile, target, environment)));
 app.MapGet("/api/v1/environments/{environment}/schema", (
     string environment, string? query, string? kind, int? limit, string? cursor, SchemaQueryService schemas) =>
     TryEnvironment(environment, out var parsed)

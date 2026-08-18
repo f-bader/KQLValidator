@@ -17,8 +17,21 @@ public sealed class KqlTools
         [Description("Schema environment: xdr, sentinel, or unified.")] KqlEnvironment environment,
         [Description("Lint profile: general, hunting, or detection.")] LintProfile profile,
         [Description("Optional request-scoped table, function, and watchlist declarations.")] ValidationExtensions? extensions = null,
+        [Description("Optional validation target. Use defender-nrt or sentinel-nrt for target-specific constraints.")] KqlTarget? target = null,
+        [Description("Optional lint rule-set, rule-ID, and severity controls.")] LintOptions? lint = null,
         CancellationToken cancellationToken = default) =>
-        executor.ExecuteAsync(new ValidateRequest(query, environment, profile, extensions), cancellationToken);
+        executor.ExecuteAsync(new ValidateRequest(query, environment, profile, extensions, target, lint), cancellationToken);
+
+    [McpServerTool(Name = "list_kql_lint_rules", Title = "List KQL lint rules", ReadOnly = true, Destructive = false, Idempotent = true, OpenWorld = false, UseStructuredContent = true)]
+    [Description("List lint rules, their rule sets, applicability, severities, and original sources.")]
+    public static LintRuleListResponse ListKqlLintRules(
+        LintRuleCatalog rules,
+        string? ruleSet = null,
+        string? category = null,
+        string? profile = null,
+        string? target = null,
+        string? environment = null) =>
+        new(rules.List(ruleSet, category, profile, target, environment));
 
     [McpServerTool(Name = "list_kql_environments", Title = "List KQL environments", ReadOnly = true, Destructive = false, Idempotent = true, OpenWorld = false, UseStructuredContent = true)]
     [Description("List the built-in KQL schema environments and their versions.")]

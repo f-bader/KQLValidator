@@ -9,6 +9,8 @@ The service performs static analysis only. It never executes a query, contacts a
 - Kusto parser and semantic diagnostics using `Microsoft.Azure.Kusto.Language`.
 - `xdr`, `sentinel`, and merged `unified` schema environments.
 - `general`, `hunting`, and `detection` lint profiles.
+- Target-aware scheduled and NRT linting for Defender XDR and Sentinel.
+- Caller-selectable rule sets, per-rule overrides, severity filtering, and public rule discovery.
 - Defender-specific functions including `AssignedIPAddresses`, `SeenBy`, and the six anomalous-behavior `invoke` functions.
 - Request-scoped custom tables, functions, and watchlists.
 - Deterministic Defender hunting guidance with stable rule IDs and source spans.
@@ -41,6 +43,7 @@ Important endpoints:
 | Endpoint | Purpose |
 | --- | --- |
 | `POST /api/v1/validate` | Validate and lint KQL |
+| `GET /api/v1/lint-rules` | List and filter every lint rule and original source |
 | `GET /api/v1/environments` | List environments and schema versions |
 | `GET /api/v1/environments/{environment}/schema` | Search tables, columns, and functions |
 | `GET /api/v1/environments/{environment}/tables/{table}` | Inspect one table |
@@ -63,13 +66,17 @@ Claude Code:
 claude mcp add --transport http kql-validator http://127.0.0.1:8080/mcp
 ```
 
-Available tools are `validate_kql`, `list_kql_environments`, `search_kql_schema`, and `get_kql_table`. They are annotated as read-only, idempotent, non-destructive, and closed-world.
+Available tools are `validate_kql`, `list_kql_lint_rules`, `list_kql_environments`, `search_kql_schema`, and `get_kql_table`. They are annotated as read-only, idempotent, non-destructive, and closed-world.
 
 ## Validation behavior
 
 Invalid KQL is a successful HTTP 200 response with `valid: false` and diagnostics. Request or service failures use Problem Details and an appropriate 4xx/5xx status.
 
 Lint warnings never invalidate a query. The hunting rules are derived from [Microsoft Defender XDR advanced hunting best practices](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-best-practices). The XDR table and ActionType snapshots are normalized from [xdrinternals.com](https://xdrinternals.com/), with their source URLs and digests recorded in the schema manifest.
+
+`target` is optional and inferred for ordinary hunting and scheduled detections. Set it explicitly to `defender-nrt` or `sentinel-nrt` for target-specific validation. The optional `lint` object selects rule sets, enables or disables stable rule IDs, filters severity, or disables custom lint while leaving parser and semantic diagnostics active. Community detection recommendations are disabled unless the caller explicitly selects `community-detection` or enables an individual community rule.
+
+See [docs/lint-rules.md](docs/lint-rules.md) for configuration, applicability, examples, every rule ID, and its original source.
 
 The `ConnectedNetworks` output from `AssignedIPAddresses` is intentionally modeled as `dynamic`: Microsoft describes the value as a JSON array even though one documentation table has shown a conflicting scalar type.
 

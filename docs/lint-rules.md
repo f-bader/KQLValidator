@@ -1,0 +1,122 @@
+# Lint rules
+
+KQL Validator separates parser and semantic errors from optional lint diagnostics. Parser and semantic validation always runs. Callers can select lint rule sets, enable or disable individual rules, and filter informational diagnostics without changing query validation.
+
+The runtime catalog is available through `GET /api/v1/lint-rules` and the MCP tool `list_kql_lint_rules`. Each emitted lint diagnostic includes `ruleId`, `ruleSet`, `category`, `sourceKind`, and `documentationUrl` so callers can distinguish Microsoft guidance from community recommendations.
+
+## Configuration
+
+When `target` is omitted, it is inferred as follows:
+
+| Request | Inferred target |
+| --- | --- |
+| `profile: hunting` | `interactive-hunting` |
+| `environment: xdr`, `profile: detection` | `defender-scheduled` |
+| `environment: sentinel`, `profile: detection` | `sentinel-scheduled` |
+| Other requests | No target |
+
+Use an explicit target for NRT validation. Defender and Sentinel NRT have different restrictions.
+
+```json
+{
+  "query": "DeviceEvents | where ActionType == 'ProcessCreated'",
+  "environment": "xdr",
+  "profile": "detection",
+  "target": "defender-nrt",
+  "lint": {
+    "enabled": true,
+    "ruleSets": ["baseline", "defender-xdr", "defender-nrt"],
+    "enableRules": [],
+    "disableRules": ["KQLH006"],
+    "minimumSeverity": "warning"
+  }
+}
+```
+
+- Omit `ruleSets` to use profile and target defaults. Supplying it selects exactly those rule sets.
+- `enableRules` adds individual rules even when their rule set is not selected.
+- `disableRules` always wins.
+- `minimumSeverity: warning` suppresses informational lint diagnostics. It never suppresses parser or semantic diagnostics.
+- `enabled: false` disables every custom lint rule while preserving parser and semantic validation.
+- Unknown rule IDs and rule-set names are rejected with HTTP 400.
+- The `community-detection` rule set is not selected by any default profile.
+
+## Rule sets and categories
+
+| Rule set | Default selection |
+| --- | --- |
+| `baseline` | All requests; its individual rules still apply only to their documented profiles/targets |
+| `microsoft-kusto` | Interactive hunting |
+| `defender-xdr` | XDR and unified environments |
+| `sentinel-detection` | Sentinel detection |
+| `defender-nrt` | Explicit `defender-nrt` target |
+| `community-detection` | Never; caller opt-in only |
+
+Categories are `correctness`, `performance`, `reliability`, `detection`, `detection-quality`, `maintainability`, `nrt`, `sentinel`, and `xdr`. `sourceKind` is `microsoft` or `community`.
+
+## Complete rule catalog
+
+“Default” means that the rule is eligible when its rule set is selected; profile, environment, and target applicability still apply.
+
+| ID | Severity | Rule set / category | Default | Trigger and preferred pattern | Original source |
+| --- | --- | --- | ---: | --- | --- |
+| `KQLH001` | Warning | baseline / performance | Yes | `search "x"` → scope with `search in (Table)` or start from a table. | [Defender hunting best practices][defender-bp] |
+| `KQLH002` | Warning | baseline / performance | Yes | `* contains "x"` → search a named column. | [Defender hunting best practices][defender-bp] |
+| `KQLH003` | Warning | baseline / performance | Yes | `union *` or an unbounded source union → enumerate required tables. | [Defender hunting best practices][defender-bp] |
+| `KQLH004` | Warning | baseline / performance | Yes | `tolower(Column) == "x"` → use a suitable case-aware string operator when semantics permit. | [Defender hunting best practices][defender-bp] |
+| `KQLH005` | Information | baseline / performance | Yes | `extract()` or `matches regex` on structured input → prefer `parse` or `parse_json`; regex remains valid when required. | [Defender hunting best practices][defender-bp] |
+| `KQLH006` | Information | baseline / performance | Yes | A string term of three characters or fewer is not term-indexed; narrow the data first. | [Defender hunting best practices][defender-bp] |
+| `KQLH007` | Warning | baseline / performance | Yes | `extend X=... | where X...` → filter the source column before calculating `X` when equivalent. | [Defender hunting best practices][defender-bp] |
+| `KQLH008` | Warning | baseline / detection-quality | Yes | Hunting with exact command-line equality → parse or independently match stable components. | [Defender hunting best practices][defender-bp] |
+| `KQLH009` | Information | baseline / correctness | Yes | `join (...)` → specify `kind`; the default `innerunique` deduplicates the left input. | [Defender hunting best practices][defender-bp] |
+| `KQLH010` | Warning | baseline / performance | Yes | Interactive XDR hunting without an early `Timestamp` or `TimeGenerated` predicate → bound the scan. Not applied to scheduled detections. | [Defender hunting best practices][defender-bp] |
+| `KQLH011` | Warning | baseline / performance | Yes | Interactive hunting join branch without its own time predicate → time-bound both inputs. Not applied to scheduled detections. | [Defender hunting best practices][defender-bp] |
+| `KQLH012` | Warning | baseline / performance | Yes | Parsing or row transformation before a selective filter → filter first. | [Defender hunting best practices][defender-bp] |
+| `KQLH013` | Information | baseline / performance | Yes | Exploratory hunting without `take`, `limit`, `top`, `count`, or aggregation → bound development results. Never applied to detection targets. | [Defender hunting best practices][defender-bp] |
+| `KQLH014` | Warning | baseline / correctness | Yes | `ProcessId` without a unique ID or creation time → include `ProcessUniqueId` or `ProcessCreationTime`. | [Defender hunting best practices][defender-bp] |
+| `KQLD001` | Error | sentinel-detection / detection | Yes | Sentinel detection output omits `TimeGenerated` → retain it in the final result. | [Sentinel scheduled rules][sentinel-rules] |
+| `KQLD002` | Warning | defender-xdr / detection | Yes | Defender detection output contains neither `Timestamp` nor `TimeGenerated` → retain event time. | [Defender custom detections][defender-detections] |
+| `KQLD003` | Warning | defender-xdr / detection | Yes | A referenced non-endpoint Defender event table exposes `ReportId`, but output drops it → retain it. | [Defender custom detections][defender-detections] |
+| `KQLD004` | Warning | defender-xdr / detection-quality | Yes | Defender detection output lacks a strong device, account, IP, or file entity → retain one or more useful identifiers. | [Defender custom detections][defender-detections] |
+| `KQLD005` | Warning | defender-xdr / detection-quality | Yes | Detection uses exact command-line equality → tolerate quoting, spacing, and argument-order changes. | [Defender hunting best practices][defender-bp] |
+| `KQLD006` | Warning | baseline / reliability | Yes | Alert query uses `take` or `limit` → use deterministic filters or aggregation. | [Azure Monitor log alerts][alert-queries] |
+| `KQLX001` | Warning | defender-xdr / xdr | Yes | Literal `ActionType` is absent from the bundled current catalog → verify schema spelling and availability. | [XDRInternals schema][xdrinternals] |
+| `KQLX002` | Error | defender-xdr / xdr | Yes | `GetAnomalousBehaviorsAbout(dynamic(...))` is not an array of one to three valid `Kind`/optional `Value` objects → correct the literal. | [GetAnomalousBehaviorsAbout][about-function] |
+| `KQLX003` | Information | defender-xdr / xdr | Yes | Native XDR detection returns only `TimeGenerated` → accepted, but prefer native `Timestamp`. Unified validation treats both as event-time columns. | [Defender custom detections][defender-detections] |
+| `KQLP001` | Information | microsoft-kusto / performance | Yes | `contains "FullTerm"` → consider `has "FullTerm"` only when full-term semantics are intended. | [Kusto query best practices][kusto-bp] |
+| `KQLP002` | Information | microsoft-kusto / performance | Yes | `Column =~ "a" or Column =~ "b"` → `Column in~ ("a", "b")`. | [Kusto `in` operator][in-operator] |
+| `KQLP003` | Information | microsoft-kusto / performance | Yes | `evaluate bag_unpack(Bag)` → declare `: (Column:type, ...)` OutputSchema when known. | [bag_unpack plugin][bag-unpack] |
+| `KQLP004` | Warning | microsoft-kusto / performance | Yes | `where format_datetime(Time, ...) == ...` → compare the datetime value or range directly. | [Kusto query best practices][kusto-bp] |
+| `KQLP005` | Warning | microsoft-kusto / correctness | Yes | `Column == ""` or `Column != ""` → `isempty(Column)` or `isnotempty(Column)`. | [isempty function][isempty] |
+| `KQLP006` | Information | microsoft-kusto / performance | Yes | `Column has "192.0.2.1"` → use `has_ipv4` or `has_any_ipv4`. | [Kusto query best practices][kusto-bp] |
+| `KQLS001` | Error | sentinel-detection / sentinel | Yes | Sentinel detection query exceeds 10,000 characters → simplify or move large lists to a managed external source. | [Sentinel scheduled rules][sentinel-rules] |
+| `KQLN001` | Error | defender-nrt / nrt | Yes | Defender NRT query uses `join`, `union`, or `externaldata` → remove the unsupported multi-input operator or use scheduled frequency. | [Defender custom detections][defender-detections] |
+| `KQLN002` | Error | defender-nrt / nrt | Yes | Defender NRT query contains a line or block comment → remove it from deployed NRT KQL. | [Defender custom detections][defender-detections] |
+| `KQLQ001` | Information | community-detection / detection-quality | No | Detection filters identity-like display names → prefer stable IDs where the source exposes them. This heuristic is intentionally opt-in. | [Detection Engineering Best Practices, part 1][dxbp1] |
+| `KQLQ002` | Information | community-detection / detection-quality | No | `DeviceProcessEvents` filename detection omits original-file-name metadata → consider the original filename to tolerate renamed binaries. | [Detection Engineering Best Practices, part 1][dxbp1] |
+| `KQLQ003` | Information | community-detection / maintainability | No | Inline negative filter has no same-line explanation → document rationale and ownership or centralize the allowlist. | [Detection Engineering Best Practices, part 2][dxbp2] |
+| `KQLQ004` | Warning | community-detection / detection-quality | No | Sentinel NRT query joins or unions events → consider a single-event NRT rule because different ingestion windows can cause missed correlation. | [FalconForce NRT research][falcon-nrt] |
+
+## Scope and deliberate exclusions
+
+Static lint cannot reliably determine input cardinality, ingestion delay, expected alert volume, SOC classification quality, or whether a detection still catches its intended behavior. Consequently, the validator does not automatically prescribe join-side ordering, broadcast/shuffle strategy, tuning thresholds, retirement decisions, or detection maintenance intervals.
+
+FalconForce’s broader maintenance recommendations—review metadata, alert time series, temporary-exclusion expiry, and periodic validation—belong in a future lifecycle validator supplied with deployment and alert-history metadata. See [FalconForce detection maintenance][falcon-maintenance] and [data-driven maintenance][falcon-data].
+
+The project references FalconForce’s NRT observations but does not copy the GPL-3.0 `NRT-KQL` matrices into this MIT repository. Microsoft’s published Defender NRT restrictions are the authoritative default rule set. The FalconForce Sentinel reliability heuristic is isolated in the caller-enabled community rule set.
+
+[defender-bp]: https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-best-practices
+[defender-detections]: https://learn.microsoft.com/en-us/defender-xdr/custom-detection-rules
+[sentinel-rules]: https://learn.microsoft.com/en-us/azure/sentinel/scheduled-rules-overview
+[alert-queries]: https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-log-query
+[kusto-bp]: https://learn.microsoft.com/en-us/kusto/query/best-practices
+[in-operator]: https://learn.microsoft.com/en-us/kusto/query/in-cs-operator
+[bag-unpack]: https://learn.microsoft.com/en-us/kusto/query/bag-unpack-plugin
+[isempty]: https://learn.microsoft.com/en-us/kusto/query/isempty-function
+[xdrinternals]: https://xdrinternals.com/
+[about-function]: https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-getanomalousbehaviorsabout-function
+[dxbp1]: https://kqlquery.com/posts/dxbp-part1/
+[dxbp2]: https://kqlquery.com/posts/dxbp-part2/
+[falcon-nrt]: https://falconforce.nl/falconfriday-need-for-speed-going-underground-with-near-real-time-nrt-rules-0xff26/
+[falcon-maintenance]: https://falconforce.nl/why-is-no-one-talking-about-maintenance-in-detection-engineering/
+[falcon-data]: https://falconforce.nl/how-data-science-can-boost-your-detection-engineering-maintenance-and-keep-you-from-herding-sheep/

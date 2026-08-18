@@ -50,6 +50,33 @@ public sealed class ApiTests : IClassFixture<WebApplicationFactory<Program>>
     }
 
     [Fact]
+    public async Task Lint_rule_catalog_is_public_and_filterable()
+    {
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var response = await client.GetAsync("/api/v1/lint-rules?ruleSet=community-detection", cancellationToken);
+        var result = await response.Content.ReadFromJsonAsync<LintRuleListResponse>(cancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.NotNull(result);
+        Assert.NotEmpty(result.Items);
+        Assert.All(result.Items, rule => Assert.Equal("community-detection", rule.RuleSet));
+        Assert.All(result.Items, rule => Assert.False(rule.DefaultEnabled));
+    }
+
+    [Fact]
+    public async Task Unknown_lint_rule_returns_bad_request()
+    {
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var response = await client.PostAsJsonAsync("/api/v1/validate", new ValidateRequest(
+            "DeviceEvents | take 1",
+            KqlEnvironment.Xdr,
+            LintProfile.General,
+            Lint: new LintOptions(EnableRules: ["NOT-A-RULE"])), cancellationToken);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
     public async Task Mcp_endpoint_accepts_stateless_initialize()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
@@ -87,5 +114,6 @@ public sealed class ApiTests : IClassFixture<WebApplicationFactory<Program>>
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.True(document.RootElement.GetProperty("paths").TryGetProperty("/api/v1/validate", out _));
+        Assert.True(document.RootElement.GetProperty("paths").TryGetProperty("/api/v1/lint-rules", out _));
     }
 }

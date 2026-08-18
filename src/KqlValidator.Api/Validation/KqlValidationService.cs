@@ -10,7 +10,8 @@ public sealed class KqlValidationService(
     SchemaCatalog catalog,
     GlobalStateFactory globalStateFactory,
     RequestValidator requestValidator,
-    KqlLinter linter)
+    KqlLinter linter,
+    LintRuleCatalog lintRules)
 {
     public ValidationResponse Validate(ValidateRequest request)
     {
@@ -25,6 +26,9 @@ public sealed class KqlValidationService(
             .Select(x => new ColumnDeclaration(x.Key, x.First().Type.Name))
             .ToArray() ?? [];
 
+        var references = GatherReferences(code);
+        var lintPolicy = lintRules.CreatePolicy(request);
+
         var diagnostics = code.GetDiagnostics()
             .Select(diagnostic => new ValidationDiagnostic(
                 diagnostic.Code,
@@ -35,13 +39,12 @@ public sealed class KqlValidationService(
                 KqlLinter.Span(request.Query, diagnostic.Start, diagnostic.Length),
                 "https://learn.microsoft.com/en-us/kusto/query/",
                 diagnostic.Code.StartsWith("KS", StringComparison.Ordinal) ? "syntax" : "semantic"))
-            .Concat(linter.Analyze(request.Query, request.Environment, request.Profile))
-            .Concat(DetectionOutputDiagnostics(request, outputColumns))
+            .Concat(linter.Analyze(request, lintPolicy))
+            .Concat(DetectionOutputDiagnostics(request, outputColumns, references.Tables, schema, lintPolicy))
             .OrderBy(x => x.Span.Start)
             .ThenByDescending(x => x.Severity)
             .ToArray();
 
-        var references = GatherReferences(code);
         stopwatch.Stop();
         return new ValidationResponse(
             !diagnostics.Any(x => x.Severity == Contracts.DiagnosticSeverity.Error),
@@ -55,33 +58,52 @@ public sealed class KqlValidationService(
             stopwatch.ElapsedMilliseconds);
     }
 
-    private static IEnumerable<ValidationDiagnostic> DetectionOutputDiagnostics(
+    private IEnumerable<ValidationDiagnostic> DetectionOutputDiagnostics(
         ValidateRequest request,
-        IReadOnlyList<ColumnDeclaration> outputColumns)
+        IReadOnlyList<ColumnDeclaration> outputColumns,
+        IReadOnlyList<string> referencedTables,
+        EnvironmentSchema schema,
+        LintPolicy policy)
     {
-        if (request.Profile != LintProfile.Detection) yield break;
         var names = outputColumns.Select(x => x.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
-        if (request.Environment == KqlEnvironment.Sentinel && !names.Contains("TimeGenerated"))
-            yield return new ValidationDiagnostic(
-                "KQLD001", Contracts.DiagnosticSeverity.Error,
+        if (!names.Contains("TimeGenerated") && Enabled(policy, "KQLD001"))
+            yield return lintRules.CreateDiagnostic(
+                request.Query, "KQLD001",
                 "Sentinel detection queries must retain TimeGenerated in their output.",
-                KqlLinter.Span(request.Query, Math.Max(0, request.Query.Length - 1), 1),
-                "https://learn.microsoft.com/en-us/azure/sentinel/scheduled-rules-overview", "detection");
+                Math.Max(0, request.Query.Length - 1));
 
-        if (request.Environment != KqlEnvironment.Xdr) yield break;
-        foreach (var column in new[] { "Timestamp", "ReportId" })
-            if (!names.Contains(column))
-                yield return new ValidationDiagnostic(
-                    column == "Timestamp" ? "KQLD002" : "KQLD003", Contracts.DiagnosticSeverity.Warning,
-                    $"Retain {column} when available so XDR detection results can identify the source event.",
-                    KqlLinter.Span(request.Query, Math.Max(0, request.Query.Length - 1), 1), Category: "detection");
+        if (!names.Contains("Timestamp") && !names.Contains("TimeGenerated") && Enabled(policy, "KQLD002"))
+            yield return lintRules.CreateDiagnostic(
+                request.Query, "KQLD002",
+                "Retain Timestamp or TimeGenerated when available so XDR detection results identify event time.",
+                Math.Max(0, request.Query.Length - 1));
 
-        if (!names.Overlaps(["DeviceId", "DeviceName", "AccountObjectId", "AccountSid", "RemoteIP", "SHA256"]))
-            yield return new ValidationDiagnostic(
-                "KQLD004", Contracts.DiagnosticSeverity.Warning,
+        if (!names.Contains("Timestamp") && names.Contains("TimeGenerated") && Enabled(policy, "KQLX003"))
+            yield return lintRules.CreateDiagnostic(
+                request.Query, "KQLX003",
+                "TimeGenerated is accepted, but prefer Timestamp for native Defender XDR table output.",
+                Math.Max(0, request.Query.Length - 1));
+
+        var reportIdAvailable = referencedTables.Any(table =>
+            schema.Tables.TryGetValue(table, out var definition) &&
+            definition.Columns.Any(column => column.Name.Equals("ReportId", StringComparison.OrdinalIgnoreCase)) &&
+            !table.StartsWith("Device", StringComparison.OrdinalIgnoreCase));
+        if (reportIdAvailable && !names.Contains("ReportId") && Enabled(policy, "KQLD003"))
+            yield return lintRules.CreateDiagnostic(
+                request.Query, "KQLD003",
+                "Retain ReportId for this non-endpoint Defender event so the source event can be identified.",
+                Math.Max(0, request.Query.Length - 1));
+
+        if (!names.Overlaps(["DeviceId", "DeviceName", "AccountObjectId", "AccountSid", "AccountUpn", "RemoteIP", "IPAddress", "SHA256"]) &&
+            Enabled(policy, "KQLD004"))
+            yield return lintRules.CreateDiagnostic(
+                request.Query, "KQLD004",
                 "Retain at least one useful device, account, IP, or file entity column for XDR detection results.",
-                KqlLinter.Span(request.Query, Math.Max(0, request.Query.Length - 1), 1), Category: "detection");
+                Math.Max(0, request.Query.Length - 1));
     }
+
+    private bool Enabled(LintPolicy policy, string ruleId) =>
+        policy.IsEnabled(ruleId, lintRules.Get(ruleId).DefaultSeverity);
 
     private static References GatherReferences(KustoCode code)
     {

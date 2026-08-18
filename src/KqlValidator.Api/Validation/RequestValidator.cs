@@ -3,7 +3,7 @@ using KqlValidator.Contracts;
 
 namespace KqlValidator.Validation;
 
-public sealed partial class RequestValidator(SchemaCatalog catalog)
+public sealed partial class RequestValidator(SchemaCatalog catalog, LintRuleCatalog lintRules)
 {
     public void Validate(ValidateRequest request)
     {
@@ -13,6 +13,9 @@ public sealed partial class RequestValidator(SchemaCatalog catalog)
             throw new RequestValidationException("query", "Query exceeds the 64 KiB character limit.");
         if (request.Environment == KqlEnvironment.Unified && request.Profile == LintProfile.Detection)
             throw new RequestValidationException("profile", "The detection profile requires either xdr or sentinel, not unified.");
+
+        ValidateTarget(request);
+        ValidateLintOptions(request.Lint);
 
         var extensions = request.Extensions;
         if (extensions is null)
@@ -76,6 +79,30 @@ public sealed partial class RequestValidator(SchemaCatalog catalog)
 
     private static RequestValidationException Limit(string collection, int limit) =>
         new("extensions", $"Custom {collection} exceed the limit of {limit}.");
+
+    private static void ValidateTarget(ValidateRequest request)
+    {
+        if (request.Target is null) return;
+        if (request.Target == KqlTarget.InteractiveHunting && request.Profile != LintProfile.Hunting)
+            throw new RequestValidationException("target", "interactive-hunting requires the hunting profile.");
+        if (request.Target is KqlTarget.SentinelScheduled or KqlTarget.SentinelNrt &&
+            (request.Profile != LintProfile.Detection || request.Environment != KqlEnvironment.Sentinel))
+            throw new RequestValidationException("target", "Sentinel targets require the detection profile and sentinel environment.");
+        if (request.Target is KqlTarget.DefenderScheduled or KqlTarget.DefenderNrt &&
+            (request.Profile != LintProfile.Detection || request.Environment != KqlEnvironment.Xdr))
+            throw new RequestValidationException("target", "Defender targets require the detection profile and xdr environment.");
+    }
+
+    private void ValidateLintOptions(LintOptions? options)
+    {
+        if (options is null) return;
+        foreach (var ruleSet in options.RuleSets ?? [])
+            if (!lintRules.ContainsRuleSet(ruleSet))
+                throw new RequestValidationException("lint.ruleSets", $"Unknown lint rule set '{ruleSet}'.");
+        foreach (var ruleId in (options.EnableRules ?? []).Concat(options.DisableRules ?? []))
+            if (!lintRules.ContainsRule(ruleId))
+                throw new RequestValidationException("lint", $"Unknown lint rule ID '{ruleId}'.");
+    }
 
     [GeneratedRegex(@"^[A-Za-z_][A-Za-z0-9_]*$")]
     private static partial Regex Identifier();

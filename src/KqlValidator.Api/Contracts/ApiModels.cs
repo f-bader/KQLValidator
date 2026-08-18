@@ -9,6 +9,16 @@ public enum KqlEnvironment { Xdr, Sentinel, Unified }
 [JsonConverter(typeof(JsonStringEnumConverter<LintProfile>))]
 public enum LintProfile { General, Hunting, Detection }
 
+[JsonConverter(typeof(JsonStringEnumConverter<KqlTarget>))]
+public enum KqlTarget
+{
+    [JsonStringEnumMemberName("interactive-hunting")] InteractiveHunting,
+    [JsonStringEnumMemberName("sentinel-scheduled")] SentinelScheduled,
+    [JsonStringEnumMemberName("sentinel-nrt")] SentinelNrt,
+    [JsonStringEnumMemberName("defender-scheduled")] DefenderScheduled,
+    [JsonStringEnumMemberName("defender-nrt")] DefenderNrt,
+}
+
 [JsonConverter(typeof(JsonStringEnumConverter<DiagnosticSeverity>))]
 public enum DiagnosticSeverity { Error, Warning, Information }
 
@@ -16,7 +26,16 @@ public sealed record ValidateRequest(
     [property: Required, MaxLength(65_536)] string Query,
     KqlEnvironment Environment,
     LintProfile Profile,
-    ValidationExtensions? Extensions = null);
+    ValidationExtensions? Extensions = null,
+    KqlTarget? Target = null,
+    LintOptions? Lint = null);
+
+public sealed record LintOptions(
+    bool Enabled = true,
+    IReadOnlyList<string>? RuleSets = null,
+    IReadOnlyList<string>? EnableRules = null,
+    IReadOnlyList<string>? DisableRules = null,
+    DiagnosticSeverity? MinimumSeverity = null);
 
 public sealed record ValidationExtensions(
     IReadOnlyList<TableDeclaration>? Tables = null,
@@ -54,7 +73,25 @@ public sealed record ValidationDiagnostic(
     string Message,
     SourceSpan Span,
     string? DocumentationUrl = null,
-    string Category = "semantic");
+    string Category = "semantic",
+    string? RuleSet = null,
+    string? SourceKind = null);
+
+public sealed record LintRuleInfo(
+    string RuleId,
+    string Title,
+    DiagnosticSeverity DefaultSeverity,
+    string Category,
+    string RuleSet,
+    bool DefaultEnabled,
+    string Description,
+    string DocumentationUrl,
+    string SourceKind,
+    IReadOnlyList<string> Profiles,
+    IReadOnlyList<string> Targets,
+    IReadOnlyList<string> Environments);
+
+public sealed record LintRuleListResponse(IReadOnlyList<LintRuleInfo> Items);
 
 public sealed record ValidationResponse(
     bool Valid,
