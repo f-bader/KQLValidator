@@ -214,6 +214,21 @@ public sealed class ValidationTests
 
         Assert.Contains(result.Diagnostics, x => x.RuleId == "KQLN001" && x.Severity == DiagnosticSeverity.Error);
         Assert.Contains(result.Diagnostics, x => x.RuleId == "KQLN002" && x.Severity == DiagnosticSeverity.Error);
+        Assert.DoesNotContain(result.Diagnostics, x => x.RuleId == "KQLH009");
+    }
+
+    [Fact]
+    public void Join_kind_rule_only_reports_an_implicit_join_kind()
+    {
+        var implicitKind = Validate(
+            "DeviceEvents | join (DeviceInfo) on DeviceId | take 1",
+            profile: LintProfile.Hunting);
+        var explicitKind = Validate(
+            "DeviceEvents | join kind=inner (DeviceInfo) on DeviceId | take 1",
+            profile: LintProfile.Hunting);
+
+        Assert.Contains(implicitKind.Diagnostics, x => x.RuleId == "KQLH009");
+        Assert.DoesNotContain(explicitKind.Diagnostics, x => x.RuleId == "KQLH009");
     }
 
     [Fact]

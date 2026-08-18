@@ -257,7 +257,7 @@ public sealed partial class KqlLinter
     private static partial Regex CalculatedFilter();
     [GeneratedRegex("""(?i)\b(?:ProcessCommandLine|InitiatingProcessCommandLine)\s*==\s*["']""")]
     private static partial Regex ExactCommandLine();
-    [GeneratedRegex(@"(?i)\|\s*join\s*(?!kind\s*=)")]
+    [GeneratedRegex(@"(?i)\|\s*join\b(?!\s+kind\s*=)")]
     private static partial Regex DefaultJoin();
     [GeneratedRegex(@"(?is)\|\s*join(?:\s+kind\s*=\s*\w+)?\s*\((.*?)\)\s*on\b")]
     private static partial Regex JoinBranch();
