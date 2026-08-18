@@ -101,9 +101,7 @@ Categories are `correctness`, `performance`, `reliability`, `detection`, `detect
 
 Static lint cannot reliably determine input cardinality, ingestion delay, expected alert volume, SOC classification quality, or whether a detection still catches its intended behavior. Consequently, the validator does not automatically prescribe join-side ordering, broadcast/shuffle strategy, tuning thresholds, retirement decisions, or detection maintenance intervals.
 
-FalconForce’s broader maintenance recommendations—review metadata, alert time series, temporary-exclusion expiry, and periodic validation—belong in a future lifecycle validator supplied with deployment and alert-history metadata. See [FalconForce detection maintenance][falcon-maintenance] and [data-driven maintenance][falcon-data].
-
-The project references FalconForce’s NRT observations but does not copy the GPL-3.0 `NRT-KQL` matrices into this MIT repository. Microsoft’s published Defender NRT restrictions are the authoritative default rule set. The FalconForce Sentinel reliability heuristic is isolated in the caller-enabled community rule set.
+## References
 
 [defender-bp]: https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-best-practices
 [defender-detections]: https://learn.microsoft.com/en-us/defender-xdr/custom-detection-rules
