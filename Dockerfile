@@ -20,6 +20,7 @@ RUN dotnet publish src/KqlValidator.Api/KqlValidator.Api.csproj \
 FROM mcr.microsoft.com/dotnet/aspnet:10.0.11-alpine3.23@sha256:4d5339ac9814f1a033a09e664bcf159e9fb386c89b6e7917b3dca7254e656027 AS final
 WORKDIR /app
 COPY --from=build /app/publish ./
+RUN apk upgrade --no-cache
 
 ENV ASPNETCORE_URLS=http://+:8080 \
     DOTNET_EnableDiagnostics=0
