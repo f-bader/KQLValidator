@@ -50,8 +50,21 @@ Important endpoints:
 | `POST /mcp` | Stateless Streamable HTTP MCP |
 | `GET /openapi/v1.json` | OpenAPI document |
 | `GET /health/live` and `/health/ready` | Health probes |
+| `GET /status/` | Optional non-indexed status and schema website |
 
 All validation, schema, lint-rule, and MCP endpoints are unauthenticated and publicly accessible when the service is deployed with external ingress. Schema and lint-rule catalogs are publicly enumerable; health probes are intentionally not rate limited.
+
+### Status website
+
+The optional unauthenticated status website is available at `/status`. It shows live readiness, service and schema versions, environment counts, schema search and table details, lint rules, and integration links. It does not collect analytics or query data. The page sends best-effort crawler exclusion signals (`robots.txt`, `noindex`, and `X-Robots-Tag`); this is not access control against a determined client.
+
+The website is enabled by default. Disable it when building the API image if only the API and MCP are wanted:
+
+```bash
+docker build --build-arg ENABLE_STATUS_SITE=false --tag kql-validator:no-status .
+```
+
+The equivalent project-level switch is `/p:EnableStatusSite=false`. A disabled build omits the website assets and returns `404` for `/status`; the API, MCP, discovery, and health endpoints remain available.
 
 ### Public API safeguards
 

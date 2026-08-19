@@ -72,6 +72,23 @@ builder.Services.AddMcpServer(options =>
 
 var app = builder.Build();
 app.UseExceptionHandler();
+#if STATUS_SITE_ENABLED
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path.StartsWithSegments("/status"))
+    {
+        context.Response.Headers["X-Robots-Tag"] = "noindex, nofollow, noarchive";
+        context.Response.Headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; font-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+        context.Response.Headers["Referrer-Policy"] = "no-referrer";
+        context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+        context.Response.Headers["Cache-Control"] = "no-store";
+    }
+
+    await next();
+});
+app.UseDefaultFiles();
+app.UseStaticFiles();
+#endif
 if (app.Configuration.GetValue<bool>("ReverseProxy:TrustForwardedHeaders"))
     app.UseForwardedHeaders();
 app.UseRateLimiter();
@@ -114,6 +131,11 @@ app.MapHealthChecks("/health/live", new HealthCheckOptions { Predicate = registr
 app.MapHealthChecks("/health/ready", new HealthCheckOptions { Predicate = registration => registration.Tags.Contains("ready") });
 app.MapOpenApi("/openapi/{documentName}.json");
 app.MapMcp("/mcp").RequireRateLimiting("public-api");
+#if STATUS_SITE_ENABLED
+app.MapGet("/robots.txt", () => Results.Text(
+    "User-agent: *\nDisallow: /status\nDisallow: /status/\n",
+    "text/plain; charset=utf-8"));
+#endif
 
 app.Run();
 

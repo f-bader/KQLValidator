@@ -2,6 +2,8 @@
   <PropertyGroup>
     <AssemblyName>KqlValidator.Api</AssemblyName>
     <RootNamespace>KqlValidator</RootNamespace>
+    <EnableStatusSite Condition="'$(EnableStatusSite)' == ''">true</EnableStatusSite>
+    <DefineConstants Condition="'$(EnableStatusSite)' == 'true'">$(DefineConstants);STATUS_SITE_ENABLED</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.11" />
@@ -10,5 +12,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Update="Schemas/*.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(EnableStatusSite)' != 'true'">
+    <Content Remove="wwwroot/status/**" />
+    <None Remove="wwwroot/status/**" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(EnableStatusSite)' == 'true'">
+    <Content Update="wwwroot/status/**/*" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

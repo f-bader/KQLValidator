@@ -29,6 +29,40 @@ public sealed class ApiTests : IClassFixture<WebApplicationFactory<Program>>
     }
 
     [Fact]
+    public async Task Status_site_is_public_and_requests_crawler_exclusion()
+    {
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var response = await client.GetAsync("/status", cancellationToken);
+        var body = await response.Content.ReadAsStringAsync(cancellationToken);
+        var styles = await client.GetStringAsync("/status/site.css", cancellationToken);
+        var robots = await client.GetStringAsync("/robots.txt", cancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Contains("KQL Validator", body, StringComparison.Ordinal);
+        Assert.Contains("Validate your KQL detections", body, StringComparison.Ordinal);
+        Assert.Contains("A KQL validator for Microsoft Defender XDR and Microsoft Sentinel.", body, StringComparison.Ordinal);
+        Assert.Contains("claude mcp add --transport http kql-validator", body, StringComparison.Ordinal);
+        Assert.Contains("codex mcp add kql-validator --url", body, StringComparison.Ordinal);
+        Assert.Contains("opencode mcp add kql-validator --url", body, StringComparison.Ordinal);
+        Assert.Equal(3, body.Split("data-copy-target=", StringSplitOptions.None).Length - 1);
+        Assert.Contains("copy-icon", body, StringComparison.Ordinal);
+        Assert.DoesNotContain("<span class=\"copy-label\">Copy</span>", body, StringComparison.Ordinal);
+        Assert.Contains("overflow-x: auto", styles, StringComparison.Ordinal);
+        Assert.Contains("href=\"#schema-environments\"", body, StringComparison.Ordinal);
+        Assert.Contains("href=\"#lint-catalog\"", body, StringComparison.Ordinal);
+        Assert.Contains("kql-validator made with", body, StringComparison.Ordinal);
+        Assert.DoesNotContain("Public · no sign-in", body, StringComparison.Ordinal);
+        Assert.DoesNotContain("Manual refresh · no polling", body, StringComparison.Ordinal);
+        Assert.DoesNotContain("Content-derived versions, public sources", body, StringComparison.Ordinal);
+        Assert.DoesNotContain("static analysis only · no query execution", body, StringComparison.Ordinal);
+        Assert.Contains("noindex", body, StringComparison.Ordinal);
+        Assert.Contains("/api/v1/environments", body, StringComparison.Ordinal);
+        Assert.Equal("noindex, nofollow, noarchive", response.Headers.GetValues("X-Robots-Tag").Single());
+        Assert.True(response.Headers.CacheControl?.NoStore == true);
+        Assert.Contains("Disallow: /status", robots, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public async Task Validate_endpoint_returns_invalid_kql_as_200()
     {
         var cancellationToken = TestContext.Current.CancellationToken;

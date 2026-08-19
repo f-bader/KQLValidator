@@ -35,6 +35,8 @@ jobs:
           jq --exit-status '[.. | objects | .vulnerabilities? // empty] | flatten | length == 0' vulnerabilities.json >/dev/null
       - name: Publish
         run: dotnet publish src/KqlValidator.Api/KqlValidator.Api.csproj --configuration Release --no-restore --output artifacts/publish /p:UseAppHost=false
+      - name: Verify status site build switch
+        run: bash scripts/validate-status-site-build.sh
       - name: Build container
         run: docker build --build-arg SOURCE_REVISION=${{ github.sha }} --tag kql-validator:${{ github.sha }} .
       - name: Scan container
