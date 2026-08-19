@@ -18,7 +18,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5.2.0
         with:
-          dotnet-version: 10.0.302
+          dotnet-version: 10.0.400
       - run: dotnet restore tools/KqlValidator.SchemaSync/KqlValidator.SchemaSync.csproj --locked-mode
       - run: dotnet run --project tools/KqlValidator.SchemaSync --no-restore -- --out src/KqlValidator.Api/Schemas
       - run: dotnet test tests/KqlValidator.Tests/KqlValidator.Tests.csproj
