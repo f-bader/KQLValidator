@@ -75,7 +75,8 @@ public sealed record ValidationDiagnostic(
     string? DocumentationUrl = null,
     string Category = "semantic",
     string? RuleSet = null,
-    string? SourceKind = null);
+    string? SourceKind = null,
+    string? SourceName = null);
 
 public sealed record LintRuleInfo(
     string RuleId,
@@ -89,7 +90,8 @@ public sealed record LintRuleInfo(
     string SourceKind,
     IReadOnlyList<string> Profiles,
     IReadOnlyList<string> Targets,
-    IReadOnlyList<string> Environments);
+    IReadOnlyList<string> Environments,
+    string? SourceName = null);
 
 public sealed record LintRuleListResponse(IReadOnlyList<LintRuleInfo> Items);
 

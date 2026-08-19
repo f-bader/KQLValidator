@@ -38,14 +38,22 @@ public sealed class GlobalStateFactory
     {
         var parameters = function.Parameters.Select(ToParameter).ToArray();
 
-        if (function.RequiredInputColumn is not null)
+        if (function.RequiredInputColumn is not null || function.RequiresTabularInput)
         {
-            var rowType = new TableSymbol(new ColumnSymbol(function.RequiredInputColumn, ResolveType(function.RequiredInputType!)));
+            var rowType = function.RequiredInputColumn is null
+                ? new TableSymbol(Array.Empty<ColumnSymbol>())
+                : new TableSymbol(new ColumnSymbol(function.RequiredInputColumn, ResolveType(function.RequiredInputType!)));
             var invokeParameters = new[] { new Parameter("T", rowType) }.Concat(parameters).ToArray();
             return new FunctionSymbol(
                 function.Name,
-                context => context.ArgumentTypes.OfType<TableSymbol>().FirstOrDefault()
-                    ?? context.RowScope,
+                context =>
+                {
+                    var input = context.ArgumentTypes.OfType<TableSymbol>().FirstOrDefault() ?? context.RowScope;
+                    var columns = function.OutputColumns?.Select(x => new ColumnSymbol(x.Name, ResolveType(x.Type))).ToArray() ?? [];
+                    if (!function.PreserveInput || input is null) return new TableSymbol(columns);
+                    return new TableSymbol(input.Members.OfType<ColumnSymbol>().Concat(columns))
+                        .WithInheritableProperties(input);
+                },
                 Tabularity.Tabular,
                 invokeParameters);
         }
@@ -76,7 +84,8 @@ public sealed class GlobalStateFactory
             parameters,
             function.Returns.Columns?.Select(x => new SchemaColumn(x.Name, x.Type)).ToArray(),
             function.Returns.Kind.Equals("scalar", StringComparison.OrdinalIgnoreCase) ? function.Returns.Type : null,
-            function.Returns.PreserveInput);
+            function.Returns.PreserveInput,
+            RequiresTabularInput: function.Returns.PreserveInput);
         return ToFunction(declaration);
     }
 

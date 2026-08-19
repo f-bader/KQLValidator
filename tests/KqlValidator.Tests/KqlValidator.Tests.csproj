@@ -10,5 +10,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../../src/KqlValidator.Api/KqlValidator.Api.csproj" />
+    <ProjectReference Include="../../tools/KqlValidator.SchemaSync/KqlValidator.SchemaSync.csproj" />
   </ItemGroup>
 </Project>

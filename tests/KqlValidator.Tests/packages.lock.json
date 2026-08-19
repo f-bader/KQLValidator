@@ -533,6 +533,9 @@
           "Microsoft.Azure.Kusto.Language": "[12.4.1, )",
           "ModelContextProtocol.AspNetCore": "[2.2.0, )"
         }
+      },
+      "kqlvalidator.schemasync": {
+        "type": "Project"
       }
     }
   }

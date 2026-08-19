@@ -2,7 +2,7 @@
 
 KQL Validator separates parser and semantic errors from optional lint diagnostics. Parser and semantic validation always runs. Callers can select lint rule sets, enable or disable individual rules, and filter informational diagnostics without changing query validation.
 
-The runtime catalog is available through `GET /api/v1/lint-rules` and the MCP tool `list_kql_lint_rules`. Each emitted lint diagnostic includes `ruleId`, `ruleSet`, `category`, `sourceKind`, and `documentationUrl` so callers can distinguish Microsoft guidance from community recommendations.
+The runtime catalog is available through `GET /api/v1/lint-rules` and the MCP tool `list_kql_lint_rules`. Each emitted lint diagnostic includes `ruleId`, `ruleSet`, `category`, `sourceKind`, `sourceName`, and `documentationUrl` so callers can distinguish Microsoft guidance from community recommendations.
 
 ## Configuration
 
@@ -12,6 +12,7 @@ When `target` is omitted, it is inferred as follows:
 | --- | --- |
 | `profile: hunting` | `interactive-hunting` |
 | `environment: xdr`, `profile: detection` | `defender-scheduled` |
+| `environment: unified`, `profile: detection` | `defender-scheduled` |
 | `environment: sentinel`, `profile: detection` | `sentinel-scheduled` |
 | Other requests | No target |
 
@@ -90,6 +91,7 @@ Categories are `correctness`, `performance`, `reliability`, `detection`, `detect
 | `KQLP005` | Warning | microsoft-kusto / correctness | Yes | `Column == ""` or `Column != ""` → `isempty(Column)` or `isnotempty(Column)`. | [isempty function][isempty] |
 | `KQLP006` | Information | microsoft-kusto / performance | Yes | `Column has "192.0.2.1"` → use `has_ipv4` or `has_any_ipv4`. | [Kusto query best practices][kusto-bp] |
 | `KQLS001` | Error | sentinel-detection / sentinel | Yes | Sentinel detection query exceeds 10,000 characters → simplify or move large lists to a managed external source. | [Sentinel scheduled rules][sentinel-rules] |
+| `KQLS002` | Warning | baseline / sentinel | Yes | `_GetWatchlist('assets') \| project Tags` or `['IP Address']` → define the optional field first, for example `\| extend Tags = column_ifexists('Tags', '')`, to avoid deployment failures when the watchlist lacks that column. | [Fabian Bader][fabian-bader] |
 | `KQLN001` | Error | defender-nrt / nrt | Yes | Defender NRT query uses `join`, `union`, or `externaldata` → remove the unsupported multi-input operator or use scheduled frequency. | [Defender custom detections][defender-detections] |
 | `KQLN002` | Error | defender-nrt / nrt | Yes | Defender NRT query contains a line or block comment → remove it from deployed NRT KQL. | [Defender custom detections][defender-detections] |
 | `KQLQ001` | Information | community-detection / detection-quality | No | Detection filters identity-like display names → prefer stable IDs where the source exposes them. This heuristic is intentionally opt-in. | [Detection Engineering Best Practices, part 1][dxbp1] |
@@ -116,5 +118,6 @@ Static lint cannot reliably determine input cardinality, ingestion delay, expect
 [dxbp1]: https://kqlquery.com/posts/dxbp-part1/
 [dxbp2]: https://kqlquery.com/posts/dxbp-part2/
 [falcon-nrt]: https://falconforce.nl/falconfriday-need-for-speed-going-underground-with-near-real-time-nrt-rules-0xff26/
+[fabian-bader]: https://github.com/fabian/kql-validator
 [falcon-maintenance]: https://falconforce.nl/why-is-no-one-talking-about-maintenance-in-detection-engineering/
 [falcon-data]: https://falconforce.nl/how-data-science-can-boost-your-detection-engineering-maintenance-and-keep-you-from-herding-sheep/

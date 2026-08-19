@@ -1,0 +1,324 @@
+{
+  "sources": [
+    {
+      "tableName": "AADSignInEventsBeta",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-aadsignineventsbeta-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-aadsignineventsbeta-table.md"
+    },
+    {
+      "tableName": "AADSpnSignInEventsBeta",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-aadspnsignineventsbeta-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-aadspnsignineventsbeta-table.md"
+    },
+    {
+      "tableName": "AgentsInfo",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-agentsinfo-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-agentsinfo-table.md"
+    },
+    {
+      "tableName": "AIAgentsInfo",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-aiagentsinfo-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-aiagentsinfo-table.md"
+    },
+    {
+      "tableName": "AlertEvidence",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-alertevidence-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-alertevidence-table.md"
+    },
+    {
+      "tableName": "AlertInfo",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-alertinfo-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-alertinfo-table.md"
+    },
+    {
+      "tableName": "BehaviorEntities",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-behaviorentities-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-behaviorentities-table.md"
+    },
+    {
+      "tableName": "BehaviorInfo",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-behaviorinfo-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-behaviorinfo-table.md"
+    },
+    {
+      "tableName": "CampaignInfo",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-campaigninfo-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-campaigninfo-table.md"
+    },
+    {
+      "tableName": "CloudAppEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-cloudappevents-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-cloudappevents-table.md"
+    },
+    {
+      "tableName": "CloudAuditEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-cloudauditevents-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-cloudauditevents-table.md"
+    },
+    {
+      "tableName": "CloudDnsEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-clouddnsevents-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-clouddnsevents-table.md"
+    },
+    {
+      "tableName": "CloudPolicyEnforcementEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-cloudpolicyenforcementevents-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-cloudpolicyenforcementevents-table.md"
+    },
+    {
+      "tableName": "CloudProcessEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-cloudprocessevents-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-cloudprocessevents-table.md"
+    },
+    {
+      "tableName": "CloudStorageAggregatedEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-cloudstorageaggregatedevents-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-cloudstorageaggregatedevents-table.md"
+    },
+    {
+      "tableName": "DataSecurityBehaviors",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-datasecuritybehaviors-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-datasecuritybehaviors-table.md"
+    },
+    {
+      "tableName": "DataSecurityEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-datasecurityevents-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-datasecurityevents-table.md"
+    },
+    {
+      "tableName": "DeviceBaselineComplianceAssessment",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicebaselinecomplianceassessment-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-devicebaselinecomplianceassessment-table.md"
+    },
+    {
+      "tableName": "DeviceBaselineComplianceAssessmentKB",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicebaselinecomplianceassessmentkb-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-devicebaselinecomplianceassessmentkb-table.md"
+    },
+    {
+      "tableName": "DeviceBaselineComplianceProfiles",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicebaselinecomplianceprofiles-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-devicebaselinecomplianceprofiles-table.md"
+    },
+    {
+      "tableName": "DeviceEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-deviceevents-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-deviceevents-table.md"
+    },
+    {
+      "tableName": "DeviceFileCertificateInfo",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicefilecertificateinfo-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-devicefilecertificateinfo-table.md"
+    },
+    {
+      "tableName": "DeviceFileEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicefileevents-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-devicefileevents-table.md"
+    },
+    {
+      "tableName": "DeviceImageLoadEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-deviceimageloadevents-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-deviceimageloadevents-table.md"
+    },
+    {
+      "tableName": "DeviceInfo",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-deviceinfo-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-deviceinfo-table.md"
+    },
+    {
+      "tableName": "DeviceLogonEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicelogonevents-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-devicelogonevents-table.md"
+    },
+    {
+      "tableName": "DeviceNetworkEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicenetworkevents-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-devicenetworkevents-table.md"
+    },
+    {
+      "tableName": "DeviceNetworkInfo",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicenetworkinfo-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-devicenetworkinfo-table.md"
+    },
+    {
+      "tableName": "DeviceProcessEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-deviceprocessevents-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-deviceprocessevents-table.md"
+    },
+    {
+      "tableName": "DeviceRegistryEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-deviceregistryevents-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-deviceregistryevents-table.md"
+    },
+    {
+      "tableName": "DeviceTvmBrowserExtensions",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicetvmbrowserextensions-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-devicetvmbrowserextensions-table.md"
+    },
+    {
+      "tableName": "DeviceTvmBrowserExtensionsKB",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicetvmbrowserextensionskb-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-devicetvmbrowserextensionskb-table.md"
+    },
+    {
+      "tableName": "DeviceTvmCertificateInfo",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicetvmcertificateinfo-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-devicetvmcertificateinfo-table.md"
+    },
+    {
+      "tableName": "DeviceTvmHardwareFirmware",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicetvmhardwarefirmware-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-devicetvmhardwarefirmware-table.md"
+    },
+    {
+      "tableName": "DeviceTvmInfoGathering",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicetvminfogathering-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-devicetvminfogathering-table.md"
+    },
+    {
+      "tableName": "DeviceTvmInfoGatheringKB",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicetvminfogatheringkb-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-devicetvminfogatheringkb-table.md"
+    },
+    {
+      "tableName": "DeviceTvmSecureConfigurationAssessment",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicetvmsecureconfigurationassessment-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-devicetvmsecureconfigurationassessment-table.md"
+    },
+    {
+      "tableName": "DeviceTvmSecureConfigurationAssessmentKB",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicetvmsecureconfigurationassessmentkb-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-devicetvmsecureconfigurationassessmentkb-table.md"
+    },
+    {
+      "tableName": "DeviceTvmSoftwareEvidenceBeta",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicetvmsoftwareevidencebeta-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-devicetvmsoftwareevidencebeta-table.md"
+    },
+    {
+      "tableName": "DeviceTvmSoftwareInventory",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicetvmsoftwareinventory-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-devicetvmsoftwareinventory-table.md"
+    },
+    {
+      "tableName": "DeviceTvmSoftwareVulnerabilities",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicetvmsoftwarevulnerabilities-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-devicetvmsoftwarevulnerabilities-table.md"
+    },
+    {
+      "tableName": "DeviceTvmSoftwareVulnerabilitiesKB",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicetvmsoftwarevulnerabilitieskb-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-devicetvmsoftwarevulnerabilitieskb-table.md"
+    },
+    {
+      "tableName": "DisruptionAndResponseEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-disruptionandresponseevents-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-disruptionandresponseevents-table.md"
+    },
+    {
+      "tableName": "EmailAttachmentInfo",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-emailattachmentinfo-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-emailattachmentinfo-table.md"
+    },
+    {
+      "tableName": "EmailEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-emailevents-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-emailevents-table.md"
+    },
+    {
+      "tableName": "EmailPostDeliveryEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-emailpostdeliveryevents-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-emailpostdeliveryevents-table.md"
+    },
+    {
+      "tableName": "EmailUrlInfo",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-emailurlinfo-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-emailurlinfo-table.md"
+    },
+    {
+      "tableName": "EntraIdSignInEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-entraidsigninevents-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-entraidsigninevents-table.md"
+    },
+    {
+      "tableName": "EntraIdSpnSignInEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-entraidspnsigninevents-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-entraidspnsigninevents-table.md"
+    },
+    {
+      "tableName": "ExposureGraphEdges",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-exposuregraphedges-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-exposuregraphedges-table.md"
+    },
+    {
+      "tableName": "ExposureGraphNodes",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-exposuregraphnodes-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-exposuregraphnodes-table.md"
+    },
+    {
+      "tableName": "FileMaliciousContentInfo",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-filemaliciouscontentinfo-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-filemaliciouscontentinfo-table.md"
+    },
+    {
+      "tableName": "GraphApiAuditEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-graphapiauditevents-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-graphapiauditevents-table.md"
+    },
+    {
+      "tableName": "IdentityAccountInfo",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-identityaccountinfo-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-identityaccountinfo-table.md"
+    },
+    {
+      "tableName": "IdentityDirectoryEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-identitydirectoryevents-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-identitydirectoryevents-table.md"
+    },
+    {
+      "tableName": "IdentityEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-identityevents-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-identityevents-table.md"
+    },
+    {
+      "tableName": "IdentityInfo",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-identityinfo-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-identityinfo-table.md"
+    },
+    {
+      "tableName": "IdentityLogonEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-identitylogonevents-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-identitylogonevents-table.md"
+    },
+    {
+      "tableName": "IdentityQueryEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-identityqueryevents-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-identityqueryevents-table.md"
+    },
+    {
+      "tableName": "MessageEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-messageevents-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-messageevents-table.md"
+    },
+    {
+      "tableName": "MessagePostDeliveryEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-messagepostdeliveryevents-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-messagepostdeliveryevents-table.md"
+    },
+    {
+      "tableName": "MessageUrlInfo",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-messageurlinfo-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-messageurlinfo-table.md"
+    },
+    {
+      "tableName": "OAuthAppInfo",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-oauthappinfo-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-oauthappinfo-table.md"
+    },
+    {
+      "tableName": "UrlClickEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-urlclickevents-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-urlclickevents-table.md"
+    }
+  ]
+}

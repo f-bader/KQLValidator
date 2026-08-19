@@ -1,0 +1,6157 @@
+{
+  "source": "Microsoft Defender XDR documentation",
+  "tables": [
+    {
+      "name": "AADSignInEventsBeta",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-aadsignineventsbeta-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-aadsignineventsbeta-table.md",
+      "columns": [
+        {
+          "name": "AadDeviceId",
+          "type": "string"
+        },
+        {
+          "name": "AccountDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "AccountObjectId",
+          "type": "string"
+        },
+        {
+          "name": "AccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "AlternateSignInName",
+          "type": "string"
+        },
+        {
+          "name": "Application",
+          "type": "string"
+        },
+        {
+          "name": "ApplicationId",
+          "type": "string"
+        },
+        {
+          "name": "AuthenticationProcessingDetails",
+          "type": "string"
+        },
+        {
+          "name": "AuthenticationRequirement",
+          "type": "string"
+        },
+        {
+          "name": "Browser",
+          "type": "string"
+        },
+        {
+          "name": "City",
+          "type": "string"
+        },
+        {
+          "name": "ClientAppUsed",
+          "type": "string"
+        },
+        {
+          "name": "ConditionalAccessPolicies",
+          "type": "string"
+        },
+        {
+          "name": "CorrelationId",
+          "type": "string"
+        },
+        {
+          "name": "Country",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "DeviceTrustType",
+          "type": "string"
+        },
+        {
+          "name": "EndpointCall",
+          "type": "string"
+        },
+        {
+          "name": "EntraIdDeviceId",
+          "type": "string"
+        },
+        {
+          "name": "IPAddress",
+          "type": "string"
+        },
+        {
+          "name": "IsGuestUser",
+          "type": "bool"
+        },
+        {
+          "name": "LastPasswordChangeTimestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "Latitude",
+          "type": "string"
+        },
+        {
+          "name": "LogonType",
+          "type": "string"
+        },
+        {
+          "name": "Longitude",
+          "type": "string"
+        },
+        {
+          "name": "NetworkLocationDetails",
+          "type": "string"
+        },
+        {
+          "name": "OSPlatform",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "RequestId",
+          "type": "string"
+        },
+        {
+          "name": "ResourceDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "ResourceId",
+          "type": "string"
+        },
+        {
+          "name": "ResourceTenantId",
+          "type": "string"
+        },
+        {
+          "name": "SessionId",
+          "type": "string"
+        },
+        {
+          "name": "State",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "UserAgent",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "AADSpnSignInEventsBeta",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-aadspnsignineventsbeta-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-aadspnsignineventsbeta-table.md",
+      "columns": [
+        {
+          "name": "Application",
+          "type": "string"
+        },
+        {
+          "name": "ApplicationId",
+          "type": "string"
+        },
+        {
+          "name": "City",
+          "type": "string"
+        },
+        {
+          "name": "CorrelationId",
+          "type": "string"
+        },
+        {
+          "name": "Country",
+          "type": "string"
+        },
+        {
+          "name": "IPAddress",
+          "type": "string"
+        },
+        {
+          "name": "IsManagedIdentity",
+          "type": "bool"
+        },
+        {
+          "name": "Latitude",
+          "type": "string"
+        },
+        {
+          "name": "Longitude",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "RequestId",
+          "type": "string"
+        },
+        {
+          "name": "ResourceDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "ResourceId",
+          "type": "string"
+        },
+        {
+          "name": "ResourceTenantId",
+          "type": "string"
+        },
+        {
+          "name": "ServicePrincipalId",
+          "type": "string"
+        },
+        {
+          "name": "ServicePrincipalName",
+          "type": "string"
+        },
+        {
+          "name": "State",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "AgentsInfo",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-agentsinfo-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-agentsinfo-table.md",
+      "columns": [
+        {
+          "name": "AgentDescription",
+          "type": "string"
+        },
+        {
+          "name": "AgentId",
+          "type": "string"
+        },
+        {
+          "name": "AgentName",
+          "type": "string"
+        },
+        {
+          "name": "Availability",
+          "type": "string"
+        },
+        {
+          "name": "Capabilities",
+          "type": "dynamic"
+        },
+        {
+          "name": "Channels",
+          "type": "dynamic"
+        },
+        {
+          "name": "ConnectedAgents",
+          "type": "dynamic"
+        },
+        {
+          "name": "CreatedDateTime",
+          "type": "datetime"
+        },
+        {
+          "name": "DeclaredDataSources",
+          "type": "dynamic"
+        },
+        {
+          "name": "DeclaredTools",
+          "type": "dynamic"
+        },
+        {
+          "name": "Endpoints",
+          "type": "dynamic"
+        },
+        {
+          "name": "EntraAgentId",
+          "type": "string"
+        },
+        {
+          "name": "EntraBlueprintId",
+          "type": "string"
+        },
+        {
+          "name": "Guardrails",
+          "type": "dynamic"
+        },
+        {
+          "name": "Instructions",
+          "type": "string"
+        },
+        {
+          "name": "LastPublishedDateTime",
+          "type": "datetime"
+        },
+        {
+          "name": "LastUpdatedDateTime",
+          "type": "datetime"
+        },
+        {
+          "name": "LifecycleStatus",
+          "type": "string"
+        },
+        {
+          "name": "McpServers",
+          "type": "dynamic"
+        },
+        {
+          "name": "Memory",
+          "type": "dynamic"
+        },
+        {
+          "name": "Model",
+          "type": "string"
+        },
+        {
+          "name": "ObservabilityId",
+          "type": "dynamic"
+        },
+        {
+          "name": "Owners",
+          "type": "dynamic"
+        },
+        {
+          "name": "Permissions",
+          "type": "dynamic"
+        },
+        {
+          "name": "Platform",
+          "type": "string"
+        },
+        {
+          "name": "PublishedStatus",
+          "type": "string"
+        },
+        {
+          "name": "RawAgentInfo",
+          "type": "dynamic"
+        },
+        {
+          "name": "SharedWith",
+          "type": "dynamic"
+        },
+        {
+          "name": "Skills",
+          "type": "dynamic"
+        },
+        {
+          "name": "SourceAgentId",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "ToolsAuthenticationType",
+          "type": "dynamic"
+        },
+        {
+          "name": "Triggers",
+          "type": "dynamic"
+        },
+        {
+          "name": "Version",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "AIAgentsInfo",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-aiagentsinfo-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-aiagentsinfo-table.md",
+      "columns": [
+        {
+          "name": "AccessCapabilities",
+          "type": "dynamic"
+        },
+        {
+          "name": "AccessControlPolicy",
+          "type": "string"
+        },
+        {
+          "name": "AgentActionTriggers",
+          "type": "string"
+        },
+        {
+          "name": "AgentAppId",
+          "type": "string"
+        },
+        {
+          "name": "AgentCreationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "AgentDescription",
+          "type": "string"
+        },
+        {
+          "name": "AgentStatus",
+          "type": "string"
+        },
+        {
+          "name": "AgentToolsDetails",
+          "type": "dynamic"
+        },
+        {
+          "name": "AgentTopicsDetails",
+          "type": "dynamic"
+        },
+        {
+          "name": "AgentUsers",
+          "type": "string"
+        },
+        {
+          "name": "AIAgentId",
+          "type": "guid"
+        },
+        {
+          "name": "AIAgentName",
+          "type": "string"
+        },
+        {
+          "name": "AIModel",
+          "type": "string"
+        },
+        {
+          "name": "AuthenticationTrigger",
+          "type": "string"
+        },
+        {
+          "name": "AuthorizedSecurityGroupIds",
+          "type": "dynamic"
+        },
+        {
+          "name": "ChildAgentsSchemaNames",
+          "type": "dynamic"
+        },
+        {
+          "name": "ConnectedAgentsSchemaNames",
+          "type": "dynamic"
+        },
+        {
+          "name": "CreatorAccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "ElementTypes",
+          "type": "dynamic"
+        },
+        {
+          "name": "EntraBlueprintId",
+          "type": "string"
+        },
+        {
+          "name": "EntraObjectId",
+          "type": "string"
+        },
+        {
+          "name": "EnvironmentId",
+          "type": "string"
+        },
+        {
+          "name": "Instructions",
+          "type": "string"
+        },
+        {
+          "name": "IsBlocked",
+          "type": "bool"
+        },
+        {
+          "name": "IsGenerativeOrchestrationEnabled",
+          "type": "bool"
+        },
+        {
+          "name": "KnowledgeDetails",
+          "type": "string"
+        },
+        {
+          "name": "LastModifiedByUpn",
+          "type": "string"
+        },
+        {
+          "name": "LastModifiedTime",
+          "type": "datetime"
+        },
+        {
+          "name": "LastPublishedByUpn",
+          "type": "string"
+        },
+        {
+          "name": "LastPublishedTime",
+          "type": "datetime"
+        },
+        {
+          "name": "OwnerAccountUpns",
+          "type": "string"
+        },
+        {
+          "name": "Platform",
+          "type": "string"
+        },
+        {
+          "name": "RawAgentInfo",
+          "type": "string"
+        },
+        {
+          "name": "RegistrySource",
+          "type": "string"
+        },
+        {
+          "name": "SourceAgentId",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "UserAuthenticationType",
+          "type": "string"
+        },
+        {
+          "name": "Version",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "AlertEvidence",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-alertevidence-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-alertevidence-table.md",
+      "columns": [
+        {
+          "name": "AccountDomain",
+          "type": "string"
+        },
+        {
+          "name": "AccountName",
+          "type": "string"
+        },
+        {
+          "name": "AccountObjectId",
+          "type": "string"
+        },
+        {
+          "name": "AccountSid",
+          "type": "string"
+        },
+        {
+          "name": "AccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "AdditionalFields",
+          "type": "string"
+        },
+        {
+          "name": "AlertId",
+          "type": "string"
+        },
+        {
+          "name": "Application",
+          "type": "string"
+        },
+        {
+          "name": "AttackTechniques",
+          "type": "string"
+        },
+        {
+          "name": "Categories",
+          "type": "string"
+        },
+        {
+          "name": "CloudPlatform",
+          "type": "string"
+        },
+        {
+          "name": "CloudResource",
+          "type": "string"
+        },
+        {
+          "name": "DetectionSource",
+          "type": "string"
+        },
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "EmailSubject",
+          "type": "string"
+        },
+        {
+          "name": "EntityType",
+          "type": "string"
+        },
+        {
+          "name": "EvidenceDirection",
+          "type": "string"
+        },
+        {
+          "name": "EvidenceRole",
+          "type": "string"
+        },
+        {
+          "name": "FileName",
+          "type": "string"
+        },
+        {
+          "name": "FolderPath",
+          "type": "string"
+        },
+        {
+          "name": "LocalIP",
+          "type": "string"
+        },
+        {
+          "name": "NetworkMessageId",
+          "type": "string"
+        },
+        {
+          "name": "OAuthApplicationId",
+          "type": "string"
+        },
+        {
+          "name": "ProcessCommandLine",
+          "type": "string"
+        },
+        {
+          "name": "RegistryKey",
+          "type": "string"
+        },
+        {
+          "name": "RegistryValueData",
+          "type": "string"
+        },
+        {
+          "name": "RegistryValueName",
+          "type": "string"
+        },
+        {
+          "name": "RemoteIP",
+          "type": "string"
+        },
+        {
+          "name": "RemoteUrl",
+          "type": "string"
+        },
+        {
+          "name": "ResourceID",
+          "type": "string"
+        },
+        {
+          "name": "ResourceType",
+          "type": "string"
+        },
+        {
+          "name": "ServiceSource",
+          "type": "string"
+        },
+        {
+          "name": "Severity",
+          "type": "string"
+        },
+        {
+          "name": "SHA1",
+          "type": "string"
+        },
+        {
+          "name": "SHA256",
+          "type": "string"
+        },
+        {
+          "name": "SubscriptionId",
+          "type": "string"
+        },
+        {
+          "name": "ThreatFamily",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "Title",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "AlertInfo",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-alertinfo-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-alertinfo-table.md",
+      "columns": [
+        {
+          "name": "AlertId",
+          "type": "string"
+        },
+        {
+          "name": "AttackTechniques",
+          "type": "string"
+        },
+        {
+          "name": "Category",
+          "type": "string"
+        },
+        {
+          "name": "DetectionSource",
+          "type": "string"
+        },
+        {
+          "name": "ServiceSource",
+          "type": "string"
+        },
+        {
+          "name": "Severity",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "Title",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "BehaviorEntities",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-behaviorentities-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-behaviorentities-table.md",
+      "columns": [
+        {
+          "name": "AccountDomain",
+          "type": "string"
+        },
+        {
+          "name": "AccountName",
+          "type": "string"
+        },
+        {
+          "name": "AccountObjectId",
+          "type": "string"
+        },
+        {
+          "name": "AccountSid",
+          "type": "string"
+        },
+        {
+          "name": "AccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "AdditionalFields",
+          "type": "string"
+        },
+        {
+          "name": "Application",
+          "type": "string"
+        },
+        {
+          "name": "BehaviorId",
+          "type": "string"
+        },
+        {
+          "name": "Categories",
+          "type": "string"
+        },
+        {
+          "name": "CloudResourceId",
+          "type": "string"
+        },
+        {
+          "name": "DataSources",
+          "type": "string"
+        },
+        {
+          "name": "DetailedEntityRole",
+          "type": "string"
+        },
+        {
+          "name": "DetectionSource",
+          "type": "string"
+        },
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "EmailClusterId",
+          "type": "string"
+        },
+        {
+          "name": "EmailSubject",
+          "type": "string"
+        },
+        {
+          "name": "EntityRole",
+          "type": "string"
+        },
+        {
+          "name": "EntityType",
+          "type": "string"
+        },
+        {
+          "name": "FileName",
+          "type": "string"
+        },
+        {
+          "name": "FolderPath",
+          "type": "string"
+        },
+        {
+          "name": "LocalIP",
+          "type": "string"
+        },
+        {
+          "name": "NetworkMessageId",
+          "type": "string"
+        },
+        {
+          "name": "OAuthApplicationId",
+          "type": "string"
+        },
+        {
+          "name": "ProcessCommandLine",
+          "type": "string"
+        },
+        {
+          "name": "RegistryKey",
+          "type": "string"
+        },
+        {
+          "name": "RegistryValueData",
+          "type": "string"
+        },
+        {
+          "name": "RegistryValueName",
+          "type": "string"
+        },
+        {
+          "name": "RemoteIP",
+          "type": "string"
+        },
+        {
+          "name": "RemoteUrl",
+          "type": "string"
+        },
+        {
+          "name": "ServiceSource",
+          "type": "string"
+        },
+        {
+          "name": "SHA1",
+          "type": "string"
+        },
+        {
+          "name": "SHA256",
+          "type": "string"
+        },
+        {
+          "name": "ThreatFamily",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "BehaviorInfo",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-behaviorinfo-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-behaviorinfo-table.md",
+      "columns": [
+        {
+          "name": "AccountObjectId",
+          "type": "string"
+        },
+        {
+          "name": "AccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "AdditionalFields",
+          "type": "string"
+        },
+        {
+          "name": "AttackTechniques",
+          "type": "string"
+        },
+        {
+          "name": "BehaviorId",
+          "type": "string"
+        },
+        {
+          "name": "Categories",
+          "type": "string"
+        },
+        {
+          "name": "DataSources",
+          "type": "string"
+        },
+        {
+          "name": "Description",
+          "type": "string"
+        },
+        {
+          "name": "DetectionSource",
+          "type": "string"
+        },
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "EndTime",
+          "type": "datetime"
+        },
+        {
+          "name": "ServiceSource",
+          "type": "string"
+        },
+        {
+          "name": "StartTime",
+          "type": "datetime"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "Title",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "CampaignInfo",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-campaigninfo-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-campaigninfo-table.md",
+      "columns": [
+        {
+          "name": "CampaignId",
+          "type": "string"
+        },
+        {
+          "name": "CampaignName",
+          "type": "string"
+        },
+        {
+          "name": "CampaignSubtype",
+          "type": "string"
+        },
+        {
+          "name": "CampaignType",
+          "type": "string"
+        },
+        {
+          "name": "NetworkMessageId",
+          "type": "string"
+        },
+        {
+          "name": "RecipientEmailAddress",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "CloudAppEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-cloudappevents-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-cloudappevents-table.md",
+      "columns": [
+        {
+          "name": "AccountDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "AccountId",
+          "type": "string"
+        },
+        {
+          "name": "AccountObjectId",
+          "type": "string"
+        },
+        {
+          "name": "AccountType",
+          "type": "string"
+        },
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "ActivityObjects",
+          "type": "dynamic"
+        },
+        {
+          "name": "ActivityType",
+          "type": "string"
+        },
+        {
+          "name": "AdditionalFields",
+          "type": "dynamic"
+        },
+        {
+          "name": "Application",
+          "type": "string"
+        },
+        {
+          "name": "AuditSource",
+          "type": "string"
+        },
+        {
+          "name": "City",
+          "type": "string"
+        },
+        {
+          "name": "CountryCode",
+          "type": "string"
+        },
+        {
+          "name": "DeviceType",
+          "type": "string"
+        },
+        {
+          "name": "IPAddress",
+          "type": "string"
+        },
+        {
+          "name": "IPCategory",
+          "type": "string"
+        },
+        {
+          "name": "IPTags",
+          "type": "dynamic"
+        },
+        {
+          "name": "IsAnonymousProxy",
+          "type": "bool"
+        },
+        {
+          "name": "IsExternalUser",
+          "type": "bool"
+        },
+        {
+          "name": "IsImpersonated",
+          "type": "bool"
+        },
+        {
+          "name": "Isp",
+          "type": "string"
+        },
+        {
+          "name": "LastSeenForUser",
+          "type": "dynamic"
+        },
+        {
+          "name": "OAuthAppId",
+          "type": "string"
+        },
+        {
+          "name": "ObjectId",
+          "type": "string"
+        },
+        {
+          "name": "ObjectName",
+          "type": "string"
+        },
+        {
+          "name": "ObjectType",
+          "type": "string"
+        },
+        {
+          "name": "OSPlatform",
+          "type": "string"
+        },
+        {
+          "name": "RawEventData",
+          "type": "dynamic"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "SessionData",
+          "type": "dynamic"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "UncommonForUser",
+          "type": "dynamic"
+        },
+        {
+          "name": "UserAgent",
+          "type": "string"
+        },
+        {
+          "name": "UserAgentTags",
+          "type": "dynamic"
+        }
+      ]
+    },
+    {
+      "name": "CloudAuditEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-cloudauditevents-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-cloudauditevents-table.md",
+      "columns": [
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "AdditionalFields",
+          "type": "dynamic"
+        },
+        {
+          "name": "City",
+          "type": "string"
+        },
+        {
+          "name": "CountryCode",
+          "type": "string"
+        },
+        {
+          "name": "DataSource",
+          "type": "string"
+        },
+        {
+          "name": "IPAddress",
+          "type": "string"
+        },
+        {
+          "name": "IsAnonymousProxy",
+          "type": "bool"
+        },
+        {
+          "name": "Isp",
+          "type": "string"
+        },
+        {
+          "name": "OperationName",
+          "type": "string"
+        },
+        {
+          "name": "RawEventData",
+          "type": "dynamic"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "ResourceId",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "UserAgent",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "CloudDnsEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-clouddnsevents-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-clouddnsevents-table.md",
+      "columns": [
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "AdditionalFields",
+          "type": "dynamic"
+        },
+        {
+          "name": "AwsResourceName",
+          "type": "string"
+        },
+        {
+          "name": "AzureResourceId",
+          "type": "string"
+        },
+        {
+          "name": "ContainerId",
+          "type": "string"
+        },
+        {
+          "name": "ContainerName",
+          "type": "string"
+        },
+        {
+          "name": "DnsEventSubType",
+          "type": "string"
+        },
+        {
+          "name": "DnsEventType",
+          "type": "string"
+        },
+        {
+          "name": "DnsQuery",
+          "type": "string"
+        },
+        {
+          "name": "DnsQueryTypeName",
+          "type": "string"
+        },
+        {
+          "name": "DnsResponseCodeName",
+          "type": "string"
+        },
+        {
+          "name": "GcpFullResourceName",
+          "type": "string"
+        },
+        {
+          "name": "ImageName",
+          "type": "string"
+        },
+        {
+          "name": "KubernetesNamespace",
+          "type": "string"
+        },
+        {
+          "name": "KubernetesPodName",
+          "type": "string"
+        },
+        {
+          "name": "KubernetesResource",
+          "type": "string"
+        },
+        {
+          "name": "ProcessName",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "TransactionIdHex",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "CloudPolicyEnforcementEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-cloudpolicyenforcementevents-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-cloudpolicyenforcementevents-table.md",
+      "columns": [
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "AdditionalFields",
+          "type": "string"
+        },
+        {
+          "name": "AwsResourceName",
+          "type": "string"
+        },
+        {
+          "name": "AzureResourceId",
+          "type": "string"
+        },
+        {
+          "name": "DataSource",
+          "type": "string"
+        },
+        {
+          "name": "GcpFullResourceName",
+          "type": "string"
+        },
+        {
+          "name": "KubernetesNamespace",
+          "type": "string"
+        },
+        {
+          "name": "Reason",
+          "type": "string"
+        },
+        {
+          "name": "Region",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "ResourceKind",
+          "type": "string"
+        },
+        {
+          "name": "ResourceName",
+          "type": "string"
+        },
+        {
+          "name": "SubscriptionId",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "CloudProcessEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-cloudprocessevents-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-cloudprocessevents-table.md",
+      "columns": [
+        {
+          "name": "AccountName",
+          "type": "string"
+        },
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "AdditionalFields",
+          "type": "string"
+        },
+        {
+          "name": "AgentId",
+          "type": "string"
+        },
+        {
+          "name": "AwsResourceName",
+          "type": "string"
+        },
+        {
+          "name": "AzureResourceId",
+          "type": "string"
+        },
+        {
+          "name": "ContainerId",
+          "type": "string"
+        },
+        {
+          "name": "ContainerImageName",
+          "type": "string"
+        },
+        {
+          "name": "ContainerName",
+          "type": "string"
+        },
+        {
+          "name": "FileName",
+          "type": "string"
+        },
+        {
+          "name": "FolderPath",
+          "type": "string"
+        },
+        {
+          "name": "GcpFullResourceName",
+          "type": "string"
+        },
+        {
+          "name": "HostName",
+          "type": "string"
+        },
+        {
+          "name": "ImageDigest",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessId",
+          "type": "string"
+        },
+        {
+          "name": "KubernetesNamespace",
+          "type": "string"
+        },
+        {
+          "name": "KubernetesPodName",
+          "type": "string"
+        },
+        {
+          "name": "KubernetesResource",
+          "type": "string"
+        },
+        {
+          "name": "ParentProcessId",
+          "type": "string"
+        },
+        {
+          "name": "ParentProcessName",
+          "type": "string"
+        },
+        {
+          "name": "ProcessCommandLine",
+          "type": "string"
+        },
+        {
+          "name": "ProcessCreationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "ProcessCurrentWorkingDirectory",
+          "type": "string"
+        },
+        {
+          "name": "ProcessName",
+          "type": "string"
+        },
+        {
+          "name": "Region",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "CloudStorageAggregatedEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-cloudstorageaggregatedevents-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-cloudstorageaggregatedevents-table.md",
+      "columns": [
+        {
+          "name": "AccountApplicationId",
+          "type": "string"
+        },
+        {
+          "name": "AccountObjectId",
+          "type": "string"
+        },
+        {
+          "name": "AccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "AdditionalFields",
+          "type": "dynamic"
+        },
+        {
+          "name": "AuthenticationType",
+          "type": "string"
+        },
+        {
+          "name": "AzureResourceId",
+          "type": "string"
+        },
+        {
+          "name": "CityName",
+          "type": "string"
+        },
+        {
+          "name": "ClientCloudPlatformName",
+          "type": "string"
+        },
+        {
+          "name": "ClientSystemServiceName",
+          "type": "string"
+        },
+        {
+          "name": "CountryName",
+          "type": "string"
+        },
+        {
+          "name": "DataAggregationEndTime",
+          "type": "datetime"
+        },
+        {
+          "name": "DataAggregationStartTime",
+          "type": "datetime"
+        },
+        {
+          "name": "DataSource",
+          "type": "string"
+        },
+        {
+          "name": "FirstEventTimestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "HashReputationMd5List",
+          "type": "dynamic"
+        },
+        {
+          "name": "IpAddress",
+          "type": "string"
+        },
+        {
+          "name": "LastEventTimestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "Location",
+          "type": "string"
+        },
+        {
+          "name": "OperationNamesList",
+          "type": "dynamic"
+        },
+        {
+          "name": "ProvinceName",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "ResourceGroup",
+          "type": "string"
+        },
+        {
+          "name": "ServiceType",
+          "type": "string"
+        },
+        {
+          "name": "StorageAccount",
+          "type": "string"
+        },
+        {
+          "name": "StorageContainer",
+          "type": "string"
+        },
+        {
+          "name": "StorageFileShare",
+          "type": "string"
+        },
+        {
+          "name": "SubscriptionId",
+          "type": "string"
+        },
+        {
+          "name": "SuspiciousUserAgentName",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "UserAgentHeader",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "DataSecurityBehaviors",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-datasecuritybehaviors-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-datasecuritybehaviors-table.md",
+      "columns": [
+        {
+          "name": "AccountEmail",
+          "type": "string"
+        },
+        {
+          "name": "AccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "Application",
+          "type": "string"
+        },
+        {
+          "name": "AttackTechniques",
+          "type": "string"
+        },
+        {
+          "name": "BehaviorId",
+          "type": "string"
+        },
+        {
+          "name": "Categories",
+          "type": "string"
+        },
+        {
+          "name": "Description",
+          "type": "string"
+        },
+        {
+          "name": "DetectionSource",
+          "type": "string"
+        },
+        {
+          "name": "DeviceInfo",
+          "type": "dynamic"
+        },
+        {
+          "name": "EndTime",
+          "type": "datetime"
+        },
+        {
+          "name": "PrinterName",
+          "type": "dynamic"
+        },
+        {
+          "name": "PriorityContentMatchInfo",
+          "type": "dynamic"
+        },
+        {
+          "name": "RecipientEmailInfo",
+          "type": "dynamic"
+        },
+        {
+          "name": "RemovableMediaInfo",
+          "type": "dynamic"
+        },
+        {
+          "name": "SensitiveInfoTypesInfo",
+          "type": "dynamic"
+        },
+        {
+          "name": "SensitivityLabelInfo",
+          "type": "dynamic"
+        },
+        {
+          "name": "ServiceSource",
+          "type": "string"
+        },
+        {
+          "name": "SharepointSiteInfo",
+          "type": "dynamic"
+        },
+        {
+          "name": "StartTime",
+          "type": "datetime"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "UrlDomainInfo",
+          "type": "dynamic"
+        }
+      ]
+    },
+    {
+      "name": "DataSecurityEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-datasecurityevents-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-datasecurityevents-table.md",
+      "columns": [
+        {
+          "name": "AadDeviceId",
+          "type": "guid"
+        },
+        {
+          "name": "AccountObjectId",
+          "type": "string"
+        },
+        {
+          "name": "AccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "ActivityId",
+          "type": "guid"
+        },
+        {
+          "name": "ApplicationNames",
+          "type": "string"
+        },
+        {
+          "name": "CcPolicyMatchInfo",
+          "type": "dynamic"
+        },
+        {
+          "name": "CloudAppAlertId",
+          "type": "string"
+        },
+        {
+          "name": "Department",
+          "type": "string"
+        },
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "DlpPolicyMatchInfo",
+          "type": "string"
+        },
+        {
+          "name": "DlpPolicyRuleMatchInfo",
+          "type": "dynamic"
+        },
+        {
+          "name": "EmailAttachmentInfo",
+          "type": "dynamic"
+        },
+        {
+          "name": "EmailSubject",
+          "type": "string"
+        },
+        {
+          "name": "ExternalUrlDomains",
+          "type": "string"
+        },
+        {
+          "name": "FileRenameInfo",
+          "type": "string"
+        },
+        {
+          "name": "InternetMessageId",
+          "type": "string"
+        },
+        {
+          "name": "IPAddress",
+          "type": "string"
+        },
+        {
+          "name": "IrmPolicyMatchInfo",
+          "type": "dynamic"
+        },
+        {
+          "name": "NetworkMessageId",
+          "type": "guid"
+        },
+        {
+          "name": "ObjectId",
+          "type": "string"
+        },
+        {
+          "name": "ObjectName",
+          "type": "string"
+        },
+        {
+          "name": "ObjectType",
+          "type": "string"
+        },
+        {
+          "name": "Operation",
+          "type": "string"
+        },
+        {
+          "name": "PhysicalAccessPointId",
+          "type": "string"
+        },
+        {
+          "name": "PhysicalAccessPointName",
+          "type": "string"
+        },
+        {
+          "name": "PhysicalAccessStatus",
+          "type": "string"
+        },
+        {
+          "name": "PhysicalAssetTag",
+          "type": "string"
+        },
+        {
+          "name": "PreviousSensitivityLabelId",
+          "type": "string"
+        },
+        {
+          "name": "PrinterName",
+          "type": "string"
+        },
+        {
+          "name": "RecipientEmailAddress",
+          "type": "string"
+        },
+        {
+          "name": "RemovableMediaManufacturer",
+          "type": "string"
+        },
+        {
+          "name": "RemovableMediaModel",
+          "type": "string"
+        },
+        {
+          "name": "RemovableMediaSerialNumber",
+          "type": "string"
+        },
+        {
+          "name": "SensitiveInfoTypeInfo",
+          "type": "dynamic"
+        },
+        {
+          "name": "SensitivityLabelId",
+          "type": "string"
+        },
+        {
+          "name": "SequenceCorrelationId",
+          "type": "string"
+        },
+        {
+          "name": "SharepointSiteSensitivityLabelIds",
+          "type": "string"
+        },
+        {
+          "name": "SiteUrl",
+          "type": "string"
+        },
+        {
+          "name": "SourceCodeInfo",
+          "type": "string"
+        },
+        {
+          "name": "SourceRelativeUrl",
+          "type": "string"
+        },
+        {
+          "name": "SourceUrlDomain",
+          "type": "string"
+        },
+        {
+          "name": "TargetFilePath",
+          "type": "string"
+        },
+        {
+          "name": "TargetUrlDomain",
+          "type": "string"
+        },
+        {
+          "name": "TeamsChannelName",
+          "type": "string"
+        },
+        {
+          "name": "TeamsChannelType",
+          "type": "string"
+        },
+        {
+          "name": "TeamsTeamName",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "UnallowedUrlDomains",
+          "type": "string"
+        },
+        {
+          "name": "UrlDomainInfo",
+          "type": "string"
+        },
+        {
+          "name": "UserAlternateEmails",
+          "type": "string"
+        },
+        {
+          "name": "Workload",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "DeviceBaselineComplianceAssessment",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicebaselinecomplianceassessment-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-devicebaselinecomplianceassessment-table.md",
+      "columns": [
+        {
+          "name": "ConfigurationId",
+          "type": "string"
+        },
+        {
+          "name": "CurrentValue",
+          "type": "dynamic"
+        },
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "IsApplicable",
+          "type": "bool"
+        },
+        {
+          "name": "IsExempt",
+          "type": "bool"
+        },
+        {
+          "name": "OSPlatform",
+          "type": "string"
+        },
+        {
+          "name": "OSVersion",
+          "type": "string"
+        },
+        {
+          "name": "ProfileId",
+          "type": "string"
+        },
+        {
+          "name": "RecommendedValue",
+          "type": "dynamic"
+        },
+        {
+          "name": "Source",
+          "type": "dynamic"
+        }
+      ]
+    },
+    {
+      "name": "DeviceBaselineComplianceAssessmentKB",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicebaselinecomplianceassessmentkb-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-devicebaselinecomplianceassessmentkb-table.md",
+      "columns": [
+        {
+          "name": "BenchmarkProfileLevels",
+          "type": "dynamic"
+        },
+        {
+          "name": "CCEReference",
+          "type": "string"
+        },
+        {
+          "name": "ConfigurationBenchmark",
+          "type": "string"
+        },
+        {
+          "name": "ConfigurationCategory",
+          "type": "string"
+        },
+        {
+          "name": "ConfigurationDescription",
+          "type": "string"
+        },
+        {
+          "name": "ConfigurationId",
+          "type": "string"
+        },
+        {
+          "name": "ConfigurationName",
+          "type": "string"
+        },
+        {
+          "name": "ConfigurationRationale",
+          "type": "string"
+        },
+        {
+          "name": "RecommendedValue",
+          "type": "dynamic"
+        },
+        {
+          "name": "RemediationOptions",
+          "type": "string"
+        },
+        {
+          "name": "Source",
+          "type": "dynamic"
+        }
+      ]
+    },
+    {
+      "name": "DeviceBaselineComplianceProfiles",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicebaselinecomplianceprofiles-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-devicebaselinecomplianceprofiles-table.md",
+      "columns": [
+        {
+          "name": "BaseBenchmark",
+          "type": "string"
+        },
+        {
+          "name": "BenchmarkProfileLevel",
+          "type": "string"
+        },
+        {
+          "name": "BenchmarkVersion",
+          "type": "string"
+        },
+        {
+          "name": "CreatedBy",
+          "type": "string"
+        },
+        {
+          "name": "CreatedOn",
+          "type": "datetime"
+        },
+        {
+          "name": "LastUpdatedBy",
+          "type": "string"
+        },
+        {
+          "name": "LastUpdatedOn",
+          "type": "datetime"
+        },
+        {
+          "name": "OSPlatform",
+          "type": "dynamic"
+        },
+        {
+          "name": "OSVersion",
+          "type": "string"
+        },
+        {
+          "name": "ProfileDescription",
+          "type": "string"
+        },
+        {
+          "name": "ProfileId",
+          "type": "string"
+        },
+        {
+          "name": "ProfileName",
+          "type": "string"
+        },
+        {
+          "name": "Status",
+          "type": "bool"
+        }
+      ]
+    },
+    {
+      "name": "DeviceEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-deviceevents-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-deviceevents-table.md",
+      "columns": [
+        {
+          "name": "AccountDomain",
+          "type": "string"
+        },
+        {
+          "name": "AccountName",
+          "type": "string"
+        },
+        {
+          "name": "AccountSid",
+          "type": "string"
+        },
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "AdditionalFields",
+          "type": "string"
+        },
+        {
+          "name": "AppGuardContainerId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "FileName",
+          "type": "string"
+        },
+        {
+          "name": "FileOriginIP",
+          "type": "string"
+        },
+        {
+          "name": "FileOriginUrl",
+          "type": "string"
+        },
+        {
+          "name": "FolderPath",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountDomain",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountObjectId",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountSid",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessCommandLine",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessCreationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "InitiatingProcessFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessFolderPath",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessMD5",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessParentCreationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "InitiatingProcessParentFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessRemoteSessionDeviceName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessRemoteSessionIP",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessSHA1",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessSHA256",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessUniqueId",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoCompanyName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoFileDescription",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoOriginalFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoProductName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoProductVersion",
+          "type": "string"
+        },
+        {
+          "name": "LocalIP",
+          "type": "string"
+        },
+        {
+          "name": "MD5",
+          "type": "string"
+        },
+        {
+          "name": "ProcessCommandLine",
+          "type": "string"
+        },
+        {
+          "name": "ProcessCreationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "ProcessRemoteSessionDeviceName",
+          "type": "string"
+        },
+        {
+          "name": "ProcessRemoteSessionIP",
+          "type": "string"
+        },
+        {
+          "name": "ProcessTokenElevation",
+          "type": "string"
+        },
+        {
+          "name": "RegistryKey",
+          "type": "string"
+        },
+        {
+          "name": "RegistryValueData",
+          "type": "string"
+        },
+        {
+          "name": "RegistryValueName",
+          "type": "string"
+        },
+        {
+          "name": "RemoteDeviceName",
+          "type": "string"
+        },
+        {
+          "name": "RemoteIP",
+          "type": "string"
+        },
+        {
+          "name": "RemoteUrl",
+          "type": "string"
+        },
+        {
+          "name": "SHA1",
+          "type": "string"
+        },
+        {
+          "name": "SHA256",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "DeviceFileCertificateInfo",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicefilecertificateinfo-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-devicefilecertificateinfo-table.md",
+      "columns": [
+        {
+          "name": "CertificateCountersignatureTime",
+          "type": "datetime"
+        },
+        {
+          "name": "CertificateCreationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "CertificateExpirationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "CertificateSerialNumber",
+          "type": "string"
+        },
+        {
+          "name": "CrlDistributionPointUrls",
+          "type": "string"
+        },
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "IsRootSignerMicrosoft",
+          "type": "bool"
+        },
+        {
+          "name": "Issuer",
+          "type": "string"
+        },
+        {
+          "name": "IssuerHash",
+          "type": "string"
+        },
+        {
+          "name": "SHA1",
+          "type": "string"
+        },
+        {
+          "name": "SignatureType",
+          "type": "string"
+        },
+        {
+          "name": "Signer",
+          "type": "string"
+        },
+        {
+          "name": "SignerHash",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "DeviceFileEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicefileevents-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-devicefileevents-table.md",
+      "columns": [
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "AdditionalFields",
+          "type": "string"
+        },
+        {
+          "name": "AppGuardContainerId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "FileName",
+          "type": "string"
+        },
+        {
+          "name": "FileOriginIP",
+          "type": "string"
+        },
+        {
+          "name": "FileOriginReferrerUrl",
+          "type": "string"
+        },
+        {
+          "name": "FileOriginUrl",
+          "type": "string"
+        },
+        {
+          "name": "FolderPath",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountDomain",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountObjectId",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountSid",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessCommandLine",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessCreationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "InitiatingProcessFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessFolderPath",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessIntegrityLevel",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessMD5",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessParentCreationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "InitiatingProcessParentFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessRemoteSessionDeviceName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessRemoteSessionIP",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessSHA1",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessSHA256",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessTokenElevation",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessUniqueId",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoCompanyName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoFileDescription",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoInternalFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoOriginalFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoProductName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoProductVersion",
+          "type": "string"
+        },
+        {
+          "name": "IsAzureInfoProtectionApplied",
+          "type": "bool"
+        },
+        {
+          "name": "MD5",
+          "type": "string"
+        },
+        {
+          "name": "PreviousFileName",
+          "type": "string"
+        },
+        {
+          "name": "PreviousFolderPath",
+          "type": "string"
+        },
+        {
+          "name": "RequestAccountDomain",
+          "type": "string"
+        },
+        {
+          "name": "RequestAccountName",
+          "type": "string"
+        },
+        {
+          "name": "RequestAccountSid",
+          "type": "string"
+        },
+        {
+          "name": "RequestProtocol",
+          "type": "string"
+        },
+        {
+          "name": "RequestSourceIP",
+          "type": "string"
+        },
+        {
+          "name": "SensitivityLabel",
+          "type": "string"
+        },
+        {
+          "name": "SensitivitySubLabel",
+          "type": "string"
+        },
+        {
+          "name": "SHA1",
+          "type": "string"
+        },
+        {
+          "name": "SHA256",
+          "type": "string"
+        },
+        {
+          "name": "ShareName",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "DeviceImageLoadEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-deviceimageloadevents-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-deviceimageloadevents-table.md",
+      "columns": [
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "AppGuardContainerId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "FileName",
+          "type": "string"
+        },
+        {
+          "name": "FolderPath",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountDomain",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountObjectId",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountSid",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessCommandLine",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessCreationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "InitiatingProcessFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessFolderPath",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessIntegrityLevel",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessMD5",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessParentCreationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "InitiatingProcessParentFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessRemoteSessionDeviceName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessRemoteSessionIP",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessSHA1",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessSHA256",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessTokenElevation",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessUniqueId",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoCompanyName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoFileDescription",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoInternalFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoOriginalFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoProductName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoProductVersion",
+          "type": "string"
+        },
+        {
+          "name": "MD5",
+          "type": "string"
+        },
+        {
+          "name": "SHA1",
+          "type": "string"
+        },
+        {
+          "name": "SHA256",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "DeviceInfo",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-deviceinfo-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-deviceinfo-table.md",
+      "columns": [
+        {
+          "name": "AadDeviceId",
+          "type": "string"
+        },
+        {
+          "name": "AdditionalFields",
+          "type": "string"
+        },
+        {
+          "name": "AssetValue",
+          "type": "string"
+        },
+        {
+          "name": "AwsResourceName",
+          "type": "string"
+        },
+        {
+          "name": "AzureResourceId",
+          "type": "string"
+        },
+        {
+          "name": "AzureVmId",
+          "type": "string"
+        },
+        {
+          "name": "AzureVmSubscriptionId",
+          "type": "string"
+        },
+        {
+          "name": "ClientVersion",
+          "type": "string"
+        },
+        {
+          "name": "CloudPlatforms",
+          "type": "string"
+        },
+        {
+          "name": "ConnectivityType",
+          "type": "string"
+        },
+        {
+          "name": "DeviceCategory",
+          "type": "string"
+        },
+        {
+          "name": "DeviceDynamicTags",
+          "type": "string"
+        },
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceManualTags",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "DeviceSubtype",
+          "type": "string"
+        },
+        {
+          "name": "DeviceType",
+          "type": "string"
+        },
+        {
+          "name": "DiscoverySources",
+          "type": "string"
+        },
+        {
+          "name": "DlpInfo",
+          "type": "string"
+        },
+        {
+          "name": "ExclusionReason",
+          "type": "string"
+        },
+        {
+          "name": "ExposureLevel",
+          "type": "string"
+        },
+        {
+          "name": "GcpFullResourceName",
+          "type": "string"
+        },
+        {
+          "name": "HardwareUuid",
+          "type": "string"
+        },
+        {
+          "name": "HostDeviceId",
+          "type": "string"
+        },
+        {
+          "name": "IsAzureADJoined",
+          "type": "bool"
+        },
+        {
+          "name": "IsInternetFacing",
+          "type": "bool"
+        },
+        {
+          "name": "IsTransient",
+          "type": "bool"
+        },
+        {
+          "name": "JoinType",
+          "type": "string"
+        },
+        {
+          "name": "LoggedOnUsers",
+          "type": "string"
+        },
+        {
+          "name": "MachineGroup",
+          "type": "string"
+        },
+        {
+          "name": "MergedDeviceIds",
+          "type": "string"
+        },
+        {
+          "name": "MergedToDeviceId",
+          "type": "string"
+        },
+        {
+          "name": "MitigationStatus",
+          "type": "string"
+        },
+        {
+          "name": "Model",
+          "type": "string"
+        },
+        {
+          "name": "OnboardingStatus",
+          "type": "string"
+        },
+        {
+          "name": "OSArchitecture",
+          "type": "string"
+        },
+        {
+          "name": "OsBuildRevision",
+          "type": "string"
+        },
+        {
+          "name": "OSDistribution",
+          "type": "string"
+        },
+        {
+          "name": "OSPlatform",
+          "type": "string"
+        },
+        {
+          "name": "OSVersion",
+          "type": "string"
+        },
+        {
+          "name": "OSVersionInfo",
+          "type": "string"
+        },
+        {
+          "name": "PublicIP",
+          "type": "string"
+        },
+        {
+          "name": "RegistryDeviceTag",
+          "type": "string"
+        },
+        {
+          "name": "SensorHealthState",
+          "type": "string"
+        },
+        {
+          "name": "Site",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "Vendor",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "DeviceLogonEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicelogonevents-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-devicelogonevents-table.md",
+      "columns": [
+        {
+          "name": "AccountDomain",
+          "type": "string"
+        },
+        {
+          "name": "AccountName",
+          "type": "string"
+        },
+        {
+          "name": "AccountSid",
+          "type": "string"
+        },
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "AdditionalFields",
+          "type": "string"
+        },
+        {
+          "name": "AppGuardContainerId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "FailureReason",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountDomain",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountObjectId",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountSid",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessCommandLine",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessCreationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "InitiatingProcessFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessFolderPath",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessIntegrityLevel",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessMD5",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessParentCreationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "InitiatingProcessParentFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessRemoteSessionDeviceName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessRemoteSessionIP",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessSHA1",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessSHA256",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessTokenElevation",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessUniqueId",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoCompanyName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoFileDescription",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoInternalFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoOriginalFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoProductName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoProductVersion",
+          "type": "string"
+        },
+        {
+          "name": "IsLocalAdmin",
+          "type": "bool"
+        },
+        {
+          "name": "LogonType",
+          "type": "string"
+        },
+        {
+          "name": "Protocol",
+          "type": "string"
+        },
+        {
+          "name": "RemoteDeviceName",
+          "type": "string"
+        },
+        {
+          "name": "RemoteIP",
+          "type": "string"
+        },
+        {
+          "name": "RemoteIPType",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "DeviceNetworkEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicenetworkevents-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-devicenetworkevents-table.md",
+      "columns": [
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "AdditionalFields",
+          "type": "string"
+        },
+        {
+          "name": "AppGuardContainerId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountDomain",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountObjectId",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountSid",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessCommandLine",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessCreationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "InitiatingProcessFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessFolderPath",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessIntegrityLevel",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessMD5",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessParentCreationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "InitiatingProcessParentFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessRemoteSessionDeviceName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessRemoteSessionIP",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessSHA1",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessSHA256",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessTokenElevation",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessUniqueId",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoCompanyName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoFileDescription",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoInternalFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoOriginalFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoProductName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoProductVersion",
+          "type": "string"
+        },
+        {
+          "name": "LocalIP",
+          "type": "string"
+        },
+        {
+          "name": "LocalIPType",
+          "type": "string"
+        },
+        {
+          "name": "Protocol",
+          "type": "string"
+        },
+        {
+          "name": "RemoteIP",
+          "type": "string"
+        },
+        {
+          "name": "RemoteIPType",
+          "type": "string"
+        },
+        {
+          "name": "RemoteUrl",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "DeviceNetworkInfo",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicenetworkinfo-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-devicenetworkinfo-table.md",
+      "columns": [
+        {
+          "name": "ConnectedNetworks",
+          "type": "string"
+        },
+        {
+          "name": "DefaultGateways",
+          "type": "string"
+        },
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "DnsAddresses",
+          "type": "string"
+        },
+        {
+          "name": "IPAddresses",
+          "type": "string"
+        },
+        {
+          "name": "IPv4Dhcp",
+          "type": "string"
+        },
+        {
+          "name": "IPv6Dhcp",
+          "type": "string"
+        },
+        {
+          "name": "MacAddress",
+          "type": "string"
+        },
+        {
+          "name": "NetworkAdapterDnsSuffix",
+          "type": "string"
+        },
+        {
+          "name": "NetworkAdapterName",
+          "type": "string"
+        },
+        {
+          "name": "NetworkAdapterStatus",
+          "type": "string"
+        },
+        {
+          "name": "NetworkAdapterType",
+          "type": "string"
+        },
+        {
+          "name": "NetworkAdapterVendor",
+          "type": "string"
+        },
+        {
+          "name": "OnboardingStatus",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "TunnelType",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "DeviceProcessEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-deviceprocessevents-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-deviceprocessevents-table.md",
+      "columns": [
+        {
+          "name": "AccountDomain",
+          "type": "string"
+        },
+        {
+          "name": "AccountName",
+          "type": "string"
+        },
+        {
+          "name": "AccountObjectId",
+          "type": "string"
+        },
+        {
+          "name": "AccountSid",
+          "type": "string"
+        },
+        {
+          "name": "AccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "AdditionalFields",
+          "type": "string"
+        },
+        {
+          "name": "AppGuardContainerId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "FileName",
+          "type": "string"
+        },
+        {
+          "name": "FolderPath",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountDomain",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountObjectId",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountSid",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessCommandLine",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessCreationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "InitiatingProcessFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessFolderPath",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessIntegrityLevel",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessMD5",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessParentCreationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "InitiatingProcessParentFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessRemoteSessionDeviceName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessRemoteSessionIP",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessSHA1",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessSHA256",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessSignatureStatus",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessSignerType",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessTokenElevation",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessUniqueId",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoCompanyName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoFileDescription",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoInternalFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoOriginalFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoProductName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoProductVersion",
+          "type": "string"
+        },
+        {
+          "name": "MD5",
+          "type": "string"
+        },
+        {
+          "name": "ProcessCommandLine",
+          "type": "string"
+        },
+        {
+          "name": "ProcessCreationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "ProcessIntegrityLevel",
+          "type": "string"
+        },
+        {
+          "name": "ProcessRemoteSessionDeviceName",
+          "type": "string"
+        },
+        {
+          "name": "ProcessRemoteSessionIP",
+          "type": "string"
+        },
+        {
+          "name": "ProcessTokenElevation",
+          "type": "string"
+        },
+        {
+          "name": "ProcessUniqueId",
+          "type": "string"
+        },
+        {
+          "name": "ProcessVersionInfoCompanyName",
+          "type": "string"
+        },
+        {
+          "name": "ProcessVersionInfoFileDescription",
+          "type": "string"
+        },
+        {
+          "name": "ProcessVersionInfoInternalFileName",
+          "type": "string"
+        },
+        {
+          "name": "ProcessVersionInfoOriginalFileName",
+          "type": "string"
+        },
+        {
+          "name": "ProcessVersionInfoProductName",
+          "type": "string"
+        },
+        {
+          "name": "ProcessVersionInfoProductVersion",
+          "type": "string"
+        },
+        {
+          "name": "SHA1",
+          "type": "string"
+        },
+        {
+          "name": "SHA256",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "DeviceRegistryEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-deviceregistryevents-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-deviceregistryevents-table.md",
+      "columns": [
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "AppGuardContainerId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountDomain",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountObjectId",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountSid",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessAccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessCommandLine",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessCreationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "InitiatingProcessFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessFolderPath",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessIntegrityLevel",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessMD5",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessParentCreationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "InitiatingProcessParentFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessRemoteSessionDeviceName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessRemoteSessionIP",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessSHA1",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessSHA256",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessTokenElevation",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessUniqueId",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoCompanyName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoFileDescription",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoInternalFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoOriginalFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoProductName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessVersionInfoProductVersion",
+          "type": "string"
+        },
+        {
+          "name": "PreviousRegistryKey",
+          "type": "string"
+        },
+        {
+          "name": "PreviousRegistryValueData",
+          "type": "string"
+        },
+        {
+          "name": "PreviousRegistryValueName",
+          "type": "string"
+        },
+        {
+          "name": "RegistryKey",
+          "type": "string"
+        },
+        {
+          "name": "RegistryValueData",
+          "type": "string"
+        },
+        {
+          "name": "RegistryValueName",
+          "type": "string"
+        },
+        {
+          "name": "RegistryValueType",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "DeviceTvmBrowserExtensions",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicetvmbrowserextensions-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-devicetvmbrowserextensions-table.md",
+      "columns": [
+        {
+          "name": "BrowserName",
+          "type": "string"
+        },
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "ExtensionDescription",
+          "type": "string"
+        },
+        {
+          "name": "ExtensionId",
+          "type": "string"
+        },
+        {
+          "name": "ExtensionName",
+          "type": "string"
+        },
+        {
+          "name": "ExtensionRisk",
+          "type": "string"
+        },
+        {
+          "name": "ExtensionVendor",
+          "type": "string"
+        },
+        {
+          "name": "ExtensionVersion",
+          "type": "string"
+        },
+        {
+          "name": "InstallationTime",
+          "type": "datetime"
+        },
+        {
+          "name": "IsActivated",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "DeviceTvmBrowserExtensionsKB",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicetvmbrowserextensionskb-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-devicetvmbrowserextensionskb-table.md",
+      "columns": [
+        {
+          "name": "BrowserName",
+          "type": "string"
+        },
+        {
+          "name": "ExtensionDescription",
+          "type": "string"
+        },
+        {
+          "name": "ExtensionId",
+          "type": "string"
+        },
+        {
+          "name": "ExtensionName",
+          "type": "string"
+        },
+        {
+          "name": "ExtensionRisk",
+          "type": "string"
+        },
+        {
+          "name": "ExtensionVersion",
+          "type": "dynamic"
+        },
+        {
+          "name": "IsPermissionRequired",
+          "type": "string"
+        },
+        {
+          "name": "PermissionDescription",
+          "type": "string"
+        },
+        {
+          "name": "PermissionId",
+          "type": "string"
+        },
+        {
+          "name": "PermissionName",
+          "type": "string"
+        },
+        {
+          "name": "PermissionRisk",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "DeviceTvmCertificateInfo",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicetvmcertificateinfo-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-devicetvmcertificateinfo-table.md",
+      "columns": [
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "ExpirationDate",
+          "type": "string"
+        },
+        {
+          "name": "ExtendedKeyUsage",
+          "type": "string"
+        },
+        {
+          "name": "FriendlyName",
+          "type": "string"
+        },
+        {
+          "name": "IssueDate",
+          "type": "string"
+        },
+        {
+          "name": "IssuedBy",
+          "type": "dynamic"
+        },
+        {
+          "name": "IssuedTo",
+          "type": "dynamic"
+        },
+        {
+          "name": "KeySize",
+          "type": "string"
+        },
+        {
+          "name": "KeyUsage",
+          "type": "string"
+        },
+        {
+          "name": "Path",
+          "type": "string"
+        },
+        {
+          "name": "SerialNumber",
+          "type": "string"
+        },
+        {
+          "name": "SignatureAlgorithm",
+          "type": "string"
+        },
+        {
+          "name": "SubjectType",
+          "type": "string"
+        },
+        {
+          "name": "Thumbprint",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "DeviceTvmHardwareFirmware",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicetvmhardwarefirmware-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-devicetvmhardwarefirmware-table.md",
+      "columns": [
+        {
+          "name": "AdditionalFields",
+          "type": "dynamic"
+        },
+        {
+          "name": "ComponentFamily",
+          "type": "string"
+        },
+        {
+          "name": "ComponentName",
+          "type": "string"
+        },
+        {
+          "name": "ComponentType",
+          "type": "string"
+        },
+        {
+          "name": "ComponentVersion",
+          "type": "string"
+        },
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "Manufacturer",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "DeviceTvmInfoGathering",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicetvminfogathering-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-devicetvminfogathering-table.md",
+      "columns": [
+        {
+          "name": "AdditionalFields",
+          "type": "dynamic"
+        },
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "LastSeenTime",
+          "type": "datetime"
+        },
+        {
+          "name": "OSPlatform",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "DeviceTvmInfoGatheringKB",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicetvminfogatheringkb-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-devicetvminfogatheringkb-table.md",
+      "columns": [
+        {
+          "name": "Categories",
+          "type": "dynamic"
+        },
+        {
+          "name": "DataStructure",
+          "type": "string"
+        },
+        {
+          "name": "Description",
+          "type": "string"
+        },
+        {
+          "name": "FieldName",
+          "type": "string"
+        },
+        {
+          "name": "IgId",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "DeviceTvmSecureConfigurationAssessment",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicetvmsecureconfigurationassessment-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-devicetvmsecureconfigurationassessment-table.md",
+      "columns": [
+        {
+          "name": "ConfigurationCategory",
+          "type": "string"
+        },
+        {
+          "name": "ConfigurationId",
+          "type": "string"
+        },
+        {
+          "name": "ConfigurationSubcategory",
+          "type": "string"
+        },
+        {
+          "name": "Context",
+          "type": "dynamic"
+        },
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "IsApplicable",
+          "type": "bool"
+        },
+        {
+          "name": "IsCompliant",
+          "type": "bool"
+        },
+        {
+          "name": "IsExpectedUserImpact",
+          "type": "bool"
+        },
+        {
+          "name": "OSPlatform",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "DeviceTvmSecureConfigurationAssessmentKB",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicetvmsecureconfigurationassessmentkb-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-devicetvmsecureconfigurationassessmentkb-table.md",
+      "columns": [
+        {
+          "name": "ConfigurationBenchmarks",
+          "type": "dynamic"
+        },
+        {
+          "name": "ConfigurationCategory",
+          "type": "string"
+        },
+        {
+          "name": "ConfigurationDescription",
+          "type": "string"
+        },
+        {
+          "name": "ConfigurationId",
+          "type": "string"
+        },
+        {
+          "name": "ConfigurationName",
+          "type": "string"
+        },
+        {
+          "name": "ConfigurationSubcategory",
+          "type": "string"
+        },
+        {
+          "name": "RemediationOptions",
+          "type": "string"
+        },
+        {
+          "name": "RiskDescription",
+          "type": "string"
+        },
+        {
+          "name": "Tags",
+          "type": "dynamic"
+        }
+      ]
+    },
+    {
+      "name": "DeviceTvmSoftwareEvidenceBeta",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicetvmsoftwareevidencebeta-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-devicetvmsoftwareevidencebeta-table.md",
+      "columns": [
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "DiskPaths",
+          "type": "dynamic"
+        },
+        {
+          "name": "LastSeenTime",
+          "type": "string"
+        },
+        {
+          "name": "RegistryPaths",
+          "type": "dynamic"
+        },
+        {
+          "name": "SoftwareName",
+          "type": "string"
+        },
+        {
+          "name": "SoftwareVendor",
+          "type": "string"
+        },
+        {
+          "name": "SoftwareVersion",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "DeviceTvmSoftwareInventory",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicetvmsoftwareinventory-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-devicetvmsoftwareinventory-table.md",
+      "columns": [
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "EndOfSupportDate",
+          "type": "datetime"
+        },
+        {
+          "name": "EndOfSupportStatus",
+          "type": "string"
+        },
+        {
+          "name": "OSArchitecture",
+          "type": "string"
+        },
+        {
+          "name": "OSPlatform",
+          "type": "string"
+        },
+        {
+          "name": "OSVersion",
+          "type": "string"
+        },
+        {
+          "name": "ProductCodeCpe",
+          "type": "string"
+        },
+        {
+          "name": "SoftwareName",
+          "type": "string"
+        },
+        {
+          "name": "SoftwareVendor",
+          "type": "string"
+        },
+        {
+          "name": "SoftwareVersion",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "DeviceTvmSoftwareVulnerabilities",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicetvmsoftwarevulnerabilities-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-devicetvmsoftwarevulnerabilities-table.md",
+      "columns": [
+        {
+          "name": "CveId",
+          "type": "string"
+        },
+        {
+          "name": "CveTags",
+          "type": "dynamic"
+        },
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "OSArchitecture",
+          "type": "string"
+        },
+        {
+          "name": "OSPlatform",
+          "type": "string"
+        },
+        {
+          "name": "OSVersion",
+          "type": "string"
+        },
+        {
+          "name": "RecommendedSecurityUpdate",
+          "type": "string"
+        },
+        {
+          "name": "RecommendedSecurityUpdateId",
+          "type": "string"
+        },
+        {
+          "name": "SoftwareName",
+          "type": "string"
+        },
+        {
+          "name": "SoftwareVendor",
+          "type": "string"
+        },
+        {
+          "name": "SoftwareVersion",
+          "type": "string"
+        },
+        {
+          "name": "VulnerabilitySeverityLevel",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "DeviceTvmSoftwareVulnerabilitiesKB",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicetvmsoftwarevulnerabilitieskb-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-devicetvmsoftwarevulnerabilitieskb-table.md",
+      "columns": [
+        {
+          "name": "AffectedSoftware",
+          "type": "dynamic"
+        },
+        {
+          "name": "CveId",
+          "type": "string"
+        },
+        {
+          "name": "CvssScore",
+          "type": "string"
+        },
+        {
+          "name": "IsExploitAvailable",
+          "type": "bool"
+        },
+        {
+          "name": "LastModifiedTime",
+          "type": "datetime"
+        },
+        {
+          "name": "PublishedDate",
+          "type": "datetime"
+        },
+        {
+          "name": "VulnerabilityDescription",
+          "type": "string"
+        },
+        {
+          "name": "VulnerabilitySeverityLevel",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "DisruptionAndResponseEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-disruptionandresponseevents-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-disruptionandresponseevents-table.md",
+      "columns": [
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "AuthenticationProtocol",
+          "type": "string"
+        },
+        {
+          "name": "CompromisedAccountCount",
+          "type": "int"
+        },
+        {
+          "name": "DataSources",
+          "type": "string"
+        },
+        {
+          "name": "DeviceId",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "DomainName",
+          "type": "string"
+        },
+        {
+          "name": "FileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessFileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessId",
+          "type": "int"
+        },
+        {
+          "name": "InterfaceFriendlyName",
+          "type": "string"
+        },
+        {
+          "name": "InterfaceUuid",
+          "type": "string"
+        },
+        {
+          "name": "IpAddress",
+          "type": "string"
+        },
+        {
+          "name": "IsPolicyOn",
+          "type": "bool"
+        },
+        {
+          "name": "LogonType",
+          "type": "string"
+        },
+        {
+          "name": "PolicyHash",
+          "type": "string"
+        },
+        {
+          "name": "PolicyId",
+          "type": "string"
+        },
+        {
+          "name": "PolicyName",
+          "type": "string"
+        },
+        {
+          "name": "PolicyVersion",
+          "type": "string"
+        },
+        {
+          "name": "Port",
+          "type": "string"
+        },
+        {
+          "name": "ReportType",
+          "type": "string"
+        },
+        {
+          "name": "Service",
+          "type": "string"
+        },
+        {
+          "name": "ShareName",
+          "type": "string"
+        },
+        {
+          "name": "SourceDeviceId",
+          "type": "string"
+        },
+        {
+          "name": "SourceDeviceName",
+          "type": "string"
+        },
+        {
+          "name": "SourceDomainName",
+          "type": "string"
+        },
+        {
+          "name": "SourceIpAddress",
+          "type": "string"
+        },
+        {
+          "name": "SourcePort",
+          "type": "int"
+        },
+        {
+          "name": "SourceUserDomainName",
+          "type": "string"
+        },
+        {
+          "name": "SourceUserName",
+          "type": "string"
+        },
+        {
+          "name": "SourceUserSid",
+          "type": "string"
+        },
+        {
+          "name": "TargetDeviceId",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "EmailAttachmentInfo",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-emailattachmentinfo-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-emailattachmentinfo-table.md",
+      "columns": [
+        {
+          "name": "AdditionalFields",
+          "type": "string"
+        },
+        {
+          "name": "DetectionMethods",
+          "type": "string"
+        },
+        {
+          "name": "FileExtension",
+          "type": "string"
+        },
+        {
+          "name": "FileName",
+          "type": "string"
+        },
+        {
+          "name": "FileType",
+          "type": "string"
+        },
+        {
+          "name": "NetworkMessageId",
+          "type": "string"
+        },
+        {
+          "name": "RecipientEmailAddress",
+          "type": "string"
+        },
+        {
+          "name": "RecipientObjectId",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "SenderDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "SenderFromAddress",
+          "type": "string"
+        },
+        {
+          "name": "SenderObjectId",
+          "type": "string"
+        },
+        {
+          "name": "SHA256",
+          "type": "string"
+        },
+        {
+          "name": "ThreatNames",
+          "type": "string"
+        },
+        {
+          "name": "ThreatTypes",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "EmailEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-emailevents-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-emailevents-table.md",
+      "columns": [
+        {
+          "name": "AdditionalFields",
+          "type": "string"
+        },
+        {
+          "name": "AuthenticationDetails",
+          "type": "string"
+        },
+        {
+          "name": "Cc",
+          "type": "string"
+        },
+        {
+          "name": "ConfidenceLevel",
+          "type": "string"
+        },
+        {
+          "name": "Connectors",
+          "type": "string"
+        },
+        {
+          "name": "Context",
+          "type": "string"
+        },
+        {
+          "name": "DeliveryAction",
+          "type": "string"
+        },
+        {
+          "name": "DeliveryLocation",
+          "type": "string"
+        },
+        {
+          "name": "DetectionMethods",
+          "type": "string"
+        },
+        {
+          "name": "DistributionList",
+          "type": "string"
+        },
+        {
+          "name": "EmailAction",
+          "type": "string"
+        },
+        {
+          "name": "EmailActionPolicy",
+          "type": "string"
+        },
+        {
+          "name": "EmailActionPolicyGuid",
+          "type": "string"
+        },
+        {
+          "name": "EmailDirection",
+          "type": "string"
+        },
+        {
+          "name": "EmailLanguage",
+          "type": "string"
+        },
+        {
+          "name": "ExchangeTransportRule",
+          "type": "string"
+        },
+        {
+          "name": "ForwardingInformation",
+          "type": "string"
+        },
+        {
+          "name": "InternetMessageId",
+          "type": "string"
+        },
+        {
+          "name": "NetworkMessageId",
+          "type": "string"
+        },
+        {
+          "name": "OrgLevelAction",
+          "type": "string"
+        },
+        {
+          "name": "OrgLevelPolicy",
+          "type": "string"
+        },
+        {
+          "name": "RecipientDomain",
+          "type": "string"
+        },
+        {
+          "name": "RecipientEmailAddress",
+          "type": "string"
+        },
+        {
+          "name": "RecipientObjectId",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "SenderDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "SenderFromAddress",
+          "type": "string"
+        },
+        {
+          "name": "SenderFromDomain",
+          "type": "string"
+        },
+        {
+          "name": "SenderIPv4",
+          "type": "string"
+        },
+        {
+          "name": "SenderIPv6",
+          "type": "string"
+        },
+        {
+          "name": "SenderMailFromAddress",
+          "type": "string"
+        },
+        {
+          "name": "SenderMailFromDomain",
+          "type": "string"
+        },
+        {
+          "name": "SenderObjectId",
+          "type": "string"
+        },
+        {
+          "name": "Subject",
+          "type": "string"
+        },
+        {
+          "name": "ThreatClassification",
+          "type": "string"
+        },
+        {
+          "name": "ThreatNames",
+          "type": "string"
+        },
+        {
+          "name": "ThreatTypes",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "To",
+          "type": "string"
+        },
+        {
+          "name": "UserLevelAction",
+          "type": "string"
+        },
+        {
+          "name": "UserLevelPolicy",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "EmailPostDeliveryEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-emailpostdeliveryevents-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-emailpostdeliveryevents-table.md",
+      "columns": [
+        {
+          "name": "Action",
+          "type": "string"
+        },
+        {
+          "name": "ActionResult",
+          "type": "string"
+        },
+        {
+          "name": "ActionTrigger",
+          "type": "string"
+        },
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "DeliveryLocation",
+          "type": "string"
+        },
+        {
+          "name": "DetectionMethods",
+          "type": "string"
+        },
+        {
+          "name": "EmailDirection",
+          "type": "string"
+        },
+        {
+          "name": "InternetMessageId",
+          "type": "string"
+        },
+        {
+          "name": "NetworkMessageId",
+          "type": "string"
+        },
+        {
+          "name": "RecipientEmailAddress",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "SenderFromAddress",
+          "type": "string"
+        },
+        {
+          "name": "SourceLocation",
+          "type": "string"
+        },
+        {
+          "name": "ThreatTypes",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "EmailUrlInfo",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-emailurlinfo-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-emailurlinfo-table.md",
+      "columns": [
+        {
+          "name": "NetworkMessageId",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "Url",
+          "type": "string"
+        },
+        {
+          "name": "UrlChainId",
+          "type": "string"
+        },
+        {
+          "name": "UrlDomain",
+          "type": "string"
+        },
+        {
+          "name": "UrlLocation",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "EntraIdSignInEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-entraidsigninevents-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-entraidsigninevents-table.md",
+      "columns": [
+        {
+          "name": "AccountDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "AccountObjectId",
+          "type": "string"
+        },
+        {
+          "name": "AccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "AlternateSignInName",
+          "type": "string"
+        },
+        {
+          "name": "Application",
+          "type": "string"
+        },
+        {
+          "name": "ApplicationId",
+          "type": "string"
+        },
+        {
+          "name": "AuthenticationProcessingDetails",
+          "type": "string"
+        },
+        {
+          "name": "AuthenticationRequirement",
+          "type": "string"
+        },
+        {
+          "name": "Browser",
+          "type": "string"
+        },
+        {
+          "name": "City",
+          "type": "string"
+        },
+        {
+          "name": "ClientAppUsed",
+          "type": "string"
+        },
+        {
+          "name": "ConditionalAccessPolicies",
+          "type": "string"
+        },
+        {
+          "name": "CorrelationId",
+          "type": "string"
+        },
+        {
+          "name": "Country",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "DeviceTrustType",
+          "type": "string"
+        },
+        {
+          "name": "EndpointCall",
+          "type": "string"
+        },
+        {
+          "name": "EntraIdDeviceId",
+          "type": "string"
+        },
+        {
+          "name": "IPAddress",
+          "type": "string"
+        },
+        {
+          "name": "IsConfidentialClient",
+          "type": "bool"
+        },
+        {
+          "name": "IsGuestUser",
+          "type": "bool"
+        },
+        {
+          "name": "LastPasswordChangeTimestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "Latitude",
+          "type": "string"
+        },
+        {
+          "name": "LogonType",
+          "type": "string"
+        },
+        {
+          "name": "Longitude",
+          "type": "string"
+        },
+        {
+          "name": "NetworkLocationDetails",
+          "type": "string"
+        },
+        {
+          "name": "OSPlatform",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "RequestId",
+          "type": "string"
+        },
+        {
+          "name": "ResourceDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "ResourceId",
+          "type": "string"
+        },
+        {
+          "name": "ResourceTenantId",
+          "type": "string"
+        },
+        {
+          "name": "SessionId",
+          "type": "string"
+        },
+        {
+          "name": "State",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "UserAgent",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "EntraIdSpnSignInEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-entraidspnsigninevents-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-entraidspnsigninevents-table.md",
+      "columns": [
+        {
+          "name": "Application",
+          "type": "string"
+        },
+        {
+          "name": "ApplicationId",
+          "type": "string"
+        },
+        {
+          "name": "City",
+          "type": "string"
+        },
+        {
+          "name": "CorrelationId",
+          "type": "string"
+        },
+        {
+          "name": "Country",
+          "type": "string"
+        },
+        {
+          "name": "IPAddress",
+          "type": "string"
+        },
+        {
+          "name": "IsManagedIdentity",
+          "type": "bool"
+        },
+        {
+          "name": "Latitude",
+          "type": "string"
+        },
+        {
+          "name": "Longitude",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "RequestId",
+          "type": "string"
+        },
+        {
+          "name": "ResourceDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "ResourceId",
+          "type": "string"
+        },
+        {
+          "name": "ResourceTenantId",
+          "type": "string"
+        },
+        {
+          "name": "ServicePrincipalId",
+          "type": "string"
+        },
+        {
+          "name": "ServicePrincipalName",
+          "type": "string"
+        },
+        {
+          "name": "State",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "ExposureGraphEdges",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-exposuregraphedges-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-exposuregraphedges-table.md",
+      "columns": [
+        {
+          "name": "EdgeId",
+          "type": "string"
+        },
+        {
+          "name": "EdgeLabel",
+          "type": "string"
+        },
+        {
+          "name": "EdgeProperties",
+          "type": "dynamic"
+        },
+        {
+          "name": "SourceNodeCategories",
+          "type": "dynamic"
+        },
+        {
+          "name": "SourceNodeId",
+          "type": "string"
+        },
+        {
+          "name": "SourceNodeLabel",
+          "type": "string"
+        },
+        {
+          "name": "SourceNodeName",
+          "type": "string"
+        },
+        {
+          "name": "TargetNodeCategories",
+          "type": "dynamic"
+        },
+        {
+          "name": "TargetNodeId",
+          "type": "string"
+        },
+        {
+          "name": "TargetNodeLabel",
+          "type": "string"
+        },
+        {
+          "name": "TargetNodeName",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "ExposureGraphNodes",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-exposuregraphnodes-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-exposuregraphnodes-table.md",
+      "columns": [
+        {
+          "name": "Categories",
+          "type": "dynamic"
+        },
+        {
+          "name": "EntityIds",
+          "type": "dynamic"
+        },
+        {
+          "name": "NodeId",
+          "type": "string"
+        },
+        {
+          "name": "NodeLabel",
+          "type": "string"
+        },
+        {
+          "name": "NodeName",
+          "type": "string"
+        },
+        {
+          "name": "NodeProperties",
+          "type": "dynamic"
+        }
+      ]
+    },
+    {
+      "name": "FileMaliciousContentInfo",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-filemaliciouscontentinfo-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-filemaliciouscontentinfo-table.md",
+      "columns": [
+        {
+          "name": "DetectionMethods",
+          "type": "string"
+        },
+        {
+          "name": "DocumentId",
+          "type": "string"
+        },
+        {
+          "name": "FileName",
+          "type": "string"
+        },
+        {
+          "name": "FileOwnerDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "FileOwnerUpn",
+          "type": "string"
+        },
+        {
+          "name": "FolderPath",
+          "type": "string"
+        },
+        {
+          "name": "LastModifiedTime",
+          "type": "datetime"
+        },
+        {
+          "name": "LastModifyingAccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "SHA256",
+          "type": "string"
+        },
+        {
+          "name": "ThreatNames",
+          "type": "string"
+        },
+        {
+          "name": "ThreatTypes",
+          "type": "dynamic"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "Workload",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "GraphApiAuditEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-graphapiauditevents-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-graphapiauditevents-table.md",
+      "columns": [
+        {
+          "name": "AccountObjectId",
+          "type": "string"
+        },
+        {
+          "name": "ApiVersion",
+          "type": "string"
+        },
+        {
+          "name": "ApplicationId",
+          "type": "string"
+        },
+        {
+          "name": "ClientRequestId",
+          "type": "string"
+        },
+        {
+          "name": "IdentityProvider",
+          "type": "string"
+        },
+        {
+          "name": "IPAddress",
+          "type": "string"
+        },
+        {
+          "name": "Location",
+          "type": "string"
+        },
+        {
+          "name": "OperationId",
+          "type": "string"
+        },
+        {
+          "name": "RequestDuration",
+          "type": "string"
+        },
+        {
+          "name": "RequestId",
+          "type": "string"
+        },
+        {
+          "name": "RequestMethod",
+          "type": "string"
+        },
+        {
+          "name": "RequestUri",
+          "type": "string"
+        },
+        {
+          "name": "ResponseStatusCode",
+          "type": "string"
+        },
+        {
+          "name": "Scopes",
+          "type": "string"
+        },
+        {
+          "name": "ServicePrincipalId",
+          "type": "string"
+        },
+        {
+          "name": "TargetWorkload",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "string"
+        },
+        {
+          "name": "UniqueTokenIdentifier",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "IdentityAccountInfo",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-identityaccountinfo-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-identityaccountinfo-table.md",
+      "columns": [
+        {
+          "name": "AccountId",
+          "type": "string"
+        },
+        {
+          "name": "AccountStatus",
+          "type": "string"
+        },
+        {
+          "name": "AccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "AdditionalFields",
+          "type": "dynamic"
+        },
+        {
+          "name": "Address",
+          "type": "string"
+        },
+        {
+          "name": "AssignedRoles",
+          "type": "dynamic"
+        },
+        {
+          "name": "AuthenticationMethod",
+          "type": "string"
+        },
+        {
+          "name": "AuthenticationSourceAcccountId",
+          "type": "string"
+        },
+        {
+          "name": "City",
+          "type": "string"
+        },
+        {
+          "name": "Country",
+          "type": "string"
+        },
+        {
+          "name": "DefenderRiskUpdateTime",
+          "type": "datetime"
+        },
+        {
+          "name": "DeletedDateTime",
+          "type": "datetime"
+        },
+        {
+          "name": "Department",
+          "type": "string"
+        },
+        {
+          "name": "DisplayName",
+          "type": "string"
+        },
+        {
+          "name": "EligibleRoles",
+          "type": "dynamic"
+        },
+        {
+          "name": "EmailAddress",
+          "type": "string"
+        },
+        {
+          "name": "EmployeeId",
+          "type": "string"
+        },
+        {
+          "name": "EnrolledMfas",
+          "type": "dynamic"
+        },
+        {
+          "name": "GivenName",
+          "type": "string"
+        },
+        {
+          "name": "GroupMembership",
+          "type": "dynamic"
+        },
+        {
+          "name": "IdentityId",
+          "type": "string"
+        },
+        {
+          "name": "IdentityLinkBy",
+          "type": "string"
+        },
+        {
+          "name": "IdentityLinkReason",
+          "type": "string"
+        },
+        {
+          "name": "IdentityLinkTime",
+          "type": "datetime"
+        },
+        {
+          "name": "IdentityLinkType",
+          "type": "string"
+        },
+        {
+          "name": "JobTitle",
+          "type": "string"
+        },
+        {
+          "name": "LastPasswordChangeTime",
+          "type": "datetime"
+        },
+        {
+          "name": "Manager",
+          "type": "string"
+        },
+        {
+          "name": "Phone",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "Sid",
+          "type": "string"
+        },
+        {
+          "name": "SourceProvderRiskLevel",
+          "type": "dynamic"
+        },
+        {
+          "name": "SourceProvider",
+          "type": "string"
+        },
+        {
+          "name": "SourceProviderAccountId",
+          "type": "string"
+        },
+        {
+          "name": "SourceProviderInstanceDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "SourceProviderInstanceId",
+          "type": "string"
+        },
+        {
+          "name": "Surname",
+          "type": "string"
+        },
+        {
+          "name": "Tags",
+          "type": "dynamic"
+        },
+        {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "TenantMembershipType",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "Type",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "IdentityDirectoryEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-identitydirectoryevents-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-identitydirectoryevents-table.md",
+      "columns": [
+        {
+          "name": "AccountDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "AccountDomain",
+          "type": "string"
+        },
+        {
+          "name": "AccountName",
+          "type": "string"
+        },
+        {
+          "name": "AccountObjectId",
+          "type": "string"
+        },
+        {
+          "name": "AccountSid",
+          "type": "string"
+        },
+        {
+          "name": "AccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "AdditionalFields",
+          "type": "dynamic"
+        },
+        {
+          "name": "Application",
+          "type": "string"
+        },
+        {
+          "name": "DestinationDeviceName",
+          "type": "string"
+        },
+        {
+          "name": "DestinationIPAddress",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "IPAddress",
+          "type": "string"
+        },
+        {
+          "name": "ISP",
+          "type": "string"
+        },
+        {
+          "name": "Location",
+          "type": "string"
+        },
+        {
+          "name": "Protocol",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "TargetAccountDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "TargetAccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "TargetDeviceName",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "IdentityEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-identityevents-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-identityevents-table.md",
+      "columns": [
+        {
+          "name": "AccountDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "AccountType",
+          "type": "string"
+        },
+        {
+          "name": "AccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "ActionFailureReason",
+          "type": "string"
+        },
+        {
+          "name": "ActionResult",
+          "type": "string"
+        },
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "AdditionalFields",
+          "type": "dynamic"
+        },
+        {
+          "name": "Application",
+          "type": "string"
+        },
+        {
+          "name": "ApplicationEventId",
+          "type": "string"
+        },
+        {
+          "name": "ApplicationInstanceId",
+          "type": "string"
+        },
+        {
+          "name": "ApplicationSessionId",
+          "type": "string"
+        },
+        {
+          "name": "IPAddress",
+          "type": "string"
+        },
+        {
+          "name": "RawEventData",
+          "type": "dynamic"
+        },
+        {
+          "name": "TargetObjects",
+          "type": "dynamic"
+        },
+        {
+          "name": "UserAgent",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "IdentityInfo",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-identityinfo-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-identityinfo-table.md",
+      "columns": [
+        {
+          "name": "AccountDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "AccountName",
+          "type": "string"
+        },
+        {
+          "name": "AccountObjectId",
+          "type": "string"
+        },
+        {
+          "name": "AccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "Address",
+          "type": "string"
+        },
+        {
+          "name": "City",
+          "type": "string"
+        },
+        {
+          "name": "CloudSid",
+          "type": "string"
+        },
+        {
+          "name": "Country",
+          "type": "string"
+        },
+        {
+          "name": "Department",
+          "type": "string"
+        },
+        {
+          "name": "EmailAddress",
+          "type": "string"
+        },
+        {
+          "name": "GivenName",
+          "type": "string"
+        },
+        {
+          "name": "IdentityEnvironment",
+          "type": "string"
+        },
+        {
+          "name": "IsAccountEnabled",
+          "type": "bool"
+        },
+        {
+          "name": "JobTitle",
+          "type": "string"
+        },
+        {
+          "name": "OnPremObjectId",
+          "type": "string"
+        },
+        {
+          "name": "OnPremSid",
+          "type": "string"
+        },
+        {
+          "name": "RiskLevel",
+          "type": "string"
+        },
+        {
+          "name": "RiskLevelDetails",
+          "type": "string"
+        },
+        {
+          "name": "SipProxyAddress",
+          "type": "string"
+        },
+        {
+          "name": "SourceProviders",
+          "type": "dynamic"
+        },
+        {
+          "name": "Surname",
+          "type": "string"
+        },
+        {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "TenantMembershipType",
+          "type": "string"
+        },
+        {
+          "name": "UserAccountControl",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "IdentityLogonEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-identitylogonevents-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-identitylogonevents-table.md",
+      "columns": [
+        {
+          "name": "AccountDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "AccountDomain",
+          "type": "string"
+        },
+        {
+          "name": "AccountName",
+          "type": "string"
+        },
+        {
+          "name": "AccountObjectId",
+          "type": "string"
+        },
+        {
+          "name": "AccountSid",
+          "type": "string"
+        },
+        {
+          "name": "AccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "AdditionalFields",
+          "type": "dynamic"
+        },
+        {
+          "name": "Application",
+          "type": "string"
+        },
+        {
+          "name": "DestinationDeviceName",
+          "type": "string"
+        },
+        {
+          "name": "DestinationIPAddress",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "DeviceType",
+          "type": "string"
+        },
+        {
+          "name": "FailureReason",
+          "type": "string"
+        },
+        {
+          "name": "IPAddress",
+          "type": "string"
+        },
+        {
+          "name": "Isp",
+          "type": "string"
+        },
+        {
+          "name": "Location",
+          "type": "string"
+        },
+        {
+          "name": "LogonType",
+          "type": "string"
+        },
+        {
+          "name": "OSPlatform",
+          "type": "string"
+        },
+        {
+          "name": "Protocol",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "TargetAccountDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "TargetDeviceName",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "IdentityQueryEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-identityqueryevents-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-identityqueryevents-table.md",
+      "columns": [
+        {
+          "name": "AccountDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "AccountDomain",
+          "type": "string"
+        },
+        {
+          "name": "AccountName",
+          "type": "string"
+        },
+        {
+          "name": "AccountObjectId",
+          "type": "string"
+        },
+        {
+          "name": "AccountSid",
+          "type": "string"
+        },
+        {
+          "name": "AccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "AdditionalFields",
+          "type": "dynamic"
+        },
+        {
+          "name": "Application",
+          "type": "string"
+        },
+        {
+          "name": "DestinationDeviceName",
+          "type": "string"
+        },
+        {
+          "name": "DestinationIPAddress",
+          "type": "string"
+        },
+        {
+          "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "IPAddress",
+          "type": "string"
+        },
+        {
+          "name": "Location",
+          "type": "string"
+        },
+        {
+          "name": "Protocol",
+          "type": "string"
+        },
+        {
+          "name": "Query",
+          "type": "string"
+        },
+        {
+          "name": "QueryTarget",
+          "type": "string"
+        },
+        {
+          "name": "QueryType",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "TargetAccountDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "TargetAccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "TargetDeviceName",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "MessageEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-messageevents-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-messageevents-table.md",
+      "columns": [
+        {
+          "name": "ConfidenceLevel",
+          "type": "dynamic"
+        },
+        {
+          "name": "DeliveryAction",
+          "type": "string"
+        },
+        {
+          "name": "DeliveryLocation",
+          "type": "string"
+        },
+        {
+          "name": "DetectionMethods",
+          "type": "dynamic"
+        },
+        {
+          "name": "GroupId",
+          "type": "string"
+        },
+        {
+          "name": "GroupName",
+          "type": "string"
+        },
+        {
+          "name": "IsExternalThread",
+          "type": "bool"
+        },
+        {
+          "name": "IsOwnedThread",
+          "type": "bool"
+        },
+        {
+          "name": "LastEditedTime",
+          "type": "string"
+        },
+        {
+          "name": "MessageFormatSubtype",
+          "type": "string"
+        },
+        {
+          "name": "MessageFormatType",
+          "type": "string"
+        },
+        {
+          "name": "MessageId",
+          "type": "string"
+        },
+        {
+          "name": "MessageSubject",
+          "type": "string"
+        },
+        {
+          "name": "MessageVersion",
+          "type": "string"
+        },
+        {
+          "name": "ParentMessageId",
+          "type": "string"
+        },
+        {
+          "name": "RecipientDetails",
+          "type": "dynamic"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "SafetyTip",
+          "type": "string"
+        },
+        {
+          "name": "SenderDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "SenderEmailAddress",
+          "type": "string"
+        },
+        {
+          "name": "SenderObjectId",
+          "type": "string"
+        },
+        {
+          "name": "SenderType",
+          "type": "string"
+        },
+        {
+          "name": "TeamsMessageId",
+          "type": "string"
+        },
+        {
+          "name": "ThreadId",
+          "type": "string"
+        },
+        {
+          "name": "ThreadSubtype",
+          "type": "string"
+        },
+        {
+          "name": "ThreatTypes",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "MessagePostDeliveryEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-messagepostdeliveryevents-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-messagepostdeliveryevents-table.md",
+      "columns": [
+        {
+          "name": "Action",
+          "type": "string"
+        },
+        {
+          "name": "ActionResult",
+          "type": "string"
+        },
+        {
+          "name": "ActionTrigger",
+          "type": "string"
+        },
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "ConfidenceLevel",
+          "type": "dynamic"
+        },
+        {
+          "name": "DetectionMethods",
+          "type": "string"
+        },
+        {
+          "name": "IsExternalThread",
+          "type": "bool"
+        },
+        {
+          "name": "LatestDeliveryLocation",
+          "type": "string"
+        },
+        {
+          "name": "RecipientDetails",
+          "type": "dynamic"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "SafetyTip",
+          "type": "string"
+        },
+        {
+          "name": "SenderEmailAddress",
+          "type": "string"
+        },
+        {
+          "name": "TeamsMessageId",
+          "type": "string"
+        },
+        {
+          "name": "ThreatTypes",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "MessageUrlInfo",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-messageurlinfo-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-messageurlinfo-table.md",
+      "columns": [
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "TeamsMessageId",
+          "type": "string"
+        },
+        {
+          "name": "ThreatTypes",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "Url",
+          "type": "string"
+        },
+        {
+          "name": "UrlDomain",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "OAuthAppInfo",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-oauthappinfo-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-oauthappinfo-table.md",
+      "columns": [
+        {
+          "name": "AddedOnTime",
+          "type": "datetime"
+        },
+        {
+          "name": "AppName",
+          "type": "string"
+        },
+        {
+          "name": "AppOrigin",
+          "type": "string"
+        },
+        {
+          "name": "AppOwnerTenantId",
+          "type": "string"
+        },
+        {
+          "name": "AppStatus",
+          "type": "string"
+        },
+        {
+          "name": "ConsentedUsersCount",
+          "type": "int"
+        },
+        {
+          "name": "IsAdminConsented",
+          "type": "bool"
+        },
+        {
+          "name": "LastModifiedTime",
+          "type": "datetime"
+        },
+        {
+          "name": "LastUsedTime",
+          "type": "datetime"
+        },
+        {
+          "name": "OAuthAppId",
+          "type": "string"
+        },
+        {
+          "name": "Permissions",
+          "type": "dynamic"
+        },
+        {
+          "name": "PrivilegeLevel",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "ServicePrincipalId",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "VerifiedPublisher",
+          "type": "dynamic"
+        }
+      ]
+    },
+    {
+      "name": "UrlClickEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-urlclickevents-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-urlclickevents-table.md",
+      "columns": [
+        {
+          "name": "AccountUpn",
+          "type": "string"
+        },
+        {
+          "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "AppName",
+          "type": "string"
+        },
+        {
+          "name": "AppVersion",
+          "type": "string"
+        },
+        {
+          "name": "DetectionMethods",
+          "type": "string"
+        },
+        {
+          "name": "IPAddress",
+          "type": "string"
+        },
+        {
+          "name": "NetworkMessageId",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "SourceId",
+          "type": "string"
+        },
+        {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "ThreatTypes",
+          "type": "string"
+        },
+        {
+          "name": "TimeGenerated",
+          "type": "datetime"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "Type",
+          "type": "string"
+        },
+        {
+          "name": "Url",
+          "type": "string"
+        },
+        {
+          "name": "UrlChain",
+          "type": "string"
+        },
+        {
+          "name": "Workload",
+          "type": "string"
+        }
+      ]
+    }
+  ]
+}

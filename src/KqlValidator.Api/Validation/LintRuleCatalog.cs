@@ -12,6 +12,7 @@ public sealed class LintRuleCatalog
     private const string DxBp1 = "https://kqlquery.com/posts/dxbp-part1/";
     private const string DxBp2 = "https://kqlquery.com/posts/dxbp-part2/";
     private const string FalconNrt = "https://falconforce.nl/falconfriday-need-for-speed-going-underground-with-near-real-time-nrt-rules-0xff26/";
+    private const string FabianBader = "https://github.com/fabian/kql-validator";
 
     private static readonly string[] GeneralHuntingDetection = ["general", "hunting", "detection"];
     private static readonly string[] HuntingDetection = ["hunting", "detection"];
@@ -55,6 +56,7 @@ public sealed class LintRuleCatalog
         Rule("KQLP006", "Generic term operator for IPv4", DiagnosticSeverity.Information, "performance", "microsoft-kusto", "Use an IPv4-aware operator for IPv4 literals.", KustoBestPractices, HuntingDetection),
 
         Rule("KQLS001", "Sentinel detection exceeds query length", DiagnosticSeverity.Error, "sentinel", "sentinel-detection", "Sentinel analytics rule queries are limited to 10,000 characters.", SentinelRules, Detection, ["sentinel-scheduled", "sentinel-nrt"], Sentinel),
+        Rule("KQLS002", "Optional watchlist column", DiagnosticSeverity.Warning, "sentinel", "baseline", "Normalize optional _GetWatchlist columns with column_ifexists before using them.", FabianBader, GeneralHuntingDetection, environments: ["sentinel", "unified"], sourceName: "Fabian Bader"),
         Rule("KQLN001", "Unsupported Defender NRT multi-input operator", DiagnosticSeverity.Error, "nrt", "defender-nrt", "Defender continuous NRT rules do not support join, union, or externaldata.", DefenderDetections, Detection, ["defender-nrt"], XdrUnified),
         Rule("KQLN002", "Comment in Defender NRT query", DiagnosticSeverity.Error, "nrt", "defender-nrt", "Defender continuous NRT queries do not support comments.", DefenderDetections, Detection, ["defender-nrt"], XdrUnified),
 
@@ -117,14 +119,15 @@ public sealed class LintRuleCatalog
             rule.DocumentationUrl,
             rule.Category,
             rule.RuleSet,
-            rule.SourceKind);
+            rule.SourceKind,
+            rule.SourceName);
     }
 
     public static KqlTarget? ResolveTarget(ValidateRequest request) => request.Target ?? request.Profile switch
     {
         LintProfile.Hunting => KqlTarget.InteractiveHunting,
         LintProfile.Detection when request.Environment == KqlEnvironment.Sentinel => KqlTarget.SentinelScheduled,
-        LintProfile.Detection when request.Environment == KqlEnvironment.Xdr => KqlTarget.DefenderScheduled,
+        LintProfile.Detection when request.Environment is KqlEnvironment.Xdr or KqlEnvironment.Unified => KqlTarget.DefenderScheduled,
         _ => null,
     };
 
@@ -166,11 +169,11 @@ public sealed class LintRuleCatalog
         string id, string title, DiagnosticSeverity severity, string category, string ruleSet,
         string description, string source, IReadOnlyList<string> profiles,
         IReadOnlyList<string>? targets = null, IReadOnlyList<string>? environments = null,
-        bool defaultEnabled = true) =>
+        bool defaultEnabled = true, string? sourceName = null) =>
         new(id, title, severity, category, ruleSet, defaultEnabled, description, source,
             source.Contains("learn.microsoft.com", StringComparison.OrdinalIgnoreCase) || source.Contains("github.com/Azure", StringComparison.OrdinalIgnoreCase)
                 ? "microsoft" : "community",
-            profiles, targets ?? [], environments ?? []);
+            profiles, targets ?? [], environments ?? [], sourceName);
 }
 
 public sealed record LintPolicy(

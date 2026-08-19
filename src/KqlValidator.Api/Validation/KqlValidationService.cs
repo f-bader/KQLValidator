@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 using KqlValidator.Contracts;
 using Kusto.Language;
 using Kusto.Language.Symbols;
@@ -6,7 +7,7 @@ using Kusto.Language.Syntax;
 
 namespace KqlValidator.Validation;
 
-public sealed class KqlValidationService(
+public sealed partial class KqlValidationService(
     SchemaCatalog catalog,
     GlobalStateFactory globalStateFactory,
     RequestValidator requestValidator,
@@ -19,7 +20,8 @@ public sealed class KqlValidationService(
         requestValidator.Validate(request);
         var schema = catalog.Get(request.Environment);
         var globals = globalStateFactory.Create(schema, request.Extensions);
-        var code = KustoCode.ParseAndAnalyze(request.Query, globals);
+        var analysisQuery = NormalizeFileProfileColumnArguments(request.Query, globals);
+        var code = KustoCode.ParseAndAnalyze(analysisQuery, globals);
 
         var outputColumns = code.ResultType?.Members.OfType<ColumnSymbol>()
             .GroupBy(x => x.Name, StringComparer.OrdinalIgnoreCase)
@@ -105,6 +107,19 @@ public sealed class KqlValidationService(
     private bool Enabled(LintPolicy policy, string ruleId) =>
         policy.IsEnabled(ruleId, lintRules.Get(ruleId).DefaultSeverity);
 
+    private static string NormalizeFileProfileColumnArguments(string query, GlobalState globals) => BareFileProfileColumn().Replace(query, match =>
+    {
+        var column = match.Groups["column"].Value;
+        var pipe = query.LastIndexOf('|', match.Index);
+        if (pipe < 0 || column.Length < 2) return match.Value;
+
+        var input = KustoCode.ParseAndAnalyze(query[..pipe], globals).ResultType as TableSymbol;
+        if (input?.Members.OfType<ColumnSymbol>().Any(candidate =>
+                candidate.Name.Equals(column, StringComparison.OrdinalIgnoreCase) && candidate.Type == ScalarTypes.String) != true)
+            return match.Value;
+        return match.Groups["prefix"].Value + $"\"{column[1..^1]}\"";
+    });
+
     private static References GatherReferences(KustoCode code)
     {
         var tables = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -135,6 +150,9 @@ public sealed class KqlValidationService(
             columns.Order(StringComparer.OrdinalIgnoreCase).ToArray(),
             functions.Order(StringComparer.OrdinalIgnoreCase).ToArray());
     }
+
+    [GeneratedRegex(@"(?i)(?<prefix>\binvoke\s+FileProfile\s*\(\s*)(?<column>[A-Za-z_]\w*)(?=\s*(?:,|\)))")]
+    private static partial Regex BareFileProfileColumn();
 
     private sealed record References(IReadOnlyList<string> Tables, IReadOnlyList<string> Columns, IReadOnlyList<string> Functions);
 }

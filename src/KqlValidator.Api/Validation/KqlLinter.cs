@@ -56,6 +56,7 @@ public sealed partial class KqlLinter
         AddActionTypeDiagnostics(diagnostics, policy, searchable);
         AddAnomalousBehaviorLiteralDiagnostics(diagnostics, policy, searchable);
         AddDetectionTextDiagnostics(diagnostics, policy, searchable);
+        AddWatchlistColumnDiagnostics(diagnostics, policy, searchable);
         AddMicrosoftKustoDiagnostics(diagnostics, policy, searchable);
         AddTargetDiagnostics(diagnostics, policy, query, searchable);
         AddCommunityDiagnostics(diagnostics, policy, query, searchable);
@@ -150,6 +151,47 @@ public sealed partial class KqlLinter
             "Avoid take or limit in alert queries; use a deterministic filter or aggregation instead.");
     }
 
+    private void AddWatchlistColumnDiagnostics(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string query)
+    {
+        foreach (Match watchlist in GetWatchlistPipeline().Matches(query))
+        {
+            var pipeline = watchlist.Groups["pipeline"];
+            foreach (var column in OptionalWatchlistColumns)
+            {
+                if (HasColumnIfExists(pipeline.Value, column)) continue;
+                var usage = WatchlistColumnUsage(column).Match(MaskStringLiterals(pipeline.Value));
+                if (!usage.Success) continue;
+
+                var preferred = IsSimpleIdentifier(column)
+                    ? $"| extend {column} = column_ifexists('{column}', '')"
+                    : $"| extend ['{column}'] = column_ifexists('{column}', '')";
+                Add(diagnostics, policy, query, "KQLS002",
+                    $"'{column}' is not native to the Watchlist table and can be absent at deployment. Add {preferred} before referencing it.",
+                    pipeline.Index + usage.Index, usage.Length);
+            }
+        }
+    }
+
+    private static bool HasColumnIfExists(string pipeline, string column) =>
+        Regex.IsMatch(pipeline, $"(?i)\\bcolumn_ifexists\\s*\\(\\s*['\"]{Regex.Escape(column)}['\"]\\s*,");
+
+    private static Regex WatchlistColumnUsage(string column) => new(
+        IsSimpleIdentifier(column)
+            ? $"(?i)(?<!['\"])\\b{Regex.Escape(column)}\\b"
+            : $"(?i)\\[\\s*['\"]{Regex.Escape(column)}['\"]\\s*\\]",
+        RegexOptions.CultureInvariant);
+
+    private static bool IsSimpleIdentifier(string value) => Regex.IsMatch(value, "^[A-Za-z_]\\w*$");
+
+    private static readonly string[] OptionalWatchlistColumns =
+    [
+        "Asset Type", "Asset Id", "Asset Name", "Asset FQDN", "IP Address", "User Identifier", "User AAD Object Id",
+        "User On-Prem Sid", "User Principal Name", "IP Subnet", "Range Name", "UserState", "Notification date",
+        "Termination date", "Employee Id", "Email", "Associated Privileged Account ID", "Associated Privileged Account",
+        "Service Identifier", "Service AAD Object Id", "Service On-Prem Sid", "Service Principal Name", "Owner User Identifier",
+        "Owner User AAD Object Id", "Owner User On-Prem Sid", "Owner User Principal Name", "Tags",
+    ];
+
     private void Match(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string query, Regex regex, string id, string message)
     {
         var severity = rules.Get(id).DefaultSeverity;
@@ -241,6 +283,11 @@ public sealed partial class KqlLinter
 
     private static string MaskComments(string query) => Regex.Replace(query, @"(?m)//[^\r\n]*|/\*[\s\S]*?\*/", m => new string(' ', m.Length));
 
+    private static string MaskStringLiterals(string query) => Regex.Replace(
+        query,
+        "(?<!\\[)'(?:''|[^'])*'|(?<!\\[)\"(?:\"\"|[^\"])*\"",
+        match => new string(' ', match.Length));
+
     [GeneratedRegex(@"(?im)(?:^|;)\s*search\s+(?!in\s*\()")]
     private static partial Regex UnscopedSearch();
     [GeneratedRegex(@"(?i)\b(?:search|where)\b[^\r\n|;]*\*\s*(?:has|contains|matches|==|=~)")]
@@ -289,6 +336,8 @@ public sealed partial class KqlLinter
     private static partial Regex DisplayNameIdentity();
     [GeneratedRegex(@"(?i)\|\s*where\b[^\r\n|;]*(?:!=|!~|!in\b|!contains\b|!has\b)")]
     private static partial Regex InlineExclusion();
+    [GeneratedRegex(@"(?is)_GetWatchlist\s*\([^)]*\)(?<pipeline>.*?)(?=;|$)")]
+    private static partial Regex GetWatchlistPipeline();
     [GeneratedRegex(@"(?im)(?:^|\|)\s*(?:join\b|union\b)")]
     private static partial Regex SentinelNrtCorrelation();
 }

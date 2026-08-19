@@ -11,9 +11,6 @@ public sealed partial class RequestValidator(SchemaCatalog catalog, LintRuleCata
             throw new RequestValidationException("query", "Query must not be empty.");
         if (request.Query.Length > 65_536)
             throw new RequestValidationException("query", "Query exceeds the 64 KiB character limit.");
-        if (request.Environment == KqlEnvironment.Unified && request.Profile == LintProfile.Detection)
-            throw new RequestValidationException("profile", "The detection profile requires either xdr or sentinel, not unified.");
-
         ValidateTarget(request);
         ValidateLintOptions(request.Lint);
 
@@ -89,8 +86,8 @@ public sealed partial class RequestValidator(SchemaCatalog catalog, LintRuleCata
             (request.Profile != LintProfile.Detection || request.Environment != KqlEnvironment.Sentinel))
             throw new RequestValidationException("target", "Sentinel targets require the detection profile and sentinel environment.");
         if (request.Target is KqlTarget.DefenderScheduled or KqlTarget.DefenderNrt &&
-            (request.Profile != LintProfile.Detection || request.Environment != KqlEnvironment.Xdr))
-            throw new RequestValidationException("target", "Defender targets require the detection profile and xdr environment.");
+            (request.Profile != LintProfile.Detection || request.Environment is not (KqlEnvironment.Xdr or KqlEnvironment.Unified)))
+            throw new RequestValidationException("target", "Defender targets require the detection profile and xdr or unified environment.");
     }
 
     private void ValidateLintOptions(LintOptions? options)

@@ -13,7 +13,8 @@ public sealed record SchemaFunction(
     string? ScalarReturnType = null,
     bool PreserveInput = false,
     string? RequiredInputColumn = null,
-    string? RequiredInputType = null);
+    string? RequiredInputType = null,
+    bool RequiresTabularInput = false);
 
 public sealed record EnvironmentSchema(
     string Name,

@@ -10,19 +10,21 @@ public sealed class SchemaCatalog
 
     private readonly IReadOnlyDictionary<KqlEnvironment, EnvironmentSchema> schemas;
 
-    public SchemaCatalog()
+    public SchemaCatalog(string? schemasDirectory = null)
     {
-        var xdr = BuildXdr();
-        var sentinel = BuildSentinel();
+        var schemaDirectory = schemasDirectory ?? Path.Combine(AppContext.BaseDirectory, "Schemas");
+        var xdr = BuildXdr(schemaDirectory);
+        var sentinel = BuildSentinel(schemaDirectory);
         schemas = new Dictionary<KqlEnvironment, EnvironmentSchema>
         {
             [KqlEnvironment.Xdr] = xdr,
             [KqlEnvironment.Sentinel] = sentinel,
             [KqlEnvironment.Unified] = Merge(xdr, sentinel),
         };
+        ActionTypes = LoadActionTypes(schemaDirectory);
     }
 
-    public IReadOnlySet<string> ActionTypes { get; } = LoadActionTypes();
+    public IReadOnlySet<string> ActionTypes { get; }
 
     public EnvironmentSchema Get(KqlEnvironment environment) => schemas[environment];
 
@@ -33,13 +35,14 @@ public sealed class SchemaCatalog
             pair.Value.Tables.Count,
             pair.Value.Functions.Count,
             Enum.GetValues<LintProfile>()
-                .Where(profile => pair.Key != KqlEnvironment.Unified || profile != LintProfile.Detection)
                 .Select(x => x.ToString().ToLowerInvariant()).ToArray()))
         .ToArray();
 
-    private static EnvironmentSchema BuildXdr()
+    private static EnvironmentSchema BuildXdr(string schemaDirectory)
     {
-        var tables = LoadSchemaSnapshot("xdr.json");
+        var tables = LoadSchemaSnapshot("xdr.json", schemaDirectory);
+        foreach (var table in LoadSchemaSnapshot("xdr-official-tables.json", schemaDirectory).Values)
+            tables[table.Name] = table;
         foreach (var table in new[]
         {
             Table("DeviceEvents", CommonDevice("ActionType:string", "AdditionalFields:dynamic")),
@@ -77,33 +80,29 @@ public sealed class SchemaCatalog
         return new EnvironmentSchema("xdr", CurrentVersion, tables, functions);
     }
 
-    private static EnvironmentSchema BuildSentinel()
+    private static EnvironmentSchema BuildSentinel(string schemaDirectory)
     {
-        var tables = LoadSchemaSnapshot("sentinel.json");
-        foreach (var table in new[]
+        var tables = LoadSchemaSnapshot("sentinel.json", schemaDirectory);
+        if (tables.Count == 0)
         {
-            Table("SecurityAlert", Columns("TimeGenerated:datetime", "SystemAlertId:string", "DisplayName:string", "AlertName:string", "AlertSeverity:string", "Description:string", "ProviderName:string", "VendorName:string", "ProductName:string", "CompromisedEntity:string", "Entities:string", "ExtendedProperties:string", "Tactics:string", "Techniques:string")),
-            Table("SecurityIncident", Columns("TimeGenerated:datetime", "IncidentNumber:int", "Title:string", "Description:string", "Severity:string", "Status:string", "Classification:string", "Owner:dynamic", "Labels:dynamic", "AlertIds:dynamic", "AdditionalData:dynamic")),
-            Table("CommonSecurityLog", Columns("TimeGenerated:datetime", "DeviceVendor:string", "DeviceProduct:string", "DeviceVersion:string", "DeviceEventClassID:string", "Activity:string", "LogSeverity:string", "SourceIP:string", "SourcePort:int", "DestinationIP:string", "DestinationPort:int", "Protocol:string", "Message:string", "AdditionalExtensions:string")),
-            Table("Syslog", Columns("TimeGenerated:datetime", "Facility:string", "SeverityLevel:string", "HostName:string", "ProcessID:int", "ProcessName:string", "SyslogMessage:string", "SourceSystem:string")),
-            Table("SigninLogs", Columns("TimeGenerated:datetime", "Id:string", "UserPrincipalName:string", "UserId:string", "AppDisplayName:string", "AppId:string", "IPAddress:string", "ClientAppUsed:string", "ResultType:string", "ResultDescription:string", "Location:dynamic", "DeviceDetail:dynamic", "ConditionalAccessStatus:string", "RiskLevelDuringSignIn:string")),
-            Table("AuditLogs", Columns("TimeGenerated:datetime", "Id:string", "Category:string", "OperationName:string", "Result:string", "ResultReason:string", "ActivityDisplayName:string", "InitiatedBy:dynamic", "TargetResources:dynamic", "AdditionalDetails:dynamic")),
-            Table("AzureActivity", Columns("TimeGenerated:datetime", "OperationNameValue:string", "ActivityStatusValue:string", "ActivitySubstatusValue:string", "Caller:string", "CallerIpAddress:string", "CategoryValue:string", "ResourceGroup:string", "ResourceId:string", "SubscriptionId:string", "Properties:dynamic")),
-            Table("Heartbeat", Columns("TimeGenerated:datetime", "Computer:string", "OSType:string", "OSName:string", "Version:string", "ComputerIP:string", "RemoteIPCountry:string", "SourceSystem:string")),
-            Table("Watchlist", Columns("TimeGenerated:datetime", "WatchlistAlias:string", "SearchKey:string", "WatchlistItem:dynamic", "_DTItemId:string", "LastUpdatedTimeUTC:datetime")),
-        })
-        {
-            if (tables.TryGetValue(table.Name, out var upstream))
+            foreach (var table in new[]
             {
-                var columns = upstream.Columns.ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
-                foreach (var column in table.Columns)
-                    columns[column.Name] = column;
-                tables[table.Name] = new SchemaTable(table.Name, columns.Values.ToArray());
-            }
-            else tables[table.Name] = table;
+                Table("SecurityAlert", Columns("TimeGenerated:datetime", "SystemAlertId:string", "DisplayName:string", "AlertName:string", "AlertSeverity:string", "Description:string", "ProviderName:string", "VendorName:string", "ProductName:string", "CompromisedEntity:string", "Entities:string", "ExtendedProperties:string", "Tactics:string", "Techniques:string")),
+                Table("SecurityIncident", Columns("TimeGenerated:datetime", "IncidentNumber:int", "Title:string", "Description:string", "Severity:string", "Status:string", "Classification:string", "Owner:dynamic", "Labels:dynamic", "AlertIds:dynamic", "AdditionalData:dynamic")),
+                Table("CommonSecurityLog", Columns("TimeGenerated:datetime", "DeviceVendor:string", "DeviceProduct:string", "DeviceVersion:string", "DeviceEventClassID:string", "Activity:string", "LogSeverity:string", "SourceIP:string", "SourcePort:int", "DestinationIP:string", "DestinationPort:int", "Protocol:string", "Message:string", "AdditionalExtensions:string")),
+                Table("Syslog", Columns("TimeGenerated:datetime", "Facility:string", "SeverityLevel:string", "HostName:string", "ProcessID:int", "ProcessName:string", "SyslogMessage:string", "SourceSystem:string")),
+                Table("SigninLogs", Columns("TimeGenerated:datetime", "Id:string", "UserPrincipalName:string", "UserId:string", "AppDisplayName:string", "AppId:string", "IPAddress:string", "ClientAppUsed:string", "ResultType:string", "ResultDescription:string", "Location:dynamic", "DeviceDetail:dynamic", "ConditionalAccessStatus:string", "RiskLevelDuringSignIn:string")),
+                Table("AuditLogs", Columns("TimeGenerated:datetime", "Id:string", "Category:string", "OperationName:string", "Result:string", "ResultReason:string", "ActivityDisplayName:string", "InitiatedBy:dynamic", "TargetResources:dynamic", "AdditionalDetails:dynamic")),
+                Table("AzureActivity", Columns("TimeGenerated:datetime", "OperationNameValue:string", "ActivityStatusValue:string", "ActivitySubstatusValue:string", "Caller:string", "CallerIpAddress:string", "CategoryValue:string", "ResourceGroup:string", "ResourceId:string", "SubscriptionId:string", "Properties:dynamic")),
+                Table("Heartbeat", Columns("TimeGenerated:datetime", "Computer:string", "OSType:string", "OSName:string", "Version:string", "ComputerIP:string", "RemoteIPCountry:string", "SourceSystem:string")),
+                Table("Watchlist", Columns("TimeGenerated:datetime", "WatchlistAlias:string", "SearchKey:string", "WatchlistItem:dynamic", "_DTItemId:string", "LastUpdatedTimeUTC:datetime")),
+            })
+                tables[table.Name] = table;
         }
 
-        var functions = new[] { WatchlistFunction() }.ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
+        var functions = LoadFunctionSnapshot("sentinel-native-functions.json", schemaDirectory);
+        foreach (var function in SentinelNativeFunctions.Create())
+            functions[function.Key] = function.Value;
         return new EnvironmentSchema("sentinel", CurrentVersion, tables, functions);
     }
 
@@ -133,7 +132,11 @@ public sealed class SchemaCatalog
     private static IEnumerable<SchemaFunction> BuiltInFunctions()
     {
         yield return WatchlistFunction();
-        yield return new("FileProfile", [new("fileColumn", "string"), new("scope", "string", true)], Columns("SHA1:string", "SHA256:string", "MD5:string", "FileSize:long", "GlobalPrevalence:long", "GlobalFirstSeen:datetime", "GlobalLastSeen:datetime", "Signer:string", "Issuer:string", "IsCertificateValid:bool", "ThreatName:string"), PreserveInput: true);
+        yield return new("FileProfile", [new("fileColumn", "string", true), new("limit", "long", true)], Columns(
+            "SHA1:string", "SHA256:string", "MD5:string", "FileSize:long", "GlobalPrevalence:long", "GlobalFirstSeen:datetime", "GlobalLastSeen:datetime",
+            "Signer:string", "Issuer:string", "SignerHash:string", "IsCertificateValid:bool", "IsRootSignerMicrosoft:bool", "SignatureState:string",
+            "IsExecutable:bool", "ThreatName:string", "Publisher:string", "SoftwareName:string", "ProfileAvailability:string"),
+            PreserveInput: true, RequiresTabularInput: true);
         yield return new("DeviceFromIP", [new("ip", "string"), new("timestamp", "datetime", true)], Columns("IP:string", "DeviceId:string"), PreserveInput: true);
         yield return new("AssignedIPAddresses", [new("device", "string"), new("timestamp", "datetime", true)], Columns("Timestamp:datetime", "IPAddress:string", "IPType:string", "NetworkAdapterType:int", "ConnectedNetworks:dynamic"));
         yield return new("SeenBy", [new("deviceId", "string", true)], PreserveInput: true, RequiredInputColumn: "DeviceId", RequiredInputType: "string");
@@ -149,7 +152,15 @@ public sealed class SchemaCatalog
         new(name, parameters, PreserveInput: true, RequiredInputColumn: "Insights", RequiredInputType: "string");
 
     private static SchemaFunction WatchlistFunction() =>
-        new("_GetWatchlist", [new("watchlistAlias", "string")], Columns("_DTItemId:string", "LastUpdatedTimeUTC:datetime", "SearchKey:string", "WatchlistItem:dynamic"));
+        new("_GetWatchlist", [new("watchlistAlias", "string")], Columns(
+            "_DTItemId:string", "LastUpdatedTimeUTC:datetime", "SearchKey:string", "WatchlistAlias:string", "WatchlistItem:dynamic",
+            "Asset Type:string", "Asset Id:string", "Asset Name:string", "Asset FQDN:string", "IP Address:string",
+            "User Identifier:string", "User AAD Object Id:string", "User On-Prem Sid:string", "User Principal Name:string",
+            "IP Subnet:string", "Range Name:string", "UserState:string", "Notification date:string", "Termination date:string",
+            "Employee Id:string", "Email:string", "Associated Privileged Account ID:string", "Associated Privileged Account:string",
+            "Service Identifier:string", "Service AAD Object Id:string", "Service On-Prem Sid:string", "Service Principal Name:string",
+            "Owner User Identifier:string", "Owner User AAD Object Id:string", "Owner User On-Prem Sid:string", "Owner User Principal Name:string",
+            "Tags:string"));
 
     private static SchemaTable Table(string name, IReadOnlyList<SchemaColumn> columns) => new(name, columns);
 
@@ -164,10 +175,10 @@ public sealed class SchemaCatalog
         return new SchemaColumn(value[..separator], value[(separator + 1)..]);
     }
 
-    private static Dictionary<string, SchemaTable> LoadSchemaSnapshot(string fileName)
+    private static Dictionary<string, SchemaTable> LoadSchemaSnapshot(string fileName, string schemaDirectory)
     {
         var tables = new Dictionary<string, SchemaTable>(StringComparer.OrdinalIgnoreCase);
-        var path = Path.Combine(AppContext.BaseDirectory, "Schemas", fileName);
+        var path = Path.Combine(schemaDirectory, fileName);
         if (!File.Exists(path)) return tables;
 
         using var document = JsonDocument.Parse(File.ReadAllText(path));
@@ -192,10 +203,39 @@ public sealed class SchemaCatalog
         return tables;
     }
 
-    private static IReadOnlySet<string> LoadActionTypes()
+    private static Dictionary<string, SchemaFunction> LoadFunctionSnapshot(string fileName, string schemaDirectory)
+    {
+        var functions = new Dictionary<string, SchemaFunction>(StringComparer.OrdinalIgnoreCase);
+        var path = Path.Combine(schemaDirectory, fileName);
+        if (!File.Exists(path)) return functions;
+
+        using var document = JsonDocument.Parse(File.ReadAllText(path));
+        if (!document.RootElement.TryGetProperty("functions", out var sourceFunctions) || sourceFunctions.ValueKind != JsonValueKind.Array)
+            return functions;
+        foreach (var source in sourceFunctions.EnumerateArray())
+        {
+            var name = GetString(source, "name", "Name");
+            if (string.IsNullOrWhiteSpace(name)) continue;
+            var parameters = TryProperty(source, "parameters", "Parameters")?.EnumerateArray()
+                .Select(parameter => new FunctionParameter(
+                    GetString(parameter, "name", "Name") ?? string.Empty,
+                    NormalizeType(GetString(parameter, "type", "Type") ?? "string"),
+                    TryProperty(parameter, "optional", "Optional")?.GetBoolean() ?? false))
+                .Where(parameter => !string.IsNullOrWhiteSpace(parameter.Name)).ToArray() ?? [];
+            var output = TryProperty(source, "outputColumns", "OutputColumns")?.EnumerateArray()
+                .Select(column => new SchemaColumn(
+                    GetString(column, "name", "Name") ?? string.Empty,
+                    NormalizeType(GetString(column, "type", "Type") ?? "string")))
+                .Where(column => !string.IsNullOrWhiteSpace(column.Name)).ToArray() ?? [];
+            functions[name] = new SchemaFunction(name, parameters, output);
+        }
+        return functions;
+    }
+
+    private static IReadOnlySet<string> LoadActionTypes(string schemaDirectory)
     {
         var result = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        var path = Path.Combine(AppContext.BaseDirectory, "Schemas", "action-types.json");
+        var path = Path.Combine(schemaDirectory, "action-types.json");
         if (!File.Exists(path)) return result;
 
         using var document = JsonDocument.Parse(File.ReadAllText(path));

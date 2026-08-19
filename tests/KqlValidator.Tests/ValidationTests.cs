@@ -1,4 +1,5 @@
 using KqlValidator.Contracts;
+using KqlValidator.SchemaSync;
 using KqlValidator.Validation;
 
 namespace KqlValidator.Tests;
@@ -31,6 +32,48 @@ public sealed class ValidationTests
     }
 
     [Fact]
+    public void Official_license_gated_xdr_tables_are_available_offline()
+    {
+        var expected = new Dictionary<string, (string Column, string Type)>
+        {
+            ["DeviceTvmBrowserExtensions"] = ("InstallationTime", "datetime"),
+            ["DeviceTvmBrowserExtensionsKB"] = ("ExtensionVersion", "dynamic"),
+            ["DeviceTvmCertificateInfo"] = ("IssuedTo", "dynamic"),
+            ["DeviceTvmHardwareFirmware"] = ("AdditionalFields", "dynamic"),
+            ["DeviceTvmInfoGathering"] = ("LastSeenTime", "datetime"),
+            ["DeviceTvmInfoGatheringKB"] = ("Categories", "dynamic"),
+            ["DeviceTvmSecureConfigurationAssessment"] = ("Context", "dynamic"),
+            ["DeviceTvmSecureConfigurationAssessmentKB"] = ("ConfigurationBenchmarks", "dynamic"),
+            ["DeviceTvmSoftwareEvidenceBeta"] = ("DiskPaths", "dynamic"),
+            ["DeviceTvmSoftwareInventory"] = ("EndOfSupportDate", "datetime"),
+            ["DeviceTvmSoftwareVulnerabilities"] = ("CveTags", "dynamic"),
+            ["DeviceTvmSoftwareVulnerabilitiesKB"] = ("IsExploitAvailable", "bool"),
+        };
+
+        foreach (var environment in new[] { KqlEnvironment.Xdr, KqlEnvironment.Unified })
+        {
+            foreach (var (table, expectedColumn) in expected)
+            {
+                var result = Validate($"{table} | project {expectedColumn.Column}", environment);
+
+                Assert.True(result.Valid, $"{environment}/{table}: {Messages(result)}");
+                Assert.Contains(result.OutputColumns, column => column.Name == expectedColumn.Column && column.Type == expectedColumn.Type);
+            }
+        }
+    }
+
+    [Theory]
+    [InlineData(KqlEnvironment.Xdr)]
+    [InlineData(KqlEnvironment.Unified)]
+    public void Newly_discovered_official_xdr_table_is_available_offline(KqlEnvironment environment)
+    {
+        var result = Validate("AADSignInEventsBeta | project Timestamp, AccountUpn", environment);
+
+        Assert.True(result.Valid, Messages(result));
+        Assert.Contains(result.OutputColumns, column => column.Name == "AccountUpn" && column.Type == "string");
+    }
+
+    [Fact]
     public void Semantic_error_invalidates_query()
     {
         var result = Validate("DeviceEvents | project DoesNotExist");
@@ -46,6 +89,99 @@ public sealed class ValidationTests
 
         Assert.True(result.Valid, Messages(result));
         Assert.Contains(result.OutputColumns, x => x.Name == "ConnectedNetworks" && x.Type == "dynamic");
+    }
+
+    [Theory]
+    [InlineData(KqlEnvironment.Xdr, "FileProfile(SHA1)")]
+    [InlineData(KqlEnvironment.Xdr, "FileProfile(SHA1, 1000)")]
+    [InlineData(KqlEnvironment.Unified, "FileProfile(SHA1)")]
+    [InlineData(KqlEnvironment.Unified, "FileProfile(SHA1, 1000)")]
+    public void File_profile_invoke_preserves_detection_row_scope(KqlEnvironment environment, string invocation)
+    {
+        var result = Validate(
+            $"DeviceFileEvents | where Timestamp > ago(1h) | invoke {invocation} | project Timestamp, ReportId, DeviceId, SHA1, ProfileAvailability",
+            environment,
+            LintProfile.Detection,
+            target: KqlTarget.DefenderScheduled);
+
+        Assert.True(result.Valid, Messages(result));
+        Assert.Contains(result.OutputColumns, column => column.Name == "Timestamp" && column.Type == "datetime");
+        Assert.Contains(result.OutputColumns, column => column.Name == "ProfileAvailability" && column.Type == "string");
+    }
+
+    [Fact]
+    public void File_profile_supports_documented_default_arguments_and_live_output_schema()
+    {
+        var result = Validate("DeviceFileEvents | project SHA1 | invoke FileProfile()", KqlEnvironment.Xdr);
+        var expected = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["SHA1"] = "string",
+            ["SHA256"] = "string",
+            ["MD5"] = "string",
+            ["FileSize"] = "long",
+            ["GlobalPrevalence"] = "long",
+            ["GlobalFirstSeen"] = "datetime",
+            ["GlobalLastSeen"] = "datetime",
+            ["Signer"] = "string",
+            ["Issuer"] = "string",
+            ["SignerHash"] = "string",
+            ["IsCertificateValid"] = "bool",
+            ["IsRootSignerMicrosoft"] = "bool",
+            ["SignatureState"] = "string",
+            ["IsExecutable"] = "bool",
+            ["ThreatName"] = "string",
+            ["Publisher"] = "string",
+            ["SoftwareName"] = "string",
+            ["ProfileAvailability"] = "string",
+        };
+
+        Assert.True(result.Valid, Messages(result));
+        foreach (var (name, type) in expected)
+            Assert.Contains(result.OutputColumns, column => column.Name == name && column.Type == type);
+    }
+
+    [Theory]
+    [InlineData(KqlEnvironment.Xdr)]
+    [InlineData(KqlEnvironment.Unified)]
+    public void File_profile_accepts_renamed_string_source_column(KqlEnvironment environment)
+    {
+        var result = Validate(
+            "DeviceImageLoadEvents | where Timestamp > ago(1h) | summarize by LoadedDLLSHA1 = SHA1 | invoke FileProfile(LoadedDLLSHA1, 1000) | project LoadedDLLSHA1, ProfileAvailability",
+            environment);
+
+        Assert.True(result.Valid, Messages(result));
+        Assert.Contains(result.OutputColumns, column => column.Name == "LoadedDLLSHA1" && column.Type == "string");
+    }
+
+    [Theory]
+    [InlineData("DeviceEvents | invoke FileProfile(DoesNotExist, 1)")]
+    [InlineData("DeviceEvents | extend NumericValue = 1 | invoke FileProfile(NumericValue, 1)")]
+    public void File_profile_rejects_unknown_or_non_string_source_column(string query)
+    {
+        var result = Validate(query, KqlEnvironment.Xdr);
+
+        Assert.False(result.Valid);
+        Assert.Contains(result.Diagnostics, diagnostic => diagnostic.RuleId == "KS142");
+    }
+
+    [Fact]
+    public void Unified_detection_uses_defender_targets_and_advertises_detection_profile()
+    {
+        var result = Validate("DeviceEvents | project Timestamp, DeviceId", KqlEnvironment.Unified, LintProfile.Detection);
+        var environments = new SchemaCatalog().List();
+
+        Assert.True(result.Valid, Messages(result));
+        Assert.Contains("detection", environments.Single(environment => environment.Name == "unified").Profiles);
+    }
+
+    [Fact]
+    public void Unified_detection_rejects_sentinel_target()
+    {
+        Assert.Throws<RequestValidationException>(() => Validate(
+            "DeviceEvents | project Timestamp, DeviceId",
+            KqlEnvironment.Unified,
+            LintProfile.Detection,
+            target: KqlTarget.SentinelScheduled));
     }
 
     [Theory]
@@ -280,6 +416,298 @@ public sealed class ValidationTests
         Assert.True(result.Valid, Messages(result));
     }
 
+    [Theory]
+    [InlineData("Asset FQDN")]
+    [InlineData("User Principal Name")]
+    [InlineData("IP Subnet")]
+    [InlineData("Termination date")]
+    [InlineData("Associated Privileged Account")]
+    [InlineData("Owner User Principal Name")]
+    public void Built_in_watchlist_template_columns_are_available(string column)
+    {
+        var result = Validate($"_GetWatchlist('any_alias') | project ['{column}']", KqlEnvironment.Sentinel);
+
+        Assert.True(result.Valid, Messages(result));
+    }
+
+    [Fact]
+    public void Unknown_builtin_watchlist_template_column_is_rejected()
+    {
+        var result = Validate("_GetWatchlist('any_alias') | project ['Not a watchlist column']", KqlEnvironment.Sentinel);
+
+        Assert.False(result.Valid);
+    }
+
+    [Fact]
+    public void Watchlist_alias_function_is_available_in_sentinel()
+    {
+        var result = Validate("_GetWatchlistAlias | project WatchlistAlias", KqlEnvironment.Sentinel);
+
+        Assert.True(result.Valid, Messages(result));
+    }
+
+    [Theory]
+    [InlineData("_GetWatchlist('assets') | project Tags", "Tags")]
+    [InlineData("_GetWatchlist('assets') | project ['IP Address']", "IP Address")]
+    public void Optional_watchlist_column_requires_column_ifexists(string query, string column)
+    {
+        var result = Validate(query, KqlEnvironment.Sentinel);
+
+        Assert.Contains(result.Diagnostics, diagnostic => diagnostic.RuleId == "KQLS002" && diagnostic.Message.Contains(column, StringComparison.Ordinal));
+        Assert.Contains(result.Diagnostics, diagnostic => diagnostic.RuleId == "KQLS002" && diagnostic.SourceName == "Fabian Bader");
+    }
+
+    [Fact]
+    public void Column_ifexists_suppresses_optional_watchlist_column_rule()
+    {
+        var result = Validate("_GetWatchlist('assets') | extend Tags = column_ifexists('Tags', '') | project Tags", KqlEnvironment.Sentinel);
+
+        Assert.DoesNotContain(result.Diagnostics, diagnostic => diagnostic.RuleId == "KQLS002");
+    }
+
+    [Fact]
+    public void Native_watchlist_column_does_not_trigger_optional_column_rule()
+    {
+        var result = Validate("_GetWatchlist('assets') | project SearchKey", KqlEnvironment.Sentinel);
+
+        Assert.DoesNotContain(result.Diagnostics, diagnostic => diagnostic.RuleId == "KQLS002");
+    }
+
+    [Fact]
+    public void Watchlist_string_literal_does_not_trigger_optional_column_rule()
+    {
+        var result = Validate("_GetWatchlist('assets') | where SearchKey == 'Tags' | project SearchKey", KqlEnvironment.Sentinel);
+
+        Assert.DoesNotContain(result.Diagnostics, diagnostic => diagnostic.RuleId == "KQLS002");
+    }
+
+    [Fact]
+    public void Asim_scalar_lookup_function_is_available_in_sentinel()
+    {
+        var result = Validate("print ProtocolName = _ASIM_LookupNetworkProtocol(6)", KqlEnvironment.Sentinel);
+
+        Assert.True(result.Valid, Messages(result));
+        Assert.Contains(result.OutputColumns, column => column.Name == "ProtocolName" && column.Type == "string");
+    }
+
+    [Fact]
+    public void Asim_resolver_preserves_the_pipeline_and_adds_documented_fields()
+    {
+        var result = Validate("SecurityEvent | invoke _ASIM_ResolveNetworkProtocol('EventID') | project EventID, NetworkProtocol", KqlEnvironment.Sentinel);
+
+        Assert.True(result.Valid, Messages(result));
+    }
+
+    [Fact]
+    public void Generated_asim_unifying_parser_is_available_in_unified()
+    {
+        var result = Validate("_Im_Authentication | project TimeGenerated, TargetUsername, SrcIpAddr", KqlEnvironment.Unified);
+
+        Assert.True(result.Valid, Messages(result));
+    }
+
+    [Fact]
+    public void Generated_asim_source_parser_accepts_its_documented_named_parameter()
+    {
+        var result = Validate("_Im_Dns_SentinelOne(starttime=ago(1h)) | project DnsQuery, DnsResponseCodeName", KqlEnvironment.Sentinel);
+
+        Assert.True(result.Valid, Messages(result));
+    }
+
+    [Fact]
+    public void Sentinel_metadata_normalizer_keeps_only_schema_in_stable_order()
+    {
+        var snapshot = SentinelMetadataNormalizer.Normalize("""
+            {
+              "functions": [{ "name": "SensitiveFunction", "body": "SecretTable" }],
+              "tables": [
+                { "name": "zTable", "columns": [{ "name": "Later", "type": "Int64" }, { "name": "First", "type": "boolean" }] },
+                { "name": "ATable", "columns": [{ "name": "Payload", "type": "object" }] }
+              ]
+            }
+            """);
+
+        Assert.Equal("Azure Log Analytics Metadata API", snapshot["source"]!.GetValue<string>());
+        var tables = snapshot["tables"]!.AsArray();
+        Assert.Equal(["ATable", "zTable"], tables.Select(x => x!["name"]!.GetValue<string>()));
+        Assert.Equal("dynamic", tables[0]!["columns"]![0]!["type"]!.GetValue<string>());
+        Assert.Equal(["First", "Later"], tables[1]!["columns"]!.AsArray().Select(x => x!["name"]!.GetValue<string>()));
+        Assert.Equal("long", tables[1]!["columns"]![1]!["type"]!.GetValue<string>());
+    }
+
+    [Theory]
+    [InlineData("""{ "tables": [] }""")]
+    [InlineData("""{ "tables": [{ "name": "A", "columns": [] }, { "name": "a", "columns": [] }] }""")]
+    [InlineData("""{ "tables": [{ "name": "A", "columns": [{ "name": "Value", "type": "string" }, { "name": "value", "type": "long" }] }] }""")]
+    [InlineData("""{ "permissions": { "workspaces": [{ "denyTables": ["SecretTable"] }] }, "tables": [{ "name": "A", "columns": [] }] }""")]
+    public void Sentinel_metadata_normalizer_rejects_incomplete_or_ambiguous_schema(string metadata)
+    {
+        Assert.Throws<InvalidDataException>(() => SentinelMetadataNormalizer.Normalize(metadata));
+    }
+
+    [Fact]
+    public void Sentinel_metadata_normalizer_excludes_custom_log_tables_unless_requested()
+    {
+        const string metadata = """
+            { "tables": [
+              { "name": "SecurityEvent", "columns": [] },
+              { "name": "PrivateEvents_CL", "columns": [] }
+            ] }
+            """;
+
+        var defaultSnapshot = SentinelMetadataNormalizer.Normalize(metadata);
+        var completeSnapshot = SentinelMetadataNormalizer.Normalize(metadata, includeCustomTables: true);
+
+        Assert.Equal(["SecurityEvent"], defaultSnapshot["tables"]!.AsArray().Select(x => x!["name"]!.GetValue<string>()));
+        Assert.Equal(["PrivateEvents_CL", "SecurityEvent"], completeSnapshot["tables"]!.AsArray().Select(x => x!["name"]!.GetValue<string>()));
+    }
+
+    [Fact]
+    public void Official_xdr_table_normalizer_extracts_documented_browser_extension_schema()
+    {
+        var source = new OfficialXdrTableSource("DeviceTvmBrowserExtensions", "https://learn.microsoft.com/example", "https://raw.githubusercontent.com/example");
+        const string markdown = """
+            # DeviceTvmBrowserExtensions table
+
+            | Column name | Data type | Description |
+            | --- | --- | --- |
+            | `DeviceId` | `string` | Device identifier |
+            | `InstallationTime` | `datetime` | Installation time |
+            """;
+
+        var table = OfficialXdrTableNormalizer.Normalize(source, markdown);
+
+        Assert.Equal("DeviceTvmBrowserExtensions", table["name"]!.GetValue<string>());
+        Assert.Contains(table["columns"]!.AsArray(), column => column!["name"]!.GetValue<string>() == "InstallationTime" && column["type"]!.GetValue<string>() == "datetime");
+    }
+
+    [Fact]
+    public void Official_xdr_table_normalizer_rejects_missing_schema()
+    {
+        var source = new OfficialXdrTableSource("Missing", "https://learn.microsoft.com/example", "https://raw.githubusercontent.com/example");
+
+        Assert.Throws<InvalidDataException>(() => OfficialXdrTableNormalizer.Normalize(source, "# Missing\nNo column table."));
+    }
+
+    [Fact]
+    public void Official_xdr_discovery_filters_non_table_documents_and_orders_the_catalog()
+    {
+        const string listing = """
+            [
+              { "type": "file", "name": "advanced-hunting-zebra-table.md", "download_url": "https://raw.example/zebra.md" },
+              { "type": "file", "name": "advanced-hunting-overview.md", "download_url": "https://raw.example/overview.md" },
+              { "type": "file", "name": "advanced-hunting-alpha-table.md", "download_url": "https://raw.example/alpha.md" },
+              { "type": "file", "name": "advanced-hunting-functions.md", "download_url": "https://raw.example/functions.md" },
+              { "type": "dir", "name": "nested", "download_url": "https://raw.example/nested" }
+            ]
+            """;
+
+        var documents = OfficialXdrTableNormalizer.DiscoverDocuments(listing);
+
+        Assert.Equal(["advanced-hunting-alpha-table.md", "advanced-hunting-zebra-table.md"], documents.Select(document => document.FileName));
+        Assert.Equal("https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-alpha-table", documents[0].DocumentationUrl);
+    }
+
+    [Fact]
+    public void Official_xdr_discovery_derives_table_name_from_h1_and_normalizes_columns()
+    {
+        var document = new OfficialXdrTableDocument("advanced-hunting-devicesample-table.md", "https://raw.example/sample.md");
+        const string markdown = """
+            # DeviceSample table
+
+            | Column name | Data type | Description |
+            | --- | --- | --- |
+            | `When` | `date` | Event time |
+            | `Metadata` | `object` | Extra values |
+            """;
+
+        var source = OfficialXdrTableNormalizer.SourceFromDocument(document, markdown);
+        var table = OfficialXdrTableNormalizer.Normalize(source, markdown);
+
+        Assert.Equal("DeviceSample", source.TableName);
+        Assert.Contains(table["columns"]!.AsArray(), column => column!["name"]!.GetValue<string>() == "When" && column["type"]!.GetValue<string>() == "datetime");
+        Assert.Contains(table["columns"]!.AsArray(), column => column!["name"]!.GetValue<string>() == "Metadata" && column["type"]!.GetValue<string>() == "dynamic");
+    }
+
+    [Fact]
+    public void Official_xdr_discovery_rejects_a_malformed_document_without_a_table_heading()
+    {
+        var document = new OfficialXdrTableDocument("advanced-hunting-sample-table.md", "https://raw.example/sample.md");
+
+        Assert.Throws<InvalidDataException>(() => OfficialXdrTableNormalizer.SourceFromDocument(document, "## Columns\n| Column name | Data type |"));
+    }
+
+    [Fact]
+    public void Sentinel_catalog_loads_a_generated_workspace_snapshot()
+    {
+        var directory = Path.Combine(Path.GetTempPath(), $"kql-validator-schema-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(directory);
+        try
+        {
+            File.WriteAllText(Path.Combine(directory, "sentinel.json"), """
+                { "source": "Azure Log Analytics Metadata API", "tables": [
+                  { "name": "WorkspaceAudit", "columns": [{ "name": "TimeGenerated", "type": "datetime" }, { "name": "ResultCode", "type": "long" }] }
+                ] }
+                """);
+
+            var catalog = new SchemaCatalog(directory);
+            var table = catalog.Get(KqlEnvironment.Sentinel).Tables["WorkspaceAudit"];
+
+            Assert.Contains(table.Columns, column => column.Name == "ResultCode" && column.Type == "long");
+        }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void Official_xdr_snapshot_overrides_primary_feed_for_licensed_table()
+    {
+        var directory = Path.Combine(Path.GetTempPath(), $"kql-validator-schema-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(directory);
+        try
+        {
+            File.WriteAllText(Path.Combine(directory, "xdr.json"), """
+                { "tables": [{ "name": "DeviceTvmBrowserExtensions", "columns": [{ "name": "OldColumn", "type": "string" }] }] }
+                """);
+            File.WriteAllText(Path.Combine(directory, "xdr-official-tables.json"), """
+                { "tables": [{ "name": "DeviceTvmBrowserExtensions", "columns": [{ "name": "ExtensionName", "type": "string" }] }] }
+                """);
+
+            var table = new SchemaCatalog(directory).Get(KqlEnvironment.Xdr).Tables["DeviceTvmBrowserExtensions"];
+
+            Assert.Equal(["ExtensionName"], table.Columns.Select(column => column.Name));
+        }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void Sentinel_workspace_snapshot_is_authoritative_over_the_fallback_catalog()
+    {
+        var directory = Path.Combine(Path.GetTempPath(), $"kql-validator-schema-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(directory);
+        try
+        {
+            File.WriteAllText(Path.Combine(directory, "sentinel.json"), """
+                { "tables": [
+                  { "name": "SecurityAlert", "columns": [{ "name": "LiveOnly", "type": "long" }] }
+                ] }
+                """);
+
+            var table = new SchemaCatalog(directory).Get(KqlEnvironment.Sentinel).Tables["SecurityAlert"];
+
+            Assert.Equal(["LiveOnly"], table.Columns.Select(column => column.Name));
+        }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
+    }
+
     [Fact]
     public void Request_scoped_table_is_available_only_to_that_validation()
     {
@@ -309,8 +737,9 @@ public sealed class ValidationTests
         string query,
         KqlEnvironment environment = KqlEnvironment.Xdr,
         LintProfile profile = LintProfile.General,
-        ValidationExtensions? extensions = null) =>
-        validator.Validate(new ValidateRequest(query, environment, profile, extensions));
+        ValidationExtensions? extensions = null,
+        KqlTarget? target = null) =>
+        validator.Validate(new ValidateRequest(query, environment, profile, extensions, target));
 
     private static string Messages(ValidationResponse response) =>
         string.Join(Environment.NewLine, response.Diagnostics.Select(x => $"{x.RuleId}: {x.Message}"));
