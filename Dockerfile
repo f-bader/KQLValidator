@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.7
-FROM mcr.microsoft.com/dotnet/sdk:10.0.400-alpine3.23@sha256:b36516b249f0cccf9e5017082f51d4bda2d61469f205a7167fbf3b8498ecdd59 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0.400-alpine3.24@sha256:620e765fe18186c08399f7aa978f79f04b6bbf0ee1b3b8a91e2d5c9619e59da1 AS build
 ARG SOURCE_REVISION=unknown
 ARG ENABLE_STATUS_SITE=true
 WORKDIR /src
@@ -17,7 +17,7 @@ RUN dotnet publish src/KqlValidator.Api/KqlValidator.Api.csproj \
     /p:SourceRevisionId=$SOURCE_REVISION \
     /p:EnableStatusSite=$ENABLE_STATUS_SITE
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0.11-alpine3.23@sha256:4d5339ac9814f1a033a09e664bcf159e9fb386c89b6e7917b3dca7254e656027 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:10.0.11-alpine3.24@sha256:c4b29bf368004ad9076c1ab9bc91fb373561e3905b4345637e14e8b8c57e3be8 AS final
 WORKDIR /app
 COPY --from=build /app/publish ./
 RUN apk upgrade --no-cache
