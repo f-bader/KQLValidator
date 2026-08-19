@@ -80,6 +80,10 @@ resource app 'Microsoft.App/containerApps@2025-01-01' = {
               name: 'ASPNETCORE_ENVIRONMENT'
               value: 'Production'
             }
+            {
+              name: 'ReverseProxy__TrustForwardedHeaders'
+              value: 'true'
+            }
           ]
           resources: {
             cpu: json('0.25')

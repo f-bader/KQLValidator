@@ -6,6 +6,9 @@ namespace KqlValidator.Validation;
 
 public sealed partial class KqlLinter
 {
+    private const int RegexTimeoutMilliseconds = 250;
+    private const int MaxLintDiagnostics = 500;
+    private static readonly TimeSpan RegexTimeout = TimeSpan.FromMilliseconds(RegexTimeoutMilliseconds);
     private static readonly HashSet<string> FallbackActionTypes = new(StringComparer.OrdinalIgnoreCase)
     {
         "AntivirusDetection", "AppControlCodeIntegrityPolicyBlocked", "AppControlExecutableAudited",
@@ -24,12 +27,31 @@ public sealed partial class KqlLinter
         this.rules = rules;
     }
 
-    public IReadOnlyList<ValidationDiagnostic> Analyze(ValidateRequest request, LintPolicy policy)
+    public IReadOnlyList<ValidationDiagnostic> Analyze(
+        ValidateRequest request,
+        LintPolicy policy,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            return AnalyzeCore(request, policy, cancellationToken);
+        }
+        catch (RegexMatchTimeoutException)
+        {
+            throw new RequestValidationException("query", "Query exceeds the lint analysis complexity limit.");
+        }
+    }
+
+    private IReadOnlyList<ValidationDiagnostic> AnalyzeCore(
+        ValidateRequest request,
+        LintPolicy policy,
+        CancellationToken cancellationToken)
     {
         var diagnostics = new List<ValidationDiagnostic>();
         var query = request.Query;
         var searchable = MaskComments(query);
 
+        cancellationToken.ThrowIfCancellationRequested();
         Match(diagnostics, policy, searchable, UnscopedSearch(), "KQLH001",
             "Scope search to explicit tables with 'search in (...)'.");
         Match(diagnostics, policy, searchable, WildcardSearch(), "KQLH002",
@@ -49,6 +71,7 @@ public sealed partial class KqlLinter
         Match(diagnostics, policy, searchable, DefaultJoin(), "KQLH009",
             "The default join flavor is innerunique and deduplicates the left side; specify kind=inner when every left-side row must be retained.");
 
+        cancellationToken.ThrowIfCancellationRequested();
         AddTimeFilterDiagnostics(diagnostics, policy, searchable);
         AddLateFilterDiagnostics(diagnostics, policy, searchable);
         AddUnboundedResultDiagnostic(diagnostics, policy, searchable);
@@ -58,6 +81,7 @@ public sealed partial class KqlLinter
         AddDetectionTextDiagnostics(diagnostics, policy, searchable);
         AddWatchlistColumnDiagnostics(diagnostics, policy, searchable);
         AddMicrosoftKustoDiagnostics(diagnostics, policy, searchable);
+        cancellationToken.ThrowIfCancellationRequested();
         AddTargetDiagnostics(diagnostics, policy, query, searchable);
         AddCommunityDiagnostics(diagnostics, policy, query, searchable);
         return diagnostics;
@@ -65,15 +89,15 @@ public sealed partial class KqlLinter
 
     private void AddTimeFilterDiagnostics(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string query)
     {
-        var hasXdrTable = Regex.IsMatch(query, @"(?im)^\s*(Device|Email|Identity|CloudApp|Alert|Behavior)[A-Za-z]+\b");
-        var hasTimeFilter = Regex.IsMatch(query, @"(?i)\b(?:Timestamp|TimeGenerated)\s*(?:>|>=|between|in)\b");
+        var hasXdrTable = IsMatch(query, @"(?im)^\s*(Device|Email|Identity|CloudApp|Alert|Behavior)[A-Za-z]+\b");
+        var hasTimeFilter = IsMatch(query, @"(?i)\b(?:Timestamp|TimeGenerated)\s*(?:>|>=|between|in)\b");
         if (hasXdrTable && !hasTimeFilter)
             Add(diagnostics, policy, query, "KQLH010",
                 "Add an early Timestamp or TimeGenerated filter to bound scanned data.", 0);
 
         foreach (Match join in JoinBranch().Matches(query))
         {
-            if (!Regex.IsMatch(join.Value, @"(?i)\b(?:Timestamp|TimeGenerated)\s*(?:>|>=|between|in)\b"))
+            if (!IsMatch(join.Value, @"(?i)\b(?:Timestamp|TimeGenerated)\s*(?:>|>=|between|in)\b"))
                 Add(diagnostics, policy, query, "KQLH011",
                     "Apply a time filter inside this join branch as well as on the left input.", join.Index, join.Length);
         }
@@ -84,7 +108,7 @@ public sealed partial class KqlLinter
         var expensive = ExpensiveOperation().Match(query);
         if (!expensive.Success)
             return;
-        var filter = Regex.Match(query, @"(?i)\|\s*where\b");
+        var filter = Find(query, @"(?i)\|\s*where\b");
         if (!filter.Success || filter.Index > expensive.Index)
             Add(diagnostics, policy, query, "KQLH012",
                 "Apply selective filters before parsing, extraction, regex, or row-wise string transformations.", expensive.Index, expensive.Length);
@@ -92,15 +116,15 @@ public sealed partial class KqlLinter
 
     private void AddUnboundedResultDiagnostic(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string query)
     {
-        if (!Regex.IsMatch(query, @"(?i)\b(?:take|limit|top|summarize|count)\b"))
+        if (!IsMatch(query, @"(?i)\b(?:take|limit|top|summarize|count)\b"))
             Add(diagnostics, policy, query, "KQLH013",
                 "For exploratory hunting, use take, limit, top, count, or an aggregation to avoid unexpectedly large results.", Math.Max(0, query.Length - 1));
     }
 
     private void AddProcessIdDiagnostic(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string query)
     {
-        var pid = Regex.Match(query, @"(?i)\b(?:ProcessId|InitiatingProcessId)\b");
-        if (pid.Success && !Regex.IsMatch(query, @"(?i)\b(?:ProcessUniqueId|InitiatingProcessUniqueId|ProcessCreationTime|InitiatingProcessCreationTime)\b"))
+        var pid = Find(query, @"(?i)\b(?:ProcessId|InitiatingProcessId)\b");
+        if (pid.Success && !IsMatch(query, @"(?i)\b(?:ProcessUniqueId|InitiatingProcessUniqueId|ProcessCreationTime|InitiatingProcessCreationTime)\b"))
             Add(diagnostics, policy, query, "KQLH014",
                 "Process IDs are reused; identify a process with its unique ID or creation time.", pid.Index, pid.Length);
     }
@@ -173,15 +197,15 @@ public sealed partial class KqlLinter
     }
 
     private static bool HasColumnIfExists(string pipeline, string column) =>
-        Regex.IsMatch(pipeline, $"(?i)\\bcolumn_ifexists\\s*\\(\\s*['\"]{Regex.Escape(column)}['\"]\\s*,");
+        IsMatch(pipeline, $"(?i)\\bcolumn_ifexists\\s*\\(\\s*['\"]{Regex.Escape(column)}['\"]\\s*,");
 
     private static Regex WatchlistColumnUsage(string column) => new(
         IsSimpleIdentifier(column)
             ? $"(?i)(?<!['\"])\\b{Regex.Escape(column)}\\b"
             : $"(?i)\\[\\s*['\"]{Regex.Escape(column)}['\"]\\s*\\]",
-        RegexOptions.CultureInvariant);
+        RegexOptions.CultureInvariant, RegexTimeout);
 
-    private static bool IsSimpleIdentifier(string value) => Regex.IsMatch(value, "^[A-Za-z_]\\w*$");
+    private static bool IsSimpleIdentifier(string value) => IsMatch(value, "^[A-Za-z_]\\w*$");
 
     private static readonly string[] OptionalWatchlistColumns =
     [
@@ -197,14 +221,17 @@ public sealed partial class KqlLinter
         var severity = rules.Get(id).DefaultSeverity;
         if (!policy.IsEnabled(id, severity)) return;
         foreach (Match match in regex.Matches(query))
+        {
+            if (diagnostics.Count >= MaxLintDiagnostics) break;
             diagnostics.Add(rules.CreateDiagnostic(query, id, message, match.Index, match.Length));
+        }
     }
 
     private void Add(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string query, string id,
         string message, int start, int length = 1)
     {
         var severity = rules.Get(id).DefaultSeverity;
-        if (policy.IsEnabled(id, severity))
+        if (diagnostics.Count < MaxLintDiagnostics && policy.IsEnabled(id, severity))
             diagnostics.Add(rules.CreateDiagnostic(query, id, message, start, length));
     }
 
@@ -246,11 +273,11 @@ public sealed partial class KqlLinter
         Match(diagnostics, policy, searchableQuery, DisplayNameIdentity(), "KQLQ001",
             "Prefer a stable identifier over this display-name comparison when the source exposes one.");
 
-        if (Regex.IsMatch(searchableQuery, @"(?i)\bDeviceProcessEvents\b") &&
-            Regex.IsMatch(searchableQuery, @"(?i)\b(?:InitiatingProcess)?FileName\s*(?:==|=~|in~?)") &&
-            !Regex.IsMatch(searchableQuery, @"(?i)\b(?:Initiating)?ProcessVersionInfoOriginalFileName\b"))
+        if (IsMatch(searchableQuery, @"(?i)\bDeviceProcessEvents\b") &&
+            IsMatch(searchableQuery, @"(?i)\b(?:InitiatingProcess)?FileName\s*(?:==|=~|in~?)") &&
+            !IsMatch(searchableQuery, @"(?i)\b(?:Initiating)?ProcessVersionInfoOriginalFileName\b"))
         {
-            var fileName = Regex.Match(searchableQuery, @"(?i)\b(?:InitiatingProcess)?FileName\b");
+            var fileName = Find(searchableQuery, @"(?i)\b(?:InitiatingProcess)?FileName\b");
             Add(diagnostics, policy, originalQuery, "KQLQ002",
                 "Consider matching ProcessVersionInfoOriginalFileName as well as FileName to tolerate renamed binaries.",
                 fileName.Index, fileName.Length);
@@ -281,63 +308,70 @@ public sealed partial class KqlLinter
         return new SourceSpan(start, Math.Max(0, Math.Min(length, query.Length - start)), line, start - lastLine);
     }
 
-    private static string MaskComments(string query) => Regex.Replace(query, @"(?m)//[^\r\n]*|/\*[\s\S]*?\*/", m => new string(' ', m.Length));
+    private static bool IsMatch(string input, string pattern) =>
+        Regex.IsMatch(input, pattern, RegexOptions.CultureInvariant, RegexTimeout);
+
+    private static Match Find(string input, string pattern) =>
+        Regex.Match(input, pattern, RegexOptions.CultureInvariant, RegexTimeout);
+
+    private static string MaskComments(string query) => Regex.Replace(
+        query, @"(?m)//[^\r\n]*|/\*[\s\S]*?\*/", m => new string(' ', m.Length), RegexOptions.CultureInvariant, RegexTimeout);
 
     private static string MaskStringLiterals(string query) => Regex.Replace(
         query,
         "(?<!\\[)'(?:''|[^'])*'|(?<!\\[)\"(?:\"\"|[^\"])*\"",
-        match => new string(' ', match.Length));
+        match => new string(' ', match.Length), RegexOptions.CultureInvariant, RegexTimeout);
 
-    [GeneratedRegex(@"(?im)(?:^|;)\s*search\s+(?!in\s*\()")]
+    [GeneratedRegex(@"(?im)(?:^|;)\s*search\s+(?!in\s*\()", RegexOptions.None, RegexTimeoutMilliseconds)]
     private static partial Regex UnscopedSearch();
-    [GeneratedRegex(@"(?i)\b(?:search|where)\b[^\r\n|;]*\*\s*(?:has|contains|matches|==|=~)")]
+    [GeneratedRegex(@"(?i)\b(?:search|where)\b[^\r\n|;]*\*\s*(?:has|contains|matches|==|=~)", RegexOptions.None, RegexTimeoutMilliseconds)]
     private static partial Regex WildcardSearch();
-    [GeneratedRegex(@"(?im)(?:^|\|)\s*union\s+(?:\*|withsource\s*=)")]
+    [GeneratedRegex(@"(?im)(?:^|\|)\s*union\s+(?:\*|withsource\s*=)", RegexOptions.None, RegexTimeoutMilliseconds)]
     private static partial Regex UnscopedUnion();
-    [GeneratedRegex(@"(?i)\b(?:tolower|toupper)\s*\([^)]*\)\s*(?:==|=~|in~?)")]
+    [GeneratedRegex(@"(?i)\b(?:tolower|toupper)\s*\([^)]*\)\s*(?:==|=~|in~?)", RegexOptions.None, RegexTimeoutMilliseconds)]
     private static partial Regex CaseTransformComparison();
-    [GeneratedRegex(@"(?i)\b(?:matches\s+regex|extract(?:_all)?\s*\()")]
+    [GeneratedRegex(@"(?i)\b(?:matches\s+regex|extract(?:_all)?\s*\()", RegexOptions.None, RegexTimeoutMilliseconds)]
     private static partial Regex RegexUsage();
-    [GeneratedRegex("""(?i)\b(?:has|contains|==|=~)\s*["']\w{1,3}["']""")]
+    [GeneratedRegex("""(?i)\b(?:has|contains|==|=~)\s*["']\w{1,3}["']""", RegexOptions.None, RegexTimeoutMilliseconds)]
     private static partial Regex ShortTerm();
-    [GeneratedRegex(@"(?is)\|\s*extend\s+(?<name>[A-Za-z_]\w*)\s*=.*?\|\s*where\s+\k<name>\b")]
+    [GeneratedRegex(@"(?is)\|\s*extend\s+(?<name>[A-Za-z_]\w*)\s*=.*?\|\s*where\s+\k<name>\b", RegexOptions.None, RegexTimeoutMilliseconds)]
     private static partial Regex CalculatedFilter();
-    [GeneratedRegex("""(?i)\b(?:ProcessCommandLine|InitiatingProcessCommandLine)\s*==\s*["']""")]
+    [GeneratedRegex("""(?i)\b(?:ProcessCommandLine|InitiatingProcessCommandLine)\s*==\s*["']""", RegexOptions.None, RegexTimeoutMilliseconds)]
     private static partial Regex ExactCommandLine();
-    [GeneratedRegex(@"(?i)\|\s*join\b(?!\s+kind\s*=)")]
+    [GeneratedRegex(@"(?i)\|\s*join\b(?!\s+kind\s*=)", RegexOptions.None, RegexTimeoutMilliseconds)]
     private static partial Regex DefaultJoin();
-    [GeneratedRegex(@"(?is)\|\s*join(?:\s+kind\s*=\s*\w+)?\s*\((.*?)\)\s*on\b")]
+    [GeneratedRegex(@"(?is)\|\s*join(?:\s+kind\s*=\s*\w+)?\s*\((.*?)\)\s*on\b", RegexOptions.None, RegexTimeoutMilliseconds)]
     private static partial Regex JoinBranch();
-    [GeneratedRegex(@"(?i)\b(?:parse_json|extractjson|extract|replace|trim|substring|tolower|toupper)\s*\(|matches\s+regex")]
+    [GeneratedRegex(@"(?i)\b(?:parse_json|extractjson|extract|replace|trim|substring|tolower|toupper)\s*\(|matches\s+regex", RegexOptions.None, RegexTimeoutMilliseconds)]
     private static partial Regex ExpensiveOperation();
-    [GeneratedRegex("""(?i)\bActionType\s*(?:==|=~)\s*["']([^"']+)["']""")]
+    [GeneratedRegex("""(?i)\bActionType\s*(?:==|=~)\s*["']([^"']+)["']""", RegexOptions.None, RegexTimeoutMilliseconds)]
     private static partial Regex ActionTypeLiteral();
-    [GeneratedRegex(@"(?is)GetAnomalousBehaviorsAbout\s*\(\s*dynamic\s*\(\s*(\[.*?\])\s*\)\s*\)")]
+    [GeneratedRegex(@"(?is)GetAnomalousBehaviorsAbout\s*\(\s*dynamic\s*\(\s*(\[.*?\])\s*\)\s*\)", RegexOptions.None, RegexTimeoutMilliseconds)]
     private static partial Regex AboutLiteral();
-    [GeneratedRegex(@"(?i)\b(?:take|limit)\s+(?:\d+|[A-Za-z_]\w*)")]
+    [GeneratedRegex(@"(?i)\b(?:take|limit)\s+(?:\d+|[A-Za-z_]\w*)", RegexOptions.None, RegexTimeoutMilliseconds)]
     private static partial Regex DetectionRowLimit();
-    [GeneratedRegex("""(?i)\bcontains(?:_cs)?\s*["'][A-Za-z0-9_]{4,}["']""")]
+    [GeneratedRegex("""(?i)\bcontains(?:_cs)?\s*["'][A-Za-z0-9_]{4,}["']""", RegexOptions.None, RegexTimeoutMilliseconds)]
     private static partial Regex ContainsTerm();
-    [GeneratedRegex("""(?i)\b(?<column>[A-Za-z_]\w*)\s*(?<operator>==|=~)\s*["'][^"']+["'](?:\s+or\s+\k<column>\s*\k<operator>\s*["'][^"']+["'])+""")]
+    [GeneratedRegex("""(?i)\b(?<column>[A-Za-z_]\w*)\s*(?<operator>==|=~)\s*["'][^"']+["'](?:\s+or\s+\k<column>\s*\k<operator>\s*["'][^"']+["'])+""", RegexOptions.None, RegexTimeoutMilliseconds)]
     private static partial Regex RepeatedEquality();
-    [GeneratedRegex(@"(?i)\bevaluate\s+bag_unpack\s*\([^\r\n|;]*\)(?!\s*:)")]
+    [GeneratedRegex(@"(?i)\bevaluate\s+bag_unpack\s*\([^\r\n|;]*\)(?!\s*:)", RegexOptions.None, RegexTimeoutMilliseconds)]
     private static partial Regex BagUnpackWithoutSchema();
-    [GeneratedRegex(@"(?i)\|\s*where\b[^\r\n|;]*\bformat_datetime\s*\(")]
+    [GeneratedRegex(@"(?i)\|\s*where\b[^\r\n|;]*\bformat_datetime\s*\(", RegexOptions.None, RegexTimeoutMilliseconds)]
     private static partial Regex FormatDateTimePredicate();
-    [GeneratedRegex("""(?i)(?:==|!=|<>)\s*["']\s*["']""")]
+    [GeneratedRegex("""(?i)(?:==|!=|<>)\s*["']\s*["']""", RegexOptions.None, RegexTimeoutMilliseconds)]
     private static partial Regex EmptyStringComparison();
-    [GeneratedRegex("""(?i)\bhas(?:_cs)?\s*["'](?:\d{1,3}\.){3}\d{1,3}["']""")]
+    [GeneratedRegex("""(?i)\bhas(?:_cs)?\s*["'](?:\d{1,3}\.){3}\d{1,3}["']""", RegexOptions.None, RegexTimeoutMilliseconds)]
     private static partial Regex HasIpv4Literal();
-    [GeneratedRegex(@"(?im)(?:^|\|)\s*(?:join\b|union\b)|\bexternaldata\s*\(")]
+    [GeneratedRegex(@"(?im)(?:^|\|)\s*(?:join\b|union\b)|\bexternaldata\s*\(", RegexOptions.None, RegexTimeoutMilliseconds)]
     private static partial Regex DefenderNrtMultiInput();
-    [GeneratedRegex(@"(?m)//[^\r\n]*|/\*[\s\S]*?\*/")]
+    [GeneratedRegex(@"(?m)//[^\r\n]*|/\*[\s\S]*?\*/", RegexOptions.None, RegexTimeoutMilliseconds)]
     private static partial Regex Comment();
-    [GeneratedRegex("""(?i)\b(?:AccountName|AccountDisplayName|DeviceName|ApplicationName|AppDisplayName)\s*(?:==|=~|in~?)\s*["']""")]
+    [GeneratedRegex("""(?i)\b(?:AccountName|AccountDisplayName|DeviceName|ApplicationName|AppDisplayName)\s*(?:==|=~|in~?)\s*["']""", RegexOptions.None, RegexTimeoutMilliseconds)]
     private static partial Regex DisplayNameIdentity();
-    [GeneratedRegex(@"(?i)\|\s*where\b[^\r\n|;]*(?:!=|!~|!in\b|!contains\b|!has\b)")]
+    [GeneratedRegex(@"(?i)\|\s*where\b[^\r\n|;]*(?:!=|!~|!in\b|!contains\b|!has\b)", RegexOptions.None, RegexTimeoutMilliseconds)]
     private static partial Regex InlineExclusion();
-    [GeneratedRegex(@"(?is)_GetWatchlist\s*\([^)]*\)(?<pipeline>.*?)(?=;|$)")]
+    [GeneratedRegex(@"(?is)_GetWatchlist\s*\([^)]*\)(?<pipeline>.*?)(?=;|$)", RegexOptions.None, RegexTimeoutMilliseconds)]
     private static partial Regex GetWatchlistPipeline();
-    [GeneratedRegex(@"(?im)(?:^|\|)\s*(?:join\b|union\b)")]
+    [GeneratedRegex(@"(?im)(?:^|\|)\s*(?:join\b|union\b)", RegexOptions.None, RegexTimeoutMilliseconds)]
     private static partial Regex SentinelNrtCorrelation();
 }

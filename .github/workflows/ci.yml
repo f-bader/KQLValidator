@@ -1,6 +1,8 @@
 name: ci
 
 on:
+  push:
+    branches: [main]
   pull_request:
   workflow_dispatch:
 
@@ -11,8 +13,10 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5.2.0
         with:
           dotnet-version: 10.0.302
           cache: true
@@ -32,9 +36,21 @@ jobs:
       - name: Publish
         run: dotnet publish src/KqlValidator.Api/KqlValidator.Api.csproj --configuration Release --no-restore --output artifacts/publish /p:UseAppHost=false
       - name: Build container
-        run: docker build --tag kql-validator:${{ github.sha }} .
-      - uses: azure/CLI@v2
+        run: docker build --build-arg SOURCE_REVISION=${{ github.sha }} --tag kql-validator:${{ github.sha }} .
+      - name: Scan container
+        uses: anchore/scan-action@f6601287cdb1efc985d6b765bbf99cb4c0ac29d8 # v7.0.0
+        with:
+          image: kql-validator:${{ github.sha }}
+          fail-build: true
+          severity-cutoff: high
+      - uses: azure/CLI@9f7ce6f37c31b777ec6c6b6d1dfe7db79f497956 # v2
         with:
           inlineScript: |
             az bicep build --file infra/main.bicep --outfile /tmp/main.json
             az bicep build --file infra/budget.bicep --outfile /tmp/budget.json
+
+  dependency-review:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0

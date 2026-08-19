@@ -13,14 +13,16 @@ jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5.2.0
         with:
           dotnet-version: 10.0.302
       - run: dotnet restore tools/KqlValidator.SchemaSync/KqlValidator.SchemaSync.csproj --locked-mode
       - run: dotnet run --project tools/KqlValidator.SchemaSync --no-restore -- --out src/KqlValidator.Api/Schemas
       - run: dotnet test tests/KqlValidator.Tests/KqlValidator.Tests.csproj
-      - uses: peter-evans/create-pull-request@v7
+      - uses: peter-evans/create-pull-request@98357b18bf14b5342f975ff684046ec3b2a07725 # v8.0.0
         with:
           branch: automation/schema-update
           delete-branch: true

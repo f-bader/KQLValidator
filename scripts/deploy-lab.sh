@@ -12,6 +12,7 @@ AZURE_LOCATION="${AZURE_LOCATION:-westeurope}"
 AZURE_APP_NAME="${AZURE_APP_NAME:-kql-validator-lab}"
 AZURE_ACR_RESOURCE_GROUP="${AZURE_ACR_RESOURCE_GROUP:-$AZURE_RESOURCE_GROUP}"
 image_tag="$(git rev-parse --short=12 HEAD)"
+source_revision="$(git rev-parse HEAD)"
 image_name="kql-validator:$image_tag"
 
 az account set --subscription "$AZURE_SUBSCRIPTION_ID"
@@ -22,6 +23,7 @@ az acr build \
   --resource-group "$AZURE_ACR_RESOURCE_GROUP" \
   --registry "$AZURE_ACR_NAME" \
   --image "$image_name" \
+  --build-arg "SOURCE_REVISION=$source_revision" \
   --file Dockerfile \
   .
 

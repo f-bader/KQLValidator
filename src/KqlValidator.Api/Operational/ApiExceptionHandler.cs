@@ -13,23 +13,27 @@ public sealed class ApiExceptionHandler(IProblemDetailsService problemDetails, I
             RequestValidationException validation => (StatusCodes.Status400BadRequest, "Invalid validation request", validation.Message),
             ArgumentException argument => (StatusCodes.Status400BadRequest, "Invalid validation request", argument.Message),
             AnalysisQueueFullException => (StatusCodes.Status429TooManyRequests, "Validation queue full", exception.Message),
-            TimeoutException => (StatusCodes.Status504GatewayTimeout, "Validation deadline exceeded", "Static analysis did not finish within five seconds."),
+            AnalysisDeadlineExceededException => (StatusCodes.Status504GatewayTimeout, "Validation deadline exceeded", exception.Message),
             OperationCanceledException when context.RequestAborted.IsCancellationRequested => (499, "Request cancelled", "The client cancelled the request."),
             _ => (StatusCodes.Status500InternalServerError, "Unexpected validation failure",
                 environment.IsDevelopment() ? exception.ToString() : "The request could not be processed."),
         };
 
         context.Response.StatusCode = status;
+        var details = new ProblemDetails
+        {
+            Status = status,
+            Title = title,
+            Detail = detail,
+            Type = $"https://httpstatuses.com/{status}",
+        };
+        if (exception is RequestValidationException requestValidation)
+            details.Extensions["field"] = requestValidation.Field;
+
         return await problemDetails.TryWriteAsync(new ProblemDetailsContext
         {
             HttpContext = context,
-            ProblemDetails = new ProblemDetails
-            {
-                Status = status,
-                Title = title,
-                Detail = detail,
-                Type = $"https://httpstatuses.com/{status}",
-            },
+            ProblemDetails = details,
             Exception = exception,
         });
     }

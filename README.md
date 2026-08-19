@@ -51,6 +51,19 @@ Important endpoints:
 | `GET /openapi/v1.json` | OpenAPI document |
 | `GET /health/live` and `/health/ready` | Health probes |
 
+All validation, schema, lint-rule, and MCP endpoints are unauthenticated and publicly accessible when the service is deployed with external ingress. Schema and lint-rule catalogs are publicly enumerable; health probes are intentionally not rate limited.
+
+### Public API safeguards
+
+- Request bodies are limited to 256 KiB; the KQL query is limited to 65,536 characters.
+- Each request may include at most 100 tables, functions, or watchlists, 5,000 declared output columns in aggregate, and 1,000 function parameters. Each lint selection list is limited to 100 entries.
+- Diagnostics are capped at 500 results. Oversized or malformed requests return Problem Details with HTTP 400 or 413.
+- Production REST and MCP traffic is partitioned by client IP with a token bucket of 10 requests and one replenished token per second. Rejected requests return HTTP 429 and `Retry-After: 1`; the analysis queue can reject additional work with HTTP 429.
+- Analysis has a five-second deadline. A deadline returns HTTP 504; client cancellation returns HTTP 499 where the client connection remains writable.
+- Readiness becomes unhealthy when an active analysis exceeds 10 seconds; liveness becomes unhealthy after 30 seconds. Completed analyses immediately clear both conditions.
+
+When deployed behind a reverse proxy, forwarded client addresses are trusted only when `ReverseProxy:TrustForwardedHeaders` is enabled. The Azure Container Apps deployment enables this setting for its ingress; local deployments leave it disabled by default.
+
 ## MCP clients
 
 Codex configuration:
@@ -82,6 +95,8 @@ The `ConnectedNetworks` output from `AssignedIPAddresses` is intentionally model
 
 `FileProfile` is modeled as a row-preserving XDR enrichment function. `| invoke FileProfile()`, `| invoke FileProfile(SHA1)`, and `| invoke FileProfile(SHA1, 1000)` are supported; any in-scope string alias of a file hash, such as `LoadedDLLSHA1`, is also accepted. The optional second argument is the 1–1000 enrichment limit. Its output schema includes the live Defender fields such as `SignerHash`, signature metadata, `Publisher`, `SoftwareName`, and `ProfileAvailability`.
 
+Schema responses expose a content-derived version in the form `sha256:<24 hex characters>`. The service discovery response and validation responses expose the service revision when the image was built with `SOURCE_REVISION`.
+
 ## Local quality gate
 
 ```bash
@@ -91,6 +106,10 @@ dotnet test tests/KqlValidator.Tests/KqlValidator.Tests.csproj --no-build
 dotnet format kql-validator.slnx --verify-no-changes --no-restore
 dotnet publish src/KqlValidator.Api/KqlValidator.Api.csproj --no-restore --configuration Release --output artifacts/publish
 ```
+
+CI additionally runs a locked dependency vulnerability audit, dependency review on pull requests, CodeQL, high-severity container scanning, and weekly pinned-action analysis with zizmor. Dependabot checks GitHub Actions, NuGet, and Docker dependencies weekly.
+
+The application instruments analysis requests with the `KqlValidator.Analysis` meter (`kql.analysis.requests`, `kql.analysis.deadline_exceeded`, `kql.analysis.queue_rejected`, and `kql.analysis.duration`). The default deployment does not configure an exporter or telemetry backend, and these instruments never include submitted query text.
 
 Azure deployment and public publishing are intentionally separate, explicit stages. Nothing in the application publishes images or modifies Azure resources by itself.
 
@@ -113,9 +132,9 @@ The daily GitHub Actions `schema-sync` workflow already runs this command and op
 
 An optional `--sentinel-dir` can point at a checkout of official Azure Monitor table-reference Markdown.
 
-### Local Sentinel workspace sync
+### Sentinel workspace sync
 
-To validate against the tables visible in a specific Sentinel Log Analytics workspace, generate a local snapshot before building the image. The snapshot contains only table names, column names, and KQL types. It is deliberately ignored by Git, but it is included in a local Docker or ACR build when present.
+To validate against the tables visible in a specific Sentinel Log Analytics workspace, generate the checked-in snapshot before building the image. The snapshot contains only table names, column names, and KQL types. `sentinel.json` is part of the public schema catalog and is included in Docker and ACR builds.
 
 Prerequisites:
 
@@ -147,9 +166,9 @@ dotnet run --project tools/KqlValidator.SchemaSync -- \
   --include-custom-tables
 ```
 
-The deployed API currently exposes Sentinel schema-search endpoints publicly. A generated workspace snapshot is therefore enumerable through that API even though it is not stored in Git. Do not use this path for a workspace whose table and column names must remain private.
+The deployed API exposes Sentinel schema-search endpoints publicly, and the committed snapshot is enumerable through that API. Only generate it from a workspace whose table and column names are approved for public disclosure. Custom Log Analytics tables remain excluded unless `--include-custom-tables` is explicitly supplied.
 
-For a future CI/CD integration, run the identical sync command after an `azure/login` OIDC step. Supply the workspace ID as a protected environment variable and grant the federated identity the same workspace access; do not add a client secret or commit `sentinel.json`.
+For a future CI/CD integration, run the identical sync command after an `azure/login` OIDC step. Supply the workspace ID as a protected environment variable and grant the federated identity the same workspace access; do not add a client secret. Review the resulting `sentinel.json` diff before publishing it.
 
 `_GetWatchlist()` also recognizes the union of fields from Microsoft Sentinel's built-in watchlist templates. This checks documented column spelling without assuming a particular watchlist alias; workspace-specific columns can still be supplied with request extensions.
 

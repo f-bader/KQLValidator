@@ -1,4 +1,6 @@
 using KqlValidator.Contracts;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using Kusto.Language.Symbols;
 
@@ -6,8 +8,6 @@ namespace KqlValidator.Validation;
 
 public sealed class SchemaCatalog
 {
-    public const string CurrentVersion = "2026.08.17";
-
     private readonly IReadOnlyDictionary<KqlEnvironment, EnvironmentSchema> schemas;
 
     public SchemaCatalog(string? schemasDirectory = null)
@@ -77,7 +77,7 @@ public sealed class SchemaCatalog
         }
 
         var functions = BuiltInFunctions().ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
-        return new EnvironmentSchema("xdr", CurrentVersion, tables, functions);
+        return CreateSchema("xdr", tables, functions);
     }
 
     private static EnvironmentSchema BuildSentinel(string schemaDirectory)
@@ -103,7 +103,7 @@ public sealed class SchemaCatalog
         var functions = LoadFunctionSnapshot("sentinel-native-functions.json", schemaDirectory);
         foreach (var function in SentinelNativeFunctions.Create())
             functions[function.Key] = function.Value;
-        return new EnvironmentSchema("sentinel", CurrentVersion, tables, functions);
+        return CreateSchema("sentinel", tables, functions);
     }
 
     private static EnvironmentSchema Merge(EnvironmentSchema xdr, EnvironmentSchema sentinel)
@@ -126,7 +126,44 @@ public sealed class SchemaCatalog
         var functions = new Dictionary<string, SchemaFunction>(sentinel.Functions, StringComparer.OrdinalIgnoreCase);
         foreach (var function in xdr.Functions)
             functions[function.Key] = function.Value;
-        return new EnvironmentSchema("unified", CurrentVersion, tables, functions);
+        return CreateSchema("unified", tables, functions);
+    }
+
+    private static EnvironmentSchema CreateSchema(
+        string name,
+        IReadOnlyDictionary<string, SchemaTable> tables,
+        IReadOnlyDictionary<string, SchemaFunction> functions) =>
+        new(name, ContentVersion(name, tables, functions), tables, functions);
+
+    private static string ContentVersion(
+        string name,
+        IReadOnlyDictionary<string, SchemaTable> tables,
+        IReadOnlyDictionary<string, SchemaFunction> functions)
+    {
+        var canonical = new StringBuilder(name.ToLowerInvariant()).Append('\n');
+        foreach (var table in tables.Values.OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase))
+        {
+            canonical.Append("table|").Append(table.Name.ToLowerInvariant()).Append('\n');
+            foreach (var column in table.Columns.OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase))
+                canonical.Append("column|").Append(column.Name.ToLowerInvariant()).Append('|').Append(column.Type.ToLowerInvariant()).Append('\n');
+        }
+
+        foreach (var function in functions.Values.OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase))
+        {
+            canonical.Append("function|").Append(function.Name.ToLowerInvariant()).Append('|')
+                .Append(function.ScalarReturnType?.ToLowerInvariant()).Append('|')
+                .Append(function.PreserveInput).Append('|').Append(function.RequiresTabularInput).Append('|')
+                .Append(function.RequiredInputColumn?.ToLowerInvariant()).Append('|')
+                .Append(function.RequiredInputType?.ToLowerInvariant()).Append('\n');
+            foreach (var parameter in function.Parameters)
+                canonical.Append("parameter|").Append(parameter.Name.ToLowerInvariant()).Append('|')
+                    .Append(parameter.Type.ToLowerInvariant()).Append('|').Append(parameter.Optional).Append('\n');
+            foreach (var column in (function.OutputColumns ?? []).OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase))
+                canonical.Append("output|").Append(column.Name.ToLowerInvariant()).Append('|').Append(column.Type.ToLowerInvariant()).Append('\n');
+        }
+
+        var digest = SHA256.HashData(Encoding.UTF8.GetBytes(canonical.ToString()));
+        return $"sha256:{Convert.ToHexString(digest.AsSpan(0, 12)).ToLowerInvariant()}";
     }
 
     private static IEnumerable<SchemaFunction> BuiltInFunctions()

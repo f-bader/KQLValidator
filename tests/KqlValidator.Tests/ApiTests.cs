@@ -2,15 +2,22 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 using KqlValidator.Contracts;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.Configuration;
 
 namespace KqlValidator.Tests;
 
 public sealed class ApiTests : IClassFixture<WebApplicationFactory<Program>>
 {
     private readonly HttpClient client;
+    private readonly WebApplicationFactory<Program> factory;
 
-    public ApiTests(WebApplicationFactory<Program> factory) => client = factory.CreateClient();
+    public ApiTests(WebApplicationFactory<Program> factory)
+    {
+        this.factory = factory;
+        client = factory.CreateClient();
+    }
 
     [Fact]
     public async Task Discovery_and_health_are_public()
@@ -47,6 +54,61 @@ public sealed class ApiTests : IClassFixture<WebApplicationFactory<Program>>
         Assert.NotNull(search);
         Assert.Contains(search.Items, x => x.Name == "BehaviorInfo");
         Assert.Equal(HttpStatusCode.OK, table.StatusCode);
+    }
+
+    [Fact]
+    public async Task Sentinel_workspace_schema_remains_public()
+    {
+        var response = await client.GetAsync("/api/v1/environments/sentinel/schema?query=SigninLogs&kind=table", TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Contains("SigninLogs", await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken), StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task Invalid_numeric_enum_and_null_nested_models_return_bad_request()
+    {
+        using var numeric = new StringContent(
+            """{"query":"DeviceEvents","environment":99,"profile":"general"}""",
+            System.Text.Encoding.UTF8,
+            "application/json");
+        var numericResponse = await client.PostAsync("/api/v1/validate", numeric, TestContext.Current.CancellationToken);
+        using var nested = new StringContent(
+            """{"query":"DeviceEvents","environment":"xdr","profile":"general","extensions":{"tables":[{"name":"Custom","columns":null}]}}""",
+            System.Text.Encoding.UTF8,
+            "application/json");
+        var nestedResponse = await client.PostAsync("/api/v1/validate", nested, TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.BadRequest, numericResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest, nestedResponse.StatusCode);
+    }
+
+    [Fact]
+    public async Task Rate_limit_uses_trusted_forwarded_client_and_exempts_health()
+    {
+        using var configured = factory.WithWebHostBuilder(builder => builder.ConfigureAppConfiguration((_, configuration) =>
+            configuration.AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["ReverseProxy:TrustForwardedHeaders"] = "true",
+                ["RateLimiting:TokenLimit"] = "2",
+                ["RateLimiting:TokensPerSecond"] = "1",
+            })));
+        using var limitedClient = configured.CreateClient();
+
+        Assert.Equal(HttpStatusCode.OK, (await GetFromClient("203.0.113.10")).StatusCode);
+        Assert.Equal(HttpStatusCode.OK, (await GetFromClient("203.0.113.10")).StatusCode);
+        var rejected = await GetFromClient("203.0.113.10");
+        Assert.Equal(HttpStatusCode.TooManyRequests, rejected.StatusCode);
+        Assert.True(rejected.Headers.Contains("Retry-After"));
+        Assert.Equal(HttpStatusCode.OK, (await GetFromClient("203.0.113.11")).StatusCode);
+        Assert.Equal(HttpStatusCode.OK, (await limitedClient.GetAsync("/health/ready", TestContext.Current.CancellationToken)).StatusCode);
+
+        async Task<HttpResponseMessage> GetFromClient(string address)
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Get, "/api/v1/environments");
+            request.Headers.Add("X-Forwarded-For", address);
+            return await limitedClient.SendAsync(request, TestContext.Current.CancellationToken);
+        }
     }
 
     [Fact]

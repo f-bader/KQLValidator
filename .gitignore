@@ -5,7 +5,6 @@
 .vscode/
 TestResults/
 artifacts/
-src/KqlValidator.Api/Schemas/sentinel.json
 .azure/
 *.user
 *.suo

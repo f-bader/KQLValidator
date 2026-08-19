@@ -270,7 +270,7 @@ public sealed class ValidationTests
             LintProfile.Hunting,
             Lint: new LintOptions(Enabled: false));
 
-        var result = validator.Validate(request);
+        var result = validator.Validate(request, TestContext.Current.CancellationToken);
 
         Assert.DoesNotContain(result.Diagnostics, x => x.RuleId.StartsWith("KQL", StringComparison.Ordinal));
         Assert.Contains(result.Diagnostics, x => x.Severity == DiagnosticSeverity.Error);
@@ -284,7 +284,7 @@ public sealed class ValidationTests
             KqlEnvironment.Xdr,
             LintProfile.Detection,
             Target: KqlTarget.DefenderScheduled,
-            Lint: new LintOptions(RuleSets: ["community-detection"])));
+            Lint: new LintOptions(RuleSets: ["community-detection"])), TestContext.Current.CancellationToken);
 
         Assert.Contains(result.Diagnostics, x => x.RuleId == "KQLQ002" && x.RuleSet == "community-detection" && x.SourceKind == "community");
         Assert.DoesNotContain(result.Diagnostics, x => x.RuleId == "KQLD003");
@@ -297,7 +297,7 @@ public sealed class ValidationTests
             "DeviceEvents | where ActionType contains 'ProcessCreated' | take 10",
             KqlEnvironment.Xdr,
             LintProfile.Hunting,
-            Lint: new LintOptions(RuleSets: ["microsoft-kusto"], DisableRules: ["KQLP001"])));
+            Lint: new LintOptions(RuleSets: ["microsoft-kusto"], DisableRules: ["KQLP001"])), TestContext.Current.CancellationToken);
 
         Assert.DoesNotContain(result.Diagnostics, x => x.RuleId == "KQLP001");
     }
@@ -311,7 +311,7 @@ public sealed class ValidationTests
             LintProfile.General,
             Lint: new LintOptions(EnableRules: ["NOT-A-RULE"]));
 
-        Assert.Throws<RequestValidationException>(() => validator.Validate(request));
+        Assert.Throws<RequestValidationException>(() => validator.Validate(request, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -346,7 +346,7 @@ public sealed class ValidationTests
             "// explanation\nDeviceEvents | join kind=inner (DeviceInfo) on DeviceId | project Timestamp, DeviceId",
             KqlEnvironment.Xdr,
             LintProfile.Detection,
-            Target: KqlTarget.DefenderNrt));
+            Target: KqlTarget.DefenderNrt), TestContext.Current.CancellationToken);
 
         Assert.Contains(result.Diagnostics, x => x.RuleId == "KQLN001" && x.Severity == DiagnosticSeverity.Error);
         Assert.Contains(result.Diagnostics, x => x.RuleId == "KQLN002" && x.Severity == DiagnosticSeverity.Error);
@@ -731,6 +731,17 @@ public sealed class ValidationTests
         ]);
 
         Assert.Throws<RequestValidationException>(() => Validate("DeviceEvents", extensions: extensions));
+    }
+
+    [Fact]
+    public void Schema_versions_are_deterministic_content_fingerprints()
+    {
+        var first = new SchemaCatalog().List();
+        var second = new SchemaCatalog().List();
+
+        Assert.Equal(first.Select(x => x.SchemaVersion), second.Select(x => x.SchemaVersion));
+        Assert.All(first, environment => Assert.Matches("^sha256:[0-9a-f]{24}$", environment.SchemaVersion));
+        Assert.Equal(3, first.Select(x => x.SchemaVersion).Distinct(StringComparer.Ordinal).Count());
     }
 
     private ValidationResponse Validate(

@@ -5,10 +5,10 @@ using KqlValidator.Operational;
 using KqlValidator.Validation;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
-
 builder.WebHost.ConfigureKestrel(options => options.Limits.MaxRequestBodySize = 262_144);
 builder.Services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = 262_144);
 builder.Services.AddProblemDetails();
@@ -21,24 +21,47 @@ builder.Services.AddSingleton<RequestValidator>();
 builder.Services.AddSingleton<KqlLinter>();
 builder.Services.AddSingleton<KqlValidationService>();
 builder.Services.AddSingleton<SchemaQueryService>();
+builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<AnalysisHealthState>();
+builder.Services.AddSingleton<AnalysisMetrics>();
 builder.Services.AddSingleton<AnalysisExecutor>();
 builder.Services.AddHealthChecks()
-    .AddCheck<AnalysisHealthCheck>("analysis", tags: ["ready"]);
+    .AddCheck<AnalysisReadinessHealthCheck>("analysis-ready", tags: ["ready"])
+    .AddCheck<AnalysisLivenessHealthCheck>("analysis-live", tags: ["live"]);
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.ForwardLimit = 1;
+    options.KnownIPNetworks.Clear();
+    options.KnownProxies.Clear();
+});
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
+    options.OnRejected = (context, _) =>
+    {
+        context.HttpContext.Response.Headers.RetryAfter = "1";
+        return ValueTask.CompletedTask;
+    };
+    options.AddPolicy("public-api", context =>
+    {
+        var configuration = context.RequestServices.GetRequiredService<IConfiguration>();
+        var environment = context.RequestServices.GetRequiredService<IHostEnvironment>();
+        var tokenLimit = configuration.GetValue<int?>("RateLimiting:TokenLimit")
+            ?? (environment.IsDevelopment() ? 100 : 10);
+        var tokensPerSecond = configuration.GetValue<int?>("RateLimiting:TokensPerSecond") ?? 1;
+        return
         RateLimitPartition.GetTokenBucketLimiter(
             context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
             _ => new TokenBucketRateLimiterOptions
             {
-                TokenLimit = 10,
-                TokensPerPeriod = 1,
+                TokenLimit = tokenLimit,
+                TokensPerPeriod = tokensPerSecond,
                 ReplenishmentPeriod = TimeSpan.FromSeconds(1),
                 AutoReplenishment = true,
                 QueueLimit = 0,
-            }));
+            });
+    });
 });
 builder.Services.AddMcpServer(options =>
     {
@@ -49,6 +72,8 @@ builder.Services.AddMcpServer(options =>
 
 var app = builder.Build();
 app.UseExceptionHandler();
+if (app.Configuration.GetValue<bool>("ReverseProxy:TrustForwardedHeaders"))
+    app.UseForwardedHeaders();
 app.UseRateLimiter();
 
 app.MapGet("/", () => new ServiceDiscovery(
@@ -59,7 +84,9 @@ app.MapGet("/", () => new ServiceDiscovery(
     "/openapi/v1.json",
     "https://github.com/fabian/kql-validator"));
 
-app.MapPost("/api/v1/validate", async (ValidateRequest request, AnalysisExecutor executor, CancellationToken cancellationToken) =>
+var api = app.MapGroup("/api/v1").RequireRateLimiting("public-api");
+
+api.MapPost("/validate", async (ValidateRequest request, AnalysisExecutor executor, CancellationToken cancellationToken) =>
     Results.Ok(await executor.ExecuteAsync(request, cancellationToken)))
     .Accepts<ValidateRequest>("application/json")
     .Produces<ValidationResponse>()
@@ -68,29 +95,29 @@ app.MapPost("/api/v1/validate", async (ValidateRequest request, AnalysisExecutor
     .ProducesProblem(StatusCodes.Status429TooManyRequests)
     .ProducesProblem(StatusCodes.Status504GatewayTimeout);
 
-app.MapGet("/api/v1/environments", (SchemaQueryService schemas) => schemas.ListEnvironments());
-app.MapGet("/api/v1/lint-rules", (
+api.MapGet("/environments", (SchemaQueryService schemas) => schemas.ListEnvironments());
+api.MapGet("/lint-rules", (
     string? ruleSet, string? category, string? profile, string? target, string? environment, LintRuleCatalog rules) =>
     new LintRuleListResponse(rules.List(ruleSet, category, profile, target, environment)));
-app.MapGet("/api/v1/environments/{environment}/schema", (
+api.MapGet("/environments/{environment}/schema", (
     string environment, string? query, string? kind, int? limit, string? cursor, SchemaQueryService schemas) =>
     TryEnvironment(environment, out var parsed)
         ? Results.Ok(schemas.Search(parsed, query, kind, limit ?? 50, cursor))
         : Results.BadRequest(new { error = "environment must be xdr, sentinel, or unified" }));
-app.MapGet("/api/v1/environments/{environment}/tables/{table}", (
+api.MapGet("/environments/{environment}/tables/{table}", (
     string environment, string table, SchemaQueryService schemas) =>
     !TryEnvironment(environment, out var parsed)
         ? Results.BadRequest(new { error = "environment must be xdr, sentinel, or unified" })
         : schemas.GetTable(parsed, table) is { } result ? Results.Ok(result) : Results.NotFound());
 
-app.MapHealthChecks("/health/live", new HealthCheckOptions { Predicate = _ => false });
+app.MapHealthChecks("/health/live", new HealthCheckOptions { Predicate = registration => registration.Tags.Contains("live") });
 app.MapHealthChecks("/health/ready", new HealthCheckOptions { Predicate = registration => registration.Tags.Contains("ready") });
 app.MapOpenApi("/openapi/{documentName}.json");
-app.MapMcp("/mcp");
+app.MapMcp("/mcp").RequireRateLimiting("public-api");
 
 app.Run();
 
 static bool TryEnvironment(string value, out KqlEnvironment environment) =>
-    Enum.TryParse(value, ignoreCase: true, out environment);
+    Enum.TryParse(value, ignoreCase: true, out environment) && Enum.IsDefined(environment);
 
 public partial class Program;
