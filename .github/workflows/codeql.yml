@@ -31,6 +31,6 @@ jobs:
           cache-dependency-path: '**/packages.lock.json'
       - run: dotnet restore kql-validator.slnx --locked-mode
       - run: dotnet build kql-validator.slnx --configuration Release --no-restore
-      - uses: github/codeql-action/analyze@7211b7c8077ea37d8641b6271f6a365a22a5fbfa # v4.36.0
+      - uses: github/codeql-action/analyze@5595ccaf912efad79be6eef63a5619ff05969be3 # v4.37.6
         with:
           upload: never
