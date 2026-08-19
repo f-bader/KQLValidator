@@ -40,7 +40,7 @@ jobs:
       - name: Build container
         run: docker build --build-arg SOURCE_REVISION=${{ github.sha }} --tag kql-validator:${{ github.sha }} .
       - name: Scan container
-        uses: anchore/scan-action@f6601287cdb1efc985d6b765bbf99cb4c0ac29d8 # v7.0.0
+        uses: anchore/scan-action@e1165082ffb1fe366ebaf02d8526e7c4989ea9d2 # v7.4.0
         with:
           image: kql-validator:${{ github.sha }}
           fail-build: true
