@@ -120,11 +120,13 @@ dotnet format kql-validator.slnx --verify-no-changes --no-restore
 dotnet publish src/KqlValidator.Api/KqlValidator.Api.csproj --no-restore --configuration Release --output artifacts/publish
 ```
 
-CI additionally runs a locked dependency vulnerability audit, dependency review on pull requests, CodeQL, high-severity container scanning, and weekly pinned-action analysis with zizmor. Dependabot checks GitHub Actions, NuGet, and Docker dependencies weekly.
+CI additionally runs a locked dependency vulnerability audit, dependency review on pull requests, CodeQL, high-severity container scanning, and weekly pinned-action analysis with zizmor. Dependabot checks GitHub Actions, NuGet, and Docker dependencies weekly. Pushes to `main` and manual runs from `main` deploy the validated image to the Azure `lab` environment after CI succeeds.
+
+This repository does not currently require environment approval for lab deployments. To add that control, open repository **Settings → Environments → lab**, add the desired user or team under **Required reviewers**, and save the environment protection rule. GitHub plan support may be required for required reviewers on private repositories.
 
 The application instruments analysis requests with the `KqlValidator.Analysis` meter (`kql.analysis.requests`, `kql.analysis.deadline_exceeded`, `kql.analysis.queue_rejected`, and `kql.analysis.duration`). The default deployment does not configure an exporter or telemetry backend, and these instruments never include submitted query text.
 
-Azure deployment and public publishing are intentionally separate, explicit stages. Nothing in the application publishes images or modifies Azure resources by itself.
+Azure deployment and public publishing are intentionally separate stages. The CI deployment job builds the image in the private ACR, deploys its immutable digest to the lab Container App, and runs the live smoke suite; it does not publish images or modify Azure resources for pull requests.
 
 See [docs/lab-deployment.md](docs/lab-deployment.md) for the isolated ACR build, immutable deployment, validation, budget, and cleanup runbook.
 
