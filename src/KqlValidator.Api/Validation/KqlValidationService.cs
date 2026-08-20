@@ -45,7 +45,7 @@ public sealed partial class KqlValidationService(
                 diagnostic.Severity == Kusto.Language.DiagnosticSeverity.Error
                     ? Contracts.DiagnosticSeverity.Error
                     : Contracts.DiagnosticSeverity.Warning,
-                diagnostic.Description,
+                DiagnosticGuidance(normalized.Query, diagnostic.Code, diagnostic.Start, diagnostic.Description),
                 KqlLinter.Span(request.Query, diagnostic.Start, diagnostic.Length),
                 "https://learn.microsoft.com/en-us/kusto/query/",
                 diagnostic.Code.StartsWith("KS", StringComparison.Ordinal) ? "syntax" : "semantic"))
@@ -91,13 +91,13 @@ public sealed partial class KqlValidationService(
         if (!names.Contains("TimeGenerated") && Enabled(policy, "KQLD001"))
             yield return lintRules.CreateDiagnostic(
                 request.Query, "KQLD001",
-                "Sentinel detection queries must retain TimeGenerated in their output.",
+                "Sentinel scheduled and NRT detections must retain TimeGenerated in the final output; filtering on it alone is insufficient. Add it to the final projection, for example: | project TimeGenerated, AlertName, AccountCustomEntity.",
                 Math.Max(0, request.Query.Length - 1));
 
         if (!names.Contains("Timestamp") && !names.Contains("TimeGenerated") && Enabled(policy, "KQLD002"))
             yield return lintRules.CreateDiagnostic(
                 request.Query, "KQLD002",
-                "Retain Timestamp or TimeGenerated when available so XDR detection results identify event time.",
+                "Defender detections must retain Timestamp or TimeGenerated in the final output so each result has an event time. Add one to the final projection, for example: | project Timestamp, DeviceId, ReportId.",
                 Math.Max(0, request.Query.Length - 1));
 
         if (!names.Contains("Timestamp") && names.Contains("TimeGenerated") && Enabled(policy, "KQLX003"))
@@ -113,14 +113,14 @@ public sealed partial class KqlValidationService(
         if (reportIdAvailable && !names.Contains("ReportId") && Enabled(policy, "KQLD003"))
             yield return lintRules.CreateDiagnostic(
                 request.Query, "KQLD003",
-                "Retain ReportId for this non-endpoint Defender event so the source event can be identified.",
+                "This non-endpoint Defender event exposes ReportId, but the final output drops it. Retain it so the source event can be identified, for example: | project Timestamp, ReportId, DeviceId.",
                 Math.Max(0, request.Query.Length - 1));
 
         if (!names.Overlaps(["DeviceId", "DeviceName", "AccountObjectId", "AccountSid", "AccountUpn", "RemoteIP", "IPAddress", "SHA256"]) &&
             Enabled(policy, "KQLD004"))
             yield return lintRules.CreateDiagnostic(
                 request.Query, "KQLD004",
-                "Retain at least one useful device, account, IP, or file entity column for XDR detection results.",
+                "Defender detection output has no strong entity column. Retain at least one useful identifier such as DeviceId, AccountObjectId, IPAddress, or SHA256 in the final projection.",
                 Math.Max(0, request.Query.Length - 1));
     }
 
@@ -153,6 +153,74 @@ public sealed partial class KqlValidationService(
                 "semantic"));
         }
         return diagnostics;
+    }
+
+    private static string? WatchlistColumnGuidance(string query, int diagnosticPosition, string description)
+    {
+        var unknownName = UnknownColumnName().Match(description);
+        if (!unknownName.Success) return null;
+
+        foreach (System.Text.RegularExpressions.Match watchlist in WatchlistPipeline().Matches(query))
+        {
+            var pipeline = watchlist.Groups["pipeline"];
+            if (diagnosticPosition < pipeline.Index || diagnosticPosition > pipeline.Index + pipeline.Length)
+                continue;
+
+            var alias = watchlist.Groups["alias"].Value.Trim();
+            if (alias.Length >= 2 && ((alias[0] == '\'' && alias[^1] == '\'') || (alias[0] == '"' && alias[^1] == '"')))
+                alias = alias[1..^1];
+            if (string.IsNullOrWhiteSpace(alias) || alias.Contains(')'))
+                alias = "example_alias";
+
+            var column = unknownName.Groups["column"].Value;
+            return $"The name '{column}' is not a known built-in watchlist column. If it is a workspace-specific field, declare it in the request's extensions.watchlists using its actual KQL type (for example, string): " +
+                $"{{ \"extensions\": {{ \"watchlists\": [{{ \"name\": \"{alias}\", \"columns\": [{{ \"name\": \"{column}\", \"type\": \"string\" }}] }}] }} }}";
+        }
+
+        return null;
+    }
+
+    private static string DiagnosticGuidance(
+        string query, string code, int diagnosticPosition, string description)
+    {
+        if (code == "KS142")
+            return WatchlistColumnGuidance(query, diagnosticPosition, description)
+                ?? GenericUnknownColumnGuidance(description);
+
+        if (code == "KS204")
+            return UnknownTableGuidance(description);
+
+        if (code == "KS211")
+            return UnknownFunctionGuidance(description);
+
+        return description;
+    }
+
+    private static string GenericUnknownColumnGuidance(string description)
+    {
+        var match = UnknownColumnName().Match(description);
+        if (!match.Success) return description;
+
+        var column = match.Groups["column"].Value;
+        return $"{description} Check the selected environment's table schema and verify the spelling and scope of '{column}'. If it is a workspace-specific table, function, or watchlist field, declare it through the request's extensions.";
+    }
+
+    private static string UnknownTableGuidance(string description)
+    {
+        var match = UnknownColumnName().Match(description);
+        if (!match.Success) return description;
+
+        var name = match.Groups["column"].Value;
+        return $"{description} Verify that '{name}' exists in the selected environment and search the environment schema. If it is workspace-specific, declare it under extensions.tables (or extensions.functions when it is a tabular function).";
+    }
+
+    private static string UnknownFunctionGuidance(string description)
+    {
+        var match = UnknownColumnName().Match(description);
+        if (!match.Success) return description;
+
+        var name = match.Groups["column"].Value;
+        return $"{description} Verify the function name and signature in the selected environment schema. If it is workspace-specific, declare its parameters and return schema under extensions.functions.";
     }
 
     private static NormalizedQuery NormalizeFileProfileColumnArguments(string query)
@@ -211,6 +279,12 @@ public sealed partial class KqlValidationService(
 
     [GeneratedRegex(@"(?i)(?<prefix>\binvoke\s+FileProfile\s*\(\s*)(?<column>[A-Za-z_]\w*)(?=\s*(?:,|\)))", RegexOptions.None, RegexTimeoutMilliseconds)]
     private static partial Regex BareFileProfileColumn();
+
+    [GeneratedRegex(@"(?i)The name '(?<column>[^']+)'", RegexOptions.None, RegexTimeoutMilliseconds)]
+    private static partial Regex UnknownColumnName();
+
+    [GeneratedRegex(@"(?is)_GetWatchlist\s*\(\s*(?<alias>[^)]*)\)\s*(?<pipeline>.*?)(?=;|$)", RegexOptions.None, RegexTimeoutMilliseconds)]
+    private static partial Regex WatchlistPipeline();
 }
 
 internal static class EnumerableExtensions

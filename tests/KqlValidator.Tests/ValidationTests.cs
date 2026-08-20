@@ -221,7 +221,11 @@ public sealed class ValidationTests
         var result = Validate("BehaviorInfo | invoke GetAnomalousBehaviorsAbout(dynamic([]))");
 
         Assert.False(result.Valid);
-        Assert.Contains(result.Diagnostics, x => x.RuleId == "KQLX002" && x.Severity == DiagnosticSeverity.Error);
+        var diagnostic = Assert.Single(result.Diagnostics, x => x.RuleId == "KQLX002");
+        Assert.Equal(DiagnosticSeverity.Error, diagnostic.Severity);
+        Assert.Contains("dynamic([{\"Kind\":\"Account\",\"Value\":\"example\"}])", diagnostic.Message, StringComparison.Ordinal);
+        Assert.Contains("one to three", diagnostic.Message, StringComparison.Ordinal);
+        Assert.Contains("Kind is required", diagnostic.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -350,7 +354,21 @@ public sealed class ValidationTests
 
         Assert.Contains(result.Diagnostics, x => x.RuleId == "KQLN001" && x.Severity == DiagnosticSeverity.Error);
         Assert.Contains(result.Diagnostics, x => x.RuleId == "KQLN002" && x.Severity == DiagnosticSeverity.Error);
+        Assert.Contains(result.Diagnostics, x => x.RuleId == "KQLN001" && x.Message.Contains("scheduled detection", StringComparison.Ordinal));
+        Assert.Contains(result.Diagnostics, x => x.RuleId == "KQLN002" && x.Message.Contains("Remove the comment", StringComparison.Ordinal));
         Assert.DoesNotContain(result.Diagnostics, x => x.RuleId == "KQLH009");
+    }
+
+    [Fact]
+    public void Sentinel_detection_length_diagnostic_reports_measurement_and_repair()
+    {
+        var query = "SecurityAlert | project TimeGenerated" + new string(' ', 10_001);
+        var result = Validate(query, KqlEnvironment.Sentinel, LintProfile.Detection);
+
+        var diagnostic = Assert.Single(result.Diagnostics, x => x.RuleId == "KQLS001");
+        Assert.Contains("10,000", diagnostic.Message, StringComparison.Ordinal);
+        Assert.Contains(query.Length.ToString(), diagnostic.Message, StringComparison.Ordinal);
+        Assert.Contains("watchlist", diagnostic.Message, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -384,7 +402,10 @@ public sealed class ValidationTests
         var result = Validate("SecurityAlert | project DisplayName", KqlEnvironment.Sentinel, LintProfile.Detection);
 
         Assert.False(result.Valid);
-        Assert.Contains(result.Diagnostics, x => x.RuleId == "KQLD001");
+        var diagnostic = Assert.Single(result.Diagnostics, x => x.RuleId == "KQLD001");
+        Assert.Contains("final output", diagnostic.Message, StringComparison.Ordinal);
+        Assert.Contains("filtering on it alone is insufficient", diagnostic.Message, StringComparison.Ordinal);
+        Assert.Contains("project TimeGenerated", diagnostic.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -393,7 +414,51 @@ public sealed class ValidationTests
         var result = Validate("SecurityAlert | where TimeGenerated > ago(1h) | project DisplayName", KqlEnvironment.Sentinel, LintProfile.Detection);
 
         Assert.False(result.Valid);
-        Assert.Contains(result.Diagnostics, x => x.RuleId == "KQLD001");
+        var diagnostic = Assert.Single(result.Diagnostics, x => x.RuleId == "KQLD001");
+        Assert.Contains("final projection", diagnostic.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void Xdr_detection_output_diagnostics_explain_required_fields()
+    {
+        var result = Validate("EmailEvents | project Timestamp", KqlEnvironment.Xdr, LintProfile.Detection);
+
+        var reportId = Assert.Single(result.Diagnostics, x => x.RuleId == "KQLD003");
+        var entity = Assert.Single(result.Diagnostics, x => x.RuleId == "KQLD004");
+        Assert.Contains("ReportId", reportId.Message, StringComparison.Ordinal);
+        Assert.Contains("final output", reportId.Message, StringComparison.Ordinal);
+        Assert.Contains("DeviceId", reportId.Message, StringComparison.Ordinal);
+        Assert.Contains("AccountObjectId", entity.Message, StringComparison.Ordinal);
+        Assert.Contains("IPAddress", entity.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void Xdr_event_time_diagnostic_explains_final_projection_requirement()
+    {
+        var result = Validate("DeviceEvents | project DeviceId", KqlEnvironment.Xdr, LintProfile.Detection);
+
+        var diagnostic = Assert.Single(result.Diagnostics, x => x.RuleId == "KQLD002");
+        Assert.Contains("Timestamp or TimeGenerated", diagnostic.Message, StringComparison.Ordinal);
+        Assert.Contains("final output", diagnostic.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void Unknown_schema_diagnostics_explain_lookup_and_extension_repairs()
+    {
+        var unknownTable = Validate("ExampleMissingTable | project Value");
+        var tableDiagnostic = Assert.Single(unknownTable.Diagnostics, x => x.RuleId == "KS204");
+        Assert.Contains("selected environment", tableDiagnostic.Message, StringComparison.Ordinal);
+        Assert.Contains("extensions.tables", tableDiagnostic.Message, StringComparison.Ordinal);
+
+        var unknownFunction = Validate("ExampleMissingFunction()");
+        var functionDiagnostic = Assert.Single(unknownFunction.Diagnostics, x => x.RuleId == "KS211");
+        Assert.Contains("function name and signature", functionDiagnostic.Message, StringComparison.Ordinal);
+        Assert.Contains("extensions.functions", functionDiagnostic.Message, StringComparison.Ordinal);
+
+        var unknownColumn = Validate("DeviceEvents | where MissingColumn == 'x'");
+        var columnDiagnostic = Assert.Single(unknownColumn.Diagnostics, x => x.RuleId == "KS142");
+        Assert.Contains("table schema", columnDiagnostic.Message, StringComparison.Ordinal);
+        Assert.Contains("spelling and scope", columnDiagnostic.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -409,10 +474,43 @@ public sealed class ValidationTests
     {
         var extensions = new ValidationExtensions(Watchlists:
         [
-            new WatchlistDeclaration("high_value", [new ColumnDeclaration("AccountUpn", "string")])
+            new WatchlistDeclaration("example_alias", [new ColumnDeclaration("CustomPattern", "string")])
         ]);
 
-        var result = Validate("_GetWatchlist('high_value') | project SearchKey, AccountUpn", KqlEnvironment.Sentinel, extensions: extensions);
+        var result = Validate("_GetWatchlist('example_alias') | project SearchKey, CustomPattern", KqlEnvironment.Sentinel, extensions: extensions);
+        Assert.True(result.Valid, Messages(result));
+    }
+
+    [Fact]
+    public void Unknown_workspace_watchlist_column_explains_request_extension()
+    {
+        var result = Validate("_GetWatchlist('example_alias') | project CustomPattern", KqlEnvironment.Sentinel);
+
+        var diagnostic = Assert.Single(result.Diagnostics, x => x.RuleId == "KS142");
+        Assert.Contains("workspace-specific", diagnostic.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("example_alias", diagnostic.Message, StringComparison.Ordinal);
+        Assert.Contains("CustomPattern", diagnostic.Message, StringComparison.Ordinal);
+        Assert.Contains("extensions", diagnostic.Message, StringComparison.Ordinal);
+        Assert.Contains("\"type\": \"string\"", diagnostic.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void Ordinary_unknown_column_keeps_generic_semantic_diagnostic()
+    {
+        var result = Validate("DeviceEvents | project CustomPattern", KqlEnvironment.Xdr);
+
+        var diagnostic = Assert.Single(result.Diagnostics, x => x.RuleId == "KS142");
+        Assert.Contains("table schema", diagnostic.Message, StringComparison.Ordinal);
+        Assert.DoesNotContain("known built-in watchlist column", diagnostic.Message, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void Sentinel_union_type_suffix_columns_are_available()
+    {
+        var result = Validate(
+            "union AADNonInteractiveUserSignInLogs, SigninLogs | extend Status = iff(isempty(Status_dynamic), todynamic(Status_string), Status_dynamic) | project Status, Status_dynamic, Status_string",
+            KqlEnvironment.Sentinel);
+
         Assert.True(result.Valid, Messages(result));
     }
 

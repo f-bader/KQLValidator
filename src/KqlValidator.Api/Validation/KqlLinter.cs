@@ -162,7 +162,7 @@ public sealed partial class KqlLinter
             catch (JsonException exception)
             {
                 Add(diagnostics, policy, query, "KQLX002",
-                    $"Invalid GetAnomalousBehaviorsAbout literal: {exception.Message}", invocation.Index, invocation.Length);
+                    $"Invalid GetAnomalousBehaviorsAbout literal: {exception.Message}. Use dynamic([{{\"Kind\":\"Account\",\"Value\":\"example\"}}]) with one to three objects; Kind is required and Value is an optional string.", invocation.Index, invocation.Length);
             }
         }
     }
@@ -256,15 +256,15 @@ public sealed partial class KqlLinter
     {
         if (originalQuery.Length > 10_000)
             Add(diagnostics, policy, originalQuery, "KQLS001",
-                "Sentinel analytics rule queries cannot exceed 10,000 characters.", 10_000,
+                $"Sentinel analytics rule queries cannot exceed 10,000 characters; this query is {originalQuery.Length} characters. Shorten it or move large literal lists and pattern data into a watchlist or other managed external source.", 10_000,
                 originalQuery.Length - 10_000);
 
         Match(diagnostics, policy, searchableQuery, DefenderNrtMultiInput(), "KQLN001",
-            "Defender continuous NRT rules do not support join, union, or externaldata.");
+            "Defender continuous NRT rules do not support join, union, or externaldata. Rewrite this as a single-input query, or use a scheduled detection when multi-input correlation is required.");
 
         foreach (Match comment in Comment().Matches(originalQuery))
             Add(diagnostics, policy, originalQuery, "KQLN002",
-                "Defender continuous NRT queries do not support comments.", comment.Index, comment.Length);
+                "Defender continuous NRT rules do not support comments in deployed KQL. Remove the comment, or use a scheduled target if comments must remain.", comment.Index, comment.Length);
     }
 
     private void AddCommunityDiagnostics(

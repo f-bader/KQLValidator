@@ -98,6 +98,8 @@ Available tools are `validate_kql`, `list_kql_lint_rules`, `list_kql_environment
 
 Invalid KQL is a successful HTTP 200 response with `valid: false` and diagnostics. Request or service failures use Problem Details and an appropriate 4xx/5xx status.
 
+Semantic diagnostics include repair-oriented context where the validator can identify a likely fix. Unknown tables and functions should be checked against the selected environment schema or declared through `extensions.tables` and `extensions.functions`; unknown ordinary columns should be checked against the source table schema. Workspace-specific watchlist fields can be declared through `extensions.watchlists` as described below.
+
 Lint warnings never invalidate a query. The hunting rules are derived from [Microsoft Defender XDR advanced hunting best practices](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-best-practices). The XDR table and ActionType snapshots are normalized from [xdrinternals.com](https://xdrinternals.com/), with their source URLs and digests recorded in the schema manifest.
 
 `target` is optional and inferred for ordinary hunting and scheduled detections. XDR and Unified detections use Defender targets; Sentinel detections use Sentinel targets. Set it explicitly to `defender-nrt` or `sentinel-nrt` for target-specific validation. The optional `lint` object selects rule sets, enables or disables stable rule IDs, filters severity, or disables custom lint while leaving parser and semantic diagnostics active. Community detection recommendations are disabled unless the caller explicitly selects `community-detection` or enables an individual community rule.
@@ -186,6 +188,23 @@ The deployed API exposes Sentinel schema-search endpoints publicly, and the comm
 For a future CI/CD integration, run the identical sync command after an `azure/login` OIDC step. Supply the workspace ID as a protected environment variable and grant the federated identity the same workspace access; do not add a client secret. Review the resulting `sentinel.json` diff before publishing it.
 
 `_GetWatchlist()` also recognizes the union of fields from Microsoft Sentinel's built-in watchlist templates. This checks documented column spelling without assuming a particular watchlist alias; workspace-specific columns can still be supplied with request extensions.
+
+When a query uses a workspace-specific watchlist field, declare that field in the validation request so semantic analysis has its type. For example, a query using `CustomPattern` from `example_alias` can include:
+
+```json
+{
+  "extensions": {
+    "watchlists": [
+      {
+        "name": "example_alias",
+        "columns": [{ "name": "CustomPattern", "type": "string" }]
+      }
+    ]
+  }
+}
+```
+
+If the declaration is omitted, the validator keeps the semantic error but explains this extension shape in its diagnostic so an automated client can repair the request.
 
 ### Public Sentinel native functions
 
