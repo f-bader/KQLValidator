@@ -276,6 +276,151 @@
       ]
     },
     {
+      "name": "AgentsInfo",
+      "columns": [
+        {
+          "name": "AgentId",
+          "type": "string"
+        },
+        {
+          "name": "Availability",
+          "type": "string"
+        },
+        {
+          "name": "Capabilities",
+          "type": "dynamic"
+        },
+        {
+          "name": "Channels",
+          "type": "dynamic"
+        },
+        {
+          "name": "ConnectedAgents",
+          "type": "dynamic"
+        },
+        {
+          "name": "CreatedDateTime",
+          "type": "datetime"
+        },
+        {
+          "name": "DeclaredDataSources",
+          "type": "dynamic"
+        },
+        {
+          "name": "DeclaredTools",
+          "type": "dynamic"
+        },
+        {
+          "name": "Description",
+          "type": "string"
+        },
+        {
+          "name": "Endpoints",
+          "type": "dynamic"
+        },
+        {
+          "name": "EntraAgentID",
+          "type": "string"
+        },
+        {
+          "name": "EntraBlueprintID",
+          "type": "string"
+        },
+        {
+          "name": "Guardrails",
+          "type": "dynamic"
+        },
+        {
+          "name": "InstanceCount",
+          "type": "long"
+        },
+        {
+          "name": "Instructions",
+          "type": "string"
+        },
+        {
+          "name": "LastPublishedDateTime",
+          "type": "datetime"
+        },
+        {
+          "name": "LastUpdatedDateTime",
+          "type": "datetime"
+        },
+        {
+          "name": "LifecycleStatus",
+          "type": "string"
+        },
+        {
+          "name": "McpServers",
+          "type": "dynamic"
+        },
+        {
+          "name": "Memory",
+          "type": "dynamic"
+        },
+        {
+          "name": "Model",
+          "type": "string"
+        },
+        {
+          "name": "Name",
+          "type": "string"
+        },
+        {
+          "name": "ObservabilityID",
+          "type": "string"
+        },
+        {
+          "name": "Owners",
+          "type": "dynamic"
+        },
+        {
+          "name": "Permissions",
+          "type": "dynamic"
+        },
+        {
+          "name": "Platform",
+          "type": "string"
+        },
+        {
+          "name": "PublishedStatus",
+          "type": "string"
+        },
+        {
+          "name": "RawAgentInfo",
+          "type": "dynamic"
+        },
+        {
+          "name": "SharedWith",
+          "type": "dynamic"
+        },
+        {
+          "name": "Skills",
+          "type": "dynamic"
+        },
+        {
+          "name": "SourceAgentId",
+          "type": "string"
+        },
+        {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "ToolsAuthenticationType",
+          "type": "string"
+        },
+        {
+          "name": "Triggers",
+          "type": "dynamic"
+        },
+        {
+          "name": "Version",
+          "type": "string"
+        }
+      ]
+    },
+    {
       "name": "AIAgentsInfo",
       "columns": [
         {
@@ -857,6 +1002,59 @@
         {
           "name": "Timestamp",
           "type": "datetime"
+        }
+      ]
+    },
+    {
+      "name": "CallActivityEvents",
+      "columns": [
+        {
+          "name": "ActivityId",
+          "type": "string"
+        },
+        {
+          "name": "ActivityInitiatorDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "ActivityInitiatorId",
+          "type": "string"
+        },
+        {
+          "name": "ActivityInitiatorUpn",
+          "type": "string"
+        },
+        {
+          "name": "ActivityTimestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "ActivityType",
+          "type": "string"
+        },
+        {
+          "name": "CallId",
+          "type": "string"
+        },
+        {
+          "name": "CallJoinUrl",
+          "type": "string"
+        },
+        {
+          "name": "CallSchedulingType",
+          "type": "string"
+        },
+        {
+          "name": "OriginatorUpn",
+          "type": "string"
+        },
+        {
+          "name": "OriginatorUserDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "ThreadId",
+          "type": "string"
         }
       ]
     },
@@ -1932,6 +2130,10 @@
         },
         {
           "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "DeviceRoles",
           "type": "string"
         },
         {
@@ -3498,6 +3700,10 @@
       "name": "EmailAttachmentInfo",
       "columns": [
         {
+          "name": "AdditionalFields",
+          "type": "dynamic"
+        },
+        {
           "name": "DetectionMethods",
           "type": "string"
         },
@@ -3676,6 +3882,18 @@
         },
         {
           "name": "OrgLevelPolicy",
+          "type": "string"
+        },
+        {
+          "name": "OriginalConfidenceLevel",
+          "type": "string"
+        },
+        {
+          "name": "OriginalDetectionMethods",
+          "type": "string"
+        },
+        {
+          "name": "OriginalThreatTypes",
           "type": "string"
         },
         {
