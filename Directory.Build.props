@@ -8,5 +8,10 @@
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <InvariantGlobalization>true</InvariantGlobalization>
     <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+    <Authors>Fabian Bader</Authors>
+    <Product>KQL Validator</Product>
+    <Description>Unauthenticated, stateless KQL validator for Microsoft Defender XDR and Microsoft Sentinel.</Description>
+    <RepositoryUrl>https://github.com/f-bader/KQLValidator</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 </Project>
