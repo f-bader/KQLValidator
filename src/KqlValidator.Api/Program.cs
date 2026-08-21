@@ -139,6 +139,10 @@ app.UseExceptionHandler(new ExceptionHandlerOptions
         or BadHttpRequestException
         or OperationCanceledException,
 });
+// Minimal-API body reading turns an oversized payload into a bare 413 without ever
+// reaching the exception handler, and the rate limiter rejects with a bare 429; this
+// middleware upgrades any empty-bodied error status to Problem Details.
+app.UseStatusCodePages();
 #if STATUS_SITE_ENABLED
 app.Use(async (context, next) =>
 {
