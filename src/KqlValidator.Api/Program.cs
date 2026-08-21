@@ -105,7 +105,19 @@ builder.Services.AddMcpServer(options =>
     .WithTools<KqlTools>();
 
 var app = builder.Build();
-app.UseExceptionHandler();
+app.UseExceptionHandler(new ExceptionHandlerOptions
+{
+    // Request-scoped failures embed user-submitted identifiers in their messages;
+    // suppressing their diagnostics keeps the "no query logging" guarantee while
+    // unexpected 500s remain fully logged.
+    SuppressDiagnosticsCallback = context => context.Exception
+        is RequestValidationException
+        or AnalysisQueueFullException
+        or AnalysisDeadlineExceededException
+        or ArgumentException
+        or BadHttpRequestException
+        or OperationCanceledException,
+});
 #if STATUS_SITE_ENABLED
 app.Use(async (context, next) =>
 {
@@ -154,12 +166,15 @@ api.MapGet("/environments/{environment}/schema", (
     string environment, string? query, string? kind, int? limit, string? cursor, SchemaQueryService schemas) =>
     TryEnvironment(environment, out var parsed)
         ? Results.Ok(schemas.Search(parsed, query, kind, limit ?? 50, cursor))
-        : Results.BadRequest(new { error = "environment must be xdr, sentinel, or unified" }));
+        : UnknownEnvironment());
 api.MapGet("/environments/{environment}/tables/{table}", (
     string environment, string table, SchemaQueryService schemas) =>
     !TryEnvironment(environment, out var parsed)
-        ? Results.BadRequest(new { error = "environment must be xdr, sentinel, or unified" })
-        : schemas.GetTable(parsed, table) is { } result ? Results.Ok(result) : Results.NotFound());
+        ? UnknownEnvironment()
+        : schemas.GetTable(parsed, table) is { } result
+            ? Results.Ok(result)
+            : Results.Problem(statusCode: StatusCodes.Status404NotFound, title: "Unknown table",
+                detail: "The table does not exist in the selected environment."));
 
 app.MapHealthChecks("/health/live", new HealthCheckOptions { Predicate = registration => registration.Tags.Contains("live") });
 app.MapHealthChecks("/health/ready", new HealthCheckOptions { Predicate = registration => registration.Tags.Contains("ready") });
@@ -175,5 +190,9 @@ app.Run();
 
 static bool TryEnvironment(string value, out KqlEnvironment environment) =>
     Enum.TryParse(value, ignoreCase: true, out environment) && Enum.IsDefined(environment);
+
+static IResult UnknownEnvironment() =>
+    Results.Problem(statusCode: StatusCodes.Status400BadRequest, title: "Unknown environment",
+        detail: "environment must be xdr, sentinel, or unified");
 
 public partial class Program;
