@@ -1,9 +1,113 @@
+using KqlValidator.Contracts;
 using KqlValidator.Operational;
 
 namespace KqlValidator.Tests;
 
 public sealed class OperationalTests
 {
+    private static readonly ValidateRequest AnyRequest = new("DeviceEvents | take 1", KqlEnvironment.Xdr, LintProfile.General);
+
+    private static ValidationResponse FastResponse() =>
+        new(true, "test", "test", [], [], [], [], [], 0);
+
+    private static AnalysisExecutor Executor(
+        Func<ValidateRequest, CancellationToken, ValidationResponse> validate,
+        TimeSpan? deadline = null) =>
+        new(validate, new AnalysisHealthState(TimeProvider.System), new AnalysisMetrics(), TimeProvider.System,
+            deadline ?? TimeSpan.FromMilliseconds(250));
+
+    [Fact]
+    public async Task Deadline_cancels_spinning_analysis_and_frees_the_permit()
+    {
+        var calls = 0;
+        var executor = Executor((_, token) =>
+        {
+            if (Interlocked.Increment(ref calls) <= 2)
+            {
+                while (true)
+                {
+                    token.ThrowIfCancellationRequested();
+                    Thread.Sleep(10);
+                }
+            }
+
+            return FastResponse();
+        });
+
+        await Assert.ThrowsAsync<AnalysisDeadlineExceededException>(
+            () => executor.ExecuteAsync(AnyRequest, TestContext.Current.CancellationToken));
+        await Assert.ThrowsAsync<AnalysisDeadlineExceededException>(
+            () => executor.ExecuteAsync(AnyRequest, TestContext.Current.CancellationToken));
+
+        // Both abandoned analyses observe their tokens and release their permits, so a
+        // subsequent fast request finds a free slot. Retry to absorb scheduler delays
+        // longer than the short test deadline on loaded machines.
+        ValidationResponse? response = null;
+        for (var attempt = 0; attempt < 20 && response is null; attempt++)
+        {
+            try
+            {
+                response = await executor.ExecuteAsync(AnyRequest, TestContext.Current.CancellationToken);
+            }
+            catch (AnalysisDeadlineExceededException)
+            {
+            }
+        }
+
+        Assert.NotNull(response);
+        Assert.True(response.Valid);
+    }
+
+    [Fact]
+    public async Task Queue_overflow_is_rejected_with_queue_full()
+    {
+        using var release = new ManualResetEventSlim();
+        var executor = Executor((_, token) =>
+        {
+            release.Wait(token);
+            return FastResponse();
+        }, TimeSpan.FromSeconds(30));
+
+        // Two analyses occupy the permits; eight more fill the queue.
+        var inFlight = Enumerable.Range(0, 10)
+            .Select(_ => executor.ExecuteAsync(AnyRequest, TestContext.Current.CancellationToken))
+            .ToArray();
+
+        await Assert.ThrowsAsync<AnalysisQueueFullException>(
+            () => executor.ExecuteAsync(AnyRequest, TestContext.Current.CancellationToken));
+
+        release.Set();
+        await Task.WhenAll(inFlight);
+        Assert.All(inFlight, task => Assert.True(task.Result.Valid));
+    }
+
+    [Fact]
+    public async Task Immediately_failing_analysis_surfaces_its_own_exception()
+    {
+        var executor = Executor(
+            (_, _) => throw new Validation.RequestValidationException("query", "invalid"),
+            TimeSpan.FromSeconds(5));
+
+        // A worker that faults before WaitAsync registers on the deadline token used to
+        // race the token-source disposal and surface ObjectDisposedException instead.
+        for (var attempt = 0; attempt < 200; attempt++)
+        {
+            await Assert.ThrowsAsync<Validation.RequestValidationException>(
+                () => executor.ExecuteAsync(AnyRequest, TestContext.Current.CancellationToken));
+        }
+    }
+
+    [Fact]
+    public async Task Client_cancellation_propagates_instead_of_reporting_a_deadline()
+    {
+        var executor = Executor((_, _) => FastResponse());
+        using var cancelled = new CancellationTokenSource();
+        cancelled.Cancel();
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(
+            () => executor.ExecuteAsync(AnyRequest, cancelled.Token));
+    }
+
     [Fact]
     public void Analysis_health_recovers_after_operation_completes()
     {

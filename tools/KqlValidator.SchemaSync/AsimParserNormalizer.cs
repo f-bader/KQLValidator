@@ -1,5 +1,5 @@
-using System.Text.RegularExpressions;
 using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
 
 namespace KqlValidator.SchemaSync;
 

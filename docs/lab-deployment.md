@@ -1,6 +1,6 @@
 # Azure lab deployment
 
-This runbook keeps the lab isolated and builds the Linux image inside Azure Container Registry. It does not publish to GHCR or any public repository.
+This runbook keeps the lab isolated and builds the Linux image inside Azure Container Registry. It deploys to a private lab environment and does not publish container images anywhere.
 
 ## One-time resources
 
@@ -25,7 +25,7 @@ az acr create \
   --admin-enabled false
 ```
 
-A Basic registry is the lab's fixed-cost floor. West Europe public retail pricing was approximately US$0.1666/day in August 2026. Container Apps is configured for Consumption scale-to-zero and normally remains inside its monthly free grant at low traffic.
+A Basic registry is the lab's fixed-cost floor; check current Azure Container Registry pricing for your region. Container Apps is configured for Consumption scale-to-zero and normally remains inside its monthly free grant at low traffic.
 
 ## Build, deploy, and validate
 
@@ -50,15 +50,15 @@ export AZURE_APP_NAME='YOUR_APP_NAME'
 
 ## GitHub Actions deployment
 
-The CI workflow deploys only after its validation job passes. Pushes to `main` and manual runs from `main` use the GitHub `lab` environment. This repository does not currently configure a required-reviewer gate; add one when the repository policy or GitHub plan requires it. Pull requests and runs from other branches never deploy.
+The CI workflow deploys only after its validation job passes. Pushes to `main` and manual runs from `main` use the GitHub `lab` environment. This repository does not currently configure a required-reviewer gate; add one when the repository policy requires it. Pull requests and runs from other branches never deploy.
 
-The workflow uses GitHub OIDC and an existing user-assigned managed identity; no Azure client secret is stored in GitHub. Add the repository variables below, then configure any optional environment protection rules:
+The workflow uses GitHub OIDC and an existing user-assigned managed identity; no Azure client secret is stored in GitHub. The tenant, subscription, and client IDs are stored as repository **secrets** so public workflow logs mask them; the remaining values are ordinary variables. Add them, then configure any optional environment protection rules:
 
 ```bash
 export GITHUB_REPOSITORY='OWNER/REPOSITORY'
-gh variable set AZURE_SUBSCRIPTION_ID --repo "$GITHUB_REPOSITORY" --body 'YOUR_SUBSCRIPTION_ID'
-gh variable set AZURE_TENANT_ID --repo "$GITHUB_REPOSITORY" --body 'YOUR_TENANT_ID'
-gh variable set AZURE_CLIENT_ID --repo "$GITHUB_REPOSITORY" --body 'DEPLOYMENT_IDENTITY_CLIENT_ID'
+gh secret set AZURE_SUBSCRIPTION_ID --repo "$GITHUB_REPOSITORY" --body 'YOUR_SUBSCRIPTION_ID'
+gh secret set AZURE_TENANT_ID --repo "$GITHUB_REPOSITORY" --body 'YOUR_TENANT_ID'
+gh secret set AZURE_CLIENT_ID --repo "$GITHUB_REPOSITORY" --body 'DEPLOYMENT_IDENTITY_CLIENT_ID'
 gh variable set AZURE_RESOURCE_GROUP --repo "$GITHUB_REPOSITORY" --body 'YOUR_RESOURCE_GROUP'
 gh variable set AZURE_LOCATION --repo "$GITHUB_REPOSITORY" --body 'YOUR_AZURE_REGION'
 gh variable set AZURE_APP_NAME --repo "$GITHUB_REPOSITORY" --body 'YOUR_APP_NAME'
@@ -67,7 +67,7 @@ gh variable set AZURE_ACR_RESOURCE_GROUP --repo "$GITHUB_REPOSITORY" --body 'YOU
 gh variable set AZURE_MANAGED_IDENTITY_NAME --repo "$GITHUB_REPOSITORY" --body 'YOUR_DEPLOYMENT_IDENTITY_NAME'
 ```
 
-To add an approval gate, open **Settings → Environments → lab**, add a user or team under **Required reviewers**, and save the protection rule. The deployment job already targets this environment, so no workflow change is needed. Required reviewers may require a GitHub plan that supports environment protection for private repositories.
+To add an approval gate, open **Settings → Environments → lab**, add a user or team under **Required reviewers**, and save the protection rule. The deployment job already targets this environment, so no workflow change is needed. Environment protection rules are available on public repositories on every GitHub plan.
 
 ### One-time OIDC and Azure access setup
 
@@ -167,7 +167,7 @@ az deployment sub create \
   --parameters \
     amount=10 \
     startDate="$(date -u +%Y-%m-01)" \
-    contactEmails='["you@example.com"]'
+    contactEmails='["YOUR_ALERT_EMAIL"]'
 ```
 
 ## Inspect or remove the lab

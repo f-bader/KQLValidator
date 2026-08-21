@@ -143,7 +143,16 @@ public sealed partial class RequestValidator(SchemaCatalog catalog, LintRuleCata
     {
         if (string.IsNullOrWhiteSpace(type))
             throw new RequestValidationException("extensions", $"The {field} requires a scalar type.");
-        _ = GlobalStateFactory.ResolveType(type);
+        try
+        {
+            _ = GlobalStateFactory.ResolveType(type);
+        }
+        catch (ArgumentException exception)
+        {
+            // The exception handler no longer echoes bare ArgumentException messages,
+            // so the deliberate guidance has to travel as a RequestValidationException.
+            throw new RequestValidationException("extensions", exception.Message);
+        }
     }
 
     private static RequestValidationException Limit(string collection, int limit) =>

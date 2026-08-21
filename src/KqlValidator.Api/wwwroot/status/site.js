@@ -125,7 +125,7 @@
     $("#lint-count").textContent = lintRules.length;
     state.lastChecked = new Date();
     $("#last-checked").textContent = formatTime(state.lastChecked);
-    $("#github-link").href = discovery.documentation || "https://github.com/fabian/kql-validator";
+    $("#github-link").href = discovery.documentation || "https://github.com/f-bader/KQLValidator";
     const restPath = discovery.rest && discovery.rest !== "/api/v1" ? discovery.rest : "/api/v1/environments";
     $("#rest-link").href = localUrl(restPath);
     $("#mcp-link").href = localUrl(discovery.mcp || "/mcp");

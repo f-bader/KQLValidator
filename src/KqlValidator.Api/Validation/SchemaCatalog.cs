@@ -1,7 +1,7 @@
-using KqlValidator.Contracts;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using KqlValidator.Contracts;
 using Kusto.Language.Symbols;
 
 namespace KqlValidator.Validation;
@@ -34,6 +34,8 @@ public sealed class SchemaCatalog
             pair.Value.Version,
             pair.Value.Tables.Count,
             pair.Value.Functions.Count,
+            // Every lint profile applies to every environment today; the field exists so
+            // clients can discover valid profile values without hardcoding them.
             Enum.GetValues<LintProfile>()
                 .Select(x => x.ToString().ToLowerInvariant()).ToArray()))
         .ToArray();
@@ -209,7 +211,9 @@ public sealed class SchemaCatalog
     private static SchemaColumn ParseColumn(string value)
     {
         var separator = value.LastIndexOf(':');
-        return new SchemaColumn(value[..separator], value[(separator + 1)..]);
+        return separator < 0
+            ? throw new InvalidDataException($"Schema column literal '{value}' must use the 'Name:type' form.")
+            : new SchemaColumn(value[..separator], value[(separator + 1)..]);
     }
 
     private static Dictionary<string, SchemaTable> LoadSchemaSnapshot(string fileName, string schemaDirectory)
@@ -218,26 +222,33 @@ public sealed class SchemaCatalog
         var path = Path.Combine(schemaDirectory, fileName);
         if (!File.Exists(path)) return tables;
 
-        using var document = JsonDocument.Parse(File.ReadAllText(path));
-        var root = document.RootElement;
-        var sourceTables = root.ValueKind == JsonValueKind.Array ? root : root.GetProperty("tables");
-        foreach (var table in sourceTables.EnumerateArray())
+        try
         {
-            var name = GetString(table, "name", "Name");
-            if (string.IsNullOrWhiteSpace(name)) continue;
-            var schema = TryProperty(table, "columns", "Schema");
-            if (schema is null) continue;
-            var columns = schema.Value.EnumerateArray()
-                .Select(column => new SchemaColumn(
-                    GetString(column, "name", "Name")!,
-                    NormalizeType(GetString(column, "type", "Type")!)))
-                .Where(column => !string.IsNullOrWhiteSpace(column.Name))
-                .GroupBy(column => column.Name, StringComparer.OrdinalIgnoreCase)
-                .Select(group => group.First())
-                .ToArray();
-            tables[name] = new SchemaTable(name, columns);
+            using var document = JsonDocument.Parse(File.ReadAllText(path));
+            var root = document.RootElement;
+            var sourceTables = root.ValueKind == JsonValueKind.Array ? root : root.GetProperty("tables");
+            foreach (var table in sourceTables.EnumerateArray())
+            {
+                var name = GetString(table, "name", "Name");
+                if (string.IsNullOrWhiteSpace(name)) continue;
+                var schema = TryProperty(table, "columns", "Schema");
+                if (schema is null) continue;
+                var columns = schema.Value.EnumerateArray()
+                    .Select(column => new SchemaColumn(
+                        GetString(column, "name", "Name") ?? string.Empty,
+                        NormalizeType(GetString(column, "type", "Type") ?? "string")))
+                    .Where(column => !string.IsNullOrWhiteSpace(column.Name))
+                    .GroupBy(column => column.Name, StringComparer.OrdinalIgnoreCase)
+                    .Select(group => group.First())
+                    .ToArray();
+                tables[name] = new SchemaTable(name, columns);
+            }
+            return tables;
         }
-        return tables;
+        catch (Exception exception) when (exception is JsonException or KeyNotFoundException or InvalidOperationException)
+        {
+            throw new InvalidDataException($"Bundled schema snapshot '{fileName}' is malformed.", exception);
+        }
     }
 
     private static Dictionary<string, SchemaFunction> LoadFunctionSnapshot(string fileName, string schemaDirectory)
@@ -246,27 +257,34 @@ public sealed class SchemaCatalog
         var path = Path.Combine(schemaDirectory, fileName);
         if (!File.Exists(path)) return functions;
 
-        using var document = JsonDocument.Parse(File.ReadAllText(path));
-        if (!document.RootElement.TryGetProperty("functions", out var sourceFunctions) || sourceFunctions.ValueKind != JsonValueKind.Array)
-            return functions;
-        foreach (var source in sourceFunctions.EnumerateArray())
+        try
         {
-            var name = GetString(source, "name", "Name");
-            if (string.IsNullOrWhiteSpace(name)) continue;
-            var parameters = TryProperty(source, "parameters", "Parameters")?.EnumerateArray()
-                .Select(parameter => new FunctionParameter(
-                    GetString(parameter, "name", "Name") ?? string.Empty,
-                    NormalizeType(GetString(parameter, "type", "Type") ?? "string"),
-                    TryProperty(parameter, "optional", "Optional")?.GetBoolean() ?? false))
-                .Where(parameter => !string.IsNullOrWhiteSpace(parameter.Name)).ToArray() ?? [];
-            var output = TryProperty(source, "outputColumns", "OutputColumns")?.EnumerateArray()
-                .Select(column => new SchemaColumn(
-                    GetString(column, "name", "Name") ?? string.Empty,
-                    NormalizeType(GetString(column, "type", "Type") ?? "string")))
-                .Where(column => !string.IsNullOrWhiteSpace(column.Name)).ToArray() ?? [];
-            functions[name] = new SchemaFunction(name, parameters, output);
+            using var document = JsonDocument.Parse(File.ReadAllText(path));
+            if (!document.RootElement.TryGetProperty("functions", out var sourceFunctions) || sourceFunctions.ValueKind != JsonValueKind.Array)
+                return functions;
+            foreach (var source in sourceFunctions.EnumerateArray())
+            {
+                var name = GetString(source, "name", "Name");
+                if (string.IsNullOrWhiteSpace(name)) continue;
+                var parameters = TryProperty(source, "parameters", "Parameters")?.EnumerateArray()
+                    .Select(parameter => new FunctionParameter(
+                        GetString(parameter, "name", "Name") ?? string.Empty,
+                        NormalizeType(GetString(parameter, "type", "Type") ?? "string"),
+                        TryProperty(parameter, "optional", "Optional")?.GetBoolean() ?? false))
+                    .Where(parameter => !string.IsNullOrWhiteSpace(parameter.Name)).ToArray() ?? [];
+                var output = TryProperty(source, "outputColumns", "OutputColumns")?.EnumerateArray()
+                    .Select(column => new SchemaColumn(
+                        GetString(column, "name", "Name") ?? string.Empty,
+                        NormalizeType(GetString(column, "type", "Type") ?? "string")))
+                    .Where(column => !string.IsNullOrWhiteSpace(column.Name)).ToArray() ?? [];
+                functions[name] = new SchemaFunction(name, parameters, output);
+            }
+            return functions;
         }
-        return functions;
+        catch (Exception exception) when (exception is JsonException or KeyNotFoundException or InvalidOperationException)
+        {
+            throw new InvalidDataException($"Bundled schema snapshot '{fileName}' is malformed.", exception);
+        }
     }
 
     private static IReadOnlySet<string> LoadActionTypes(string schemaDirectory)
@@ -275,17 +293,28 @@ public sealed class SchemaCatalog
         var path = Path.Combine(schemaDirectory, "action-types.json");
         if (!File.Exists(path)) return result;
 
-        using var document = JsonDocument.Parse(File.ReadAllText(path));
-        var root = document.RootElement;
-        var tables = root.ValueKind == JsonValueKind.Array ? root : root.GetProperty("tables");
-        foreach (var table in tables.EnumerateArray())
+        try
         {
-            var actions = TryProperty(table, "actionTypes", "ActionTypes");
-            if (actions is null) continue;
-            if (actions.Value.ValueKind == JsonValueKind.String) result.Add(actions.Value.GetString()!);
-            else foreach (var action in actions.Value.EnumerateArray()) result.Add(action.GetString()!);
+            using var document = JsonDocument.Parse(File.ReadAllText(path));
+            var root = document.RootElement;
+            var tables = root.ValueKind == JsonValueKind.Array ? root : root.GetProperty("tables");
+            foreach (var table in tables.EnumerateArray())
+            {
+                var actions = TryProperty(table, "actionTypes", "ActionTypes");
+                if (actions is null) continue;
+                if (actions.Value.ValueKind == JsonValueKind.String && actions.Value.GetString() is { } single)
+                    result.Add(single);
+                else if (actions.Value.ValueKind == JsonValueKind.Array)
+                    foreach (var action in actions.Value.EnumerateArray())
+                        if (action.GetString() is { } value)
+                            result.Add(value);
+            }
+            return result;
         }
-        return result;
+        catch (Exception exception) when (exception is JsonException or KeyNotFoundException or InvalidOperationException)
+        {
+            throw new InvalidDataException("Bundled schema snapshot 'action-types.json' is malformed.", exception);
+        }
     }
 
     private static JsonElement? TryProperty(JsonElement element, string camelCase, string pascalCase) =>

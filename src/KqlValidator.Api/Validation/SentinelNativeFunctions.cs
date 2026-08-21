@@ -53,6 +53,8 @@ internal static class SentinelNativeFunctions
     private static IReadOnlyList<SchemaColumn> Columns(params string[] values) => values.Select(value =>
     {
         var separator = value.LastIndexOf(':');
-        return new SchemaColumn(value[..separator], value[(separator + 1)..]);
+        return separator < 0
+            ? throw new InvalidDataException($"Schema column literal '{value}' must use the 'Name:type' form.")
+            : new SchemaColumn(value[..separator], value[(separator + 1)..]);
     }).ToArray();
 }

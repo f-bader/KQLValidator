@@ -47,7 +47,7 @@ Use an explicit target for NRT validation. Defender and Sentinel NRT have differ
 These checks run only for `target: defender-nrt` in `xdr` and `unified` detection requests. The query must reference exactly one table and cannot use `join`, `union`, `externaldata`, or comments. The validator follows Microsoft’s [continuous-NRT requirements][defender-detections] and linked [KQL feature allowlist][nrt-kql-features].
 
 - `xdr` tables: `AlertEvidence`, `CloudAppEvents`, `DeviceEvents`, `DeviceFileCertificateInfo`, `DeviceFileEvents`, `DeviceImageLoadEvents`, `DeviceLogonEvents`, `DeviceNetworkEvents`, `DeviceNetworkInfo`, `DeviceInfo`, `DeviceProcessEvents`, `DeviceRegistryEvents`, `EmailAttachmentInfo`, `EmailEvents`, `EmailPostDeliveryEvents`, `EmailUrlInfo`, `IdentityDirectoryEvents`, `IdentityLogonEvents`, `IdentityQueryEvents`, and `UrlClickEvents`.
-- `unified` accepts the preceding XDR tables plus `ABAPAuditLog_C`, `ABAPChangeDocsLog_CL`, `AuditLogs`, `AWSCloudTrail`, `AWSGuardDuty`, `AzureActivity`, `CommonSecurityLog`, `GCPAuditLogs`, `MicrosoftGraphActivityLogs`, `OfficeActivity`, `Okta_CL`, `OktaV2_CL`, `ProofpointPOD`, `ProofPointTAPClicksPermitted_CL`, `ProofPointTAPMessagesDelivered_CL`, `SecurityAlert`, `SecurityEvent`, and `SigninLogs`.
+- `unified` accepts the preceding XDR tables plus `ABAPAuditLog_CL`, `ABAPChangeDocsLog_CL`, `AuditLogs`, `AWSCloudTrail`, `AWSGuardDuty`, `AzureActivity`, `CommonSecurityLog`, `GCPAuditLogs`, `MicrosoftGraphActivityLogs`, `OfficeActivity`, `Okta_CL`, `OktaV2_CL`, `ProofpointPOD`, `ProofPointTAPClicksPermitted_CL`, `ProofPointTAPMessagesDelivered_CL`, `SecurityAlert`, `SecurityEvent`, and `SigninLogs`.
 - Allowed tabular operations are `where`, `extend`, `project`, `project-away`, `project-rename`, `parse`, `print`, and `datatable`; every NRT query must still reference exactly one source table.
 - The supported scalar-operator and function catalog follows Microsoft’s published list. User-defined functions must take scalar arguments only. `matches regex` requires a correctly escaped KQL string literal.
 - `EmailEvents.LatestDeliveryLocation` and `EmailEvents.LatestDeliveryAction` are not eligible. Time predicates on `Timestamp`, `TimeGenerated`, `ingestion_time()`, or a direct alias trigger `KQLN007` because they can skip events. `KQLN007` also applies to `sentinel-nrt` detection requests; the other constraints in this section remain Defender-specific.
@@ -140,6 +140,4 @@ Static lint cannot reliably determine input cardinality, ingestion delay, expect
 [dxbp1]: https://kqlquery.com/posts/dxbp-part1/
 [dxbp2]: https://kqlquery.com/posts/dxbp-part2/
 [falcon-nrt]: https://falconforce.nl/falconfriday-need-for-speed-going-underground-with-near-real-time-nrt-rules-0xff26/
-[fabian-bader]: https://github.com/fabian/kql-validator
-[falcon-maintenance]: https://falconforce.nl/why-is-no-one-talking-about-maintenance-in-detection-engineering/
-[falcon-data]: https://falconforce.nl/how-data-science-can-boost-your-detection-engineering-maintenance-and-keep-you-from-herding-sheep/
+[fabian-bader]: https://github.com/f-bader/KQLValidator/blob/main/docs/lint-rules.md

@@ -18,10 +18,18 @@ jobs:
     permissions:
       actions: read
       contents: read
+      security-events: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      # SARIF upload needs GitHub Advanced Security on private repositories; checked at
+      # runtime because scheduled runs have no repository event payload.
+      - name: Determine repository visibility
+        id: visibility
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: echo "private=$(gh api "repos/$GITHUB_REPOSITORY" --jq .private)" >> "$GITHUB_OUTPUT"
       - name: Enforce medium, high-confidence findings
         uses: zizmorcore/zizmor-action@3dc1ecc9bcb9e94e9b2c709687979e1298497054 # v0.6.2
         with:
@@ -30,5 +38,6 @@ jobs:
           persona: regular
           min-severity: medium
           min-confidence: high
-          advanced-security: false
+          # Findings land in the Security tab once the repository is public.
+          advanced-security: ${{ steps.visibility.outputs.private == 'false' }}
           annotations: true
