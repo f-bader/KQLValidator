@@ -1,5 +1,8 @@
 # KQL Validator
 
+[![ci](https://github.com/f-bader/KQLValidator/actions/workflows/ci.yml/badge.svg)](https://github.com/f-bader/KQLValidator/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
 An unauthenticated, stateless KQL validator for Microsoft Defender XDR and Microsoft Sentinel. It exposes the same validation engine through a regular REST API and a Streamable HTTP MCP server.
 
 The service performs static analysis only. It never executes a query, contacts a tenant, or persists submitted KQL.
@@ -54,6 +57,8 @@ Important endpoints:
 
 All validation, schema, lint-rule, and MCP endpoints are unauthenticated and publicly accessible when the service is deployed with external ingress. Schema and lint-rule catalogs are publicly enumerable; health probes are intentionally not rate limited.
 
+`GET /api/v1/lint-rules` accepts optional `ruleSet`, `category`, `profile`, `target`, and `environment` filters. The schema-search endpoint accepts `query`, `kind` (`table`, `column`, or `function`), `limit` (1–100, default 50), and an opaque `cursor` for pagination.
+
 ### Status website
 
 The optional unauthenticated status website is available at `/status`. It shows live readiness, service and schema versions, environment counts, schema search and table details, lint rules, and integration links. It does not collect analytics or query data. The page sends best-effort crawler exclusion signals (`robots.txt`, `noindex`, and `X-Robots-Tag`); this is not access control against a determined client.
@@ -72,24 +77,31 @@ The equivalent project-level switch is `/p:EnableStatusSite=false`. A disabled b
 - Each request may include at most 100 tables, functions, or watchlists, 5,000 declared output columns in aggregate, and 1,000 function parameters. Each lint selection list is limited to 100 entries.
 - Diagnostics are capped at 500 results. Oversized or malformed requests return Problem Details with HTTP 400 or 413.
 - Production REST and MCP traffic is partitioned by client IP with a token bucket of 10 requests and one replenished token per second. Rejected requests return HTTP 429 and `Retry-After: 1`; the analysis queue can reject additional work with HTTP 429.
-- Analysis has a five-second deadline. A deadline returns HTTP 504; client cancellation returns HTTP 499 where the client connection remains writable.
+- A global token bucket (100 tokens, 25 replenished per second in production) bounds total throughput regardless of how many client-IP partitions exist, so spoofed forwarded addresses cannot bypass rate limiting. Health probes are exempt from the global bucket.
+- The buckets are tunable through `RateLimiting:TokenLimit`, `RateLimiting:TokensPerSecond`, `RateLimiting:GlobalTokenLimit`, `RateLimiting:GlobalTokensPerSecond`, and `RateLimiting:ReplenishmentPeriodSeconds`.
+- Analysis has a five-second deadline that cancels the underlying work cooperatively, so an abandoned analysis frees its slot within roughly one regex-timeout interval. A deadline returns HTTP 504; client cancellation returns HTTP 499 where the client connection remains writable.
 - Readiness becomes unhealthy when an active analysis exceeds 10 seconds; liveness becomes unhealthy after 30 seconds. Completed analyses immediately clear both conditions.
 
-When deployed behind a reverse proxy, forwarded client addresses are trusted only when `ReverseProxy:TrustForwardedHeaders` is enabled. The Azure Container Apps deployment enables this setting for its ingress; local deployments leave it disabled by default.
+When deployed behind a reverse proxy, forwarded client addresses are trusted only when `ReverseProxy:TrustForwardedHeaders` is enabled, and only for exactly one hop. Enable it only when the service is reachable exclusively through the proxy (the Azure Container Apps deployment satisfies this; its ingress appends the observed client address as the rightmost forwarded entry). Optionally restrict the trusted sources further with a `ReverseProxy:KnownNetworks` CIDR array. Local deployments leave forwarding disabled by default.
 
 ## MCP clients
-
-Codex configuration:
-
-```toml
-[mcp_servers.kql_validator]
-url = "http://127.0.0.1:8080/mcp"
-```
 
 Claude Code:
 
 ```bash
 claude mcp add --transport http kql-validator http://127.0.0.1:8080/mcp
+```
+
+Codex (CLI, or the equivalent `[mcp_servers.kql_validator]` TOML entry with `url`):
+
+```bash
+codex mcp add kql-validator --url http://127.0.0.1:8080/mcp
+```
+
+opencode:
+
+```bash
+opencode mcp add kql-validator --url http://127.0.0.1:8080/mcp
 ```
 
 Available tools are `validate_kql`, `list_kql_lint_rules`, `list_kql_environments`, `search_kql_schema`, and `get_kql_table`. They are annotated as read-only, idempotent, non-destructive, and closed-world.
@@ -128,7 +140,7 @@ dotnet publish src/KqlValidator.Api/KqlValidator.Api.csproj --no-restore --confi
 
 CI additionally runs a locked dependency vulnerability audit, dependency review on pull requests, CodeQL, high-severity container scanning, and weekly pinned-action analysis with zizmor. Dependabot checks GitHub Actions, NuGet, and Docker dependencies weekly. Pushes to `main` and manual runs from `main` deploy the validated image to the Azure `lab` environment after CI succeeds.
 
-This repository does not currently require environment approval for lab deployments. To add that control, open repository **Settings → Environments → lab**, add the desired user or team under **Required reviewers**, and save the environment protection rule. GitHub plan support may be required for required reviewers on private repositories.
+This repository does not currently require environment approval for lab deployments. To add that control, open repository **Settings → Environments → lab**, add the desired user or team under **Required reviewers**, and save the environment protection rule. Environment protection rules are available on public repositories on every GitHub plan.
 
 The application instruments analysis requests with the `KqlValidator.Analysis` meter (`kql.analysis.requests`, `kql.analysis.deadline_exceeded`, `kql.analysis.queue_rejected`, and `kql.analysis.duration`). The default deployment does not configure an exporter or telemetry backend, and these instruments never include submitted query text.
 
@@ -136,7 +148,7 @@ Azure deployment and public publishing are intentionally separate stages. The CI
 
 See [docs/lab-deployment.md](docs/lab-deployment.md) for the isolated ACR build, immutable deployment, validation, budget, and cleanup runbook.
 
-The lab deployment expects an existing Azure Container Registry, which may be in a different resource group. In West Europe a separate Basic registry has a current public retail floor of approximately US$5.07/month; reusing an existing registry avoids that incremental fixed cost. Light Container Apps usage normally remains inside the monthly Consumption free grant. `infra/budget.bicep` therefore defaults to a US$10-equivalent monthly alert threshold. Budget alerts do not stop spending.
+The lab deployment expects an existing Azure Container Registry, which may be in a different resource group. A dedicated Basic registry adds a small fixed monthly cost (check current Azure Container Registry pricing for your region); reusing an existing registry avoids it. Light Container Apps usage normally remains inside the monthly Consumption free grant. `infra/budget.bicep` therefore defaults to a US$10-equivalent monthly alert threshold. Budget alerts do not stop spending.
 
 ## Schema updates
 
@@ -229,6 +241,10 @@ dotnet run --project tools/KqlValidator.SchemaSync -- \
 
 The generator reads only parser YAML metadata (built-in parser name, ASIM schema, and declared parameters), never parser bodies. Parser result schemas expose portable ASIM fields for semantic validation; a parser that exists only in a private workspace remains opt-in through request extensions.
 
+## Contributing and security
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the local quality gate and pull-request expectations, and [SECURITY.md](SECURITY.md) for how to report vulnerabilities privately.
+
 ## License
 
-MIT
+[MIT](LICENSE)

@@ -13,7 +13,17 @@ builder.WebHost.ConfigureKestrel(options => options.Limits.MaxRequestBodySize = 
 builder.Services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = 262_144);
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<ApiExceptionHandler>();
-builder.Services.AddOpenApi("v1");
+builder.Services.AddOpenApi("v1", options => options.AddDocumentTransformer((document, _, _) =>
+{
+    document.Info = new()
+    {
+        Title = "KQL Validator",
+        Version = ThisAssembly.Version,
+        Description = "Unauthenticated, stateless static analysis for Microsoft Defender XDR and Microsoft Sentinel KQL. Queries are never executed, logged, or persisted.",
+        License = new() { Name = "MIT", Url = new Uri("https://github.com/f-bader/KQLValidator/blob/main/LICENSE") },
+    };
+    return Task.CompletedTask;
+}));
 builder.Services.AddSingleton<SchemaCatalog>();
 builder.Services.AddSingleton<LintRuleCatalog>();
 builder.Services.AddSingleton<GlobalStateFactory>();
@@ -105,6 +115,17 @@ builder.Services.AddMcpServer(options =>
     .WithTools<KqlTools>();
 
 var app = builder.Build();
+// OnStarting survives the response reset the exception handler performs, so every
+// response - including Problem Details - carries nosniff.
+app.Use((context, next) =>
+{
+    context.Response.OnStarting(static state =>
+    {
+        ((HttpContext)state).Response.Headers.XContentTypeOptions = "nosniff";
+        return Task.CompletedTask;
+    }, context);
+    return next(context);
+});
 app.UseExceptionHandler(new ExceptionHandlerOptions
 {
     // Request-scoped failures embed user-submitted identifiers in their messages;
@@ -166,7 +187,10 @@ api.MapGet("/environments/{environment}/schema", (
     string environment, string? query, string? kind, int? limit, string? cursor, SchemaQueryService schemas) =>
     TryEnvironment(environment, out var parsed)
         ? Results.Ok(schemas.Search(parsed, query, kind, limit ?? 50, cursor))
-        : UnknownEnvironment());
+        : UnknownEnvironment())
+    .Produces<SchemaSearchResponse>()
+    .ProducesProblem(StatusCodes.Status400BadRequest)
+    .ProducesProblem(StatusCodes.Status429TooManyRequests);
 api.MapGet("/environments/{environment}/tables/{table}", (
     string environment, string table, SchemaQueryService schemas) =>
     !TryEnvironment(environment, out var parsed)
@@ -174,7 +198,11 @@ api.MapGet("/environments/{environment}/tables/{table}", (
         : schemas.GetTable(parsed, table) is { } result
             ? Results.Ok(result)
             : Results.Problem(statusCode: StatusCodes.Status404NotFound, title: "Unknown table",
-                detail: "The table does not exist in the selected environment."));
+                detail: "The table does not exist in the selected environment."))
+    .Produces<SchemaTable>()
+    .ProducesProblem(StatusCodes.Status400BadRequest)
+    .ProducesProblem(StatusCodes.Status404NotFound)
+    .ProducesProblem(StatusCodes.Status429TooManyRequests);
 
 app.MapHealthChecks("/health/live", new HealthCheckOptions { Predicate = registration => registration.Tags.Contains("live") });
 app.MapHealthChecks("/health/ready", new HealthCheckOptions { Predicate = registration => registration.Tags.Contains("ready") });
