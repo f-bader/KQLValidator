@@ -50,7 +50,7 @@ These checks run only for `target: defender-nrt` in `xdr` and `unified` detectio
 - `unified` accepts the preceding XDR tables plus `ABAPAuditLog_C`, `ABAPChangeDocsLog_CL`, `AuditLogs`, `AWSCloudTrail`, `AWSGuardDuty`, `AzureActivity`, `CommonSecurityLog`, `GCPAuditLogs`, `MicrosoftGraphActivityLogs`, `OfficeActivity`, `Okta_CL`, `OktaV2_CL`, `ProofpointPOD`, `ProofPointTAPClicksPermitted_CL`, `ProofPointTAPMessagesDelivered_CL`, `SecurityAlert`, `SecurityEvent`, and `SigninLogs`.
 - Allowed tabular operations are `where`, `extend`, `project`, `project-away`, `project-rename`, `parse`, `print`, and `datatable`; every NRT query must still reference exactly one source table.
 - The supported scalar-operator and function catalog follows Microsoft’s published list. User-defined functions must take scalar arguments only. `matches regex` requires a correctly escaped KQL string literal.
-- `EmailEvents.LatestDeliveryLocation` and `EmailEvents.LatestDeliveryAction` are not eligible. Time predicates on `Timestamp`, `TimeGenerated`, `ingestion_time()`, or a direct alias trigger `KQLN007` because they can skip events.
+- `EmailEvents.LatestDeliveryLocation` and `EmailEvents.LatestDeliveryAction` are not eligible. Time predicates on `Timestamp`, `TimeGenerated`, `ingestion_time()`, or a direct alias trigger `KQLN007` because they can skip events. `KQLN007` also applies to `sentinel-nrt` detection requests; the other constraints in this section remain Defender-specific.
 
 ## Repair-oriented diagnostics
 
@@ -66,7 +66,7 @@ For `KQLX002`, the valid literal shape is `dynamic([{"Kind":"Account","Value":"e
 | `microsoft-kusto` | Interactive hunting |
 | `defender-xdr` | XDR and unified environments |
 | `sentinel-detection` | Sentinel detection |
-| `defender-nrt` | Explicit `defender-nrt` target |
+| `defender-nrt` | Explicit `defender-nrt` target, plus `sentinel-nrt` for shared `KQLN007` time-filter validation |
 | `community-detection` | Never; caller opt-in only |
 
 Categories are `correctness`, `performance`, `reliability`, `detection`, `detection-quality`, `maintainability`, `nrt`, `sentinel`, and `xdr`. `sourceKind` is `microsoft` or `community`.
@@ -114,7 +114,7 @@ Categories are `correctness`, `performance`, `reliability`, `detection`, `detect
 | `KQLN004` | Error | defender-nrt / nrt | Yes | Defender NRT query uses an unsupported tabular operator, string operator, function, or non-scalar-argument UDF → use the documented KQL subset. | [Supported KQL features][nrt-kql-features] |
 | `KQLN005` | Error | defender-nrt / nrt | Yes | `matches regex` does not use a correctly escaped KQL string literal → encode regex backslashes according to KQL string quoting rules. | [Defender custom detections][defender-detections] |
 | `KQLN006` | Error | defender-nrt / nrt | Yes | `EmailEvents` uses `LatestDeliveryLocation` or `LatestDeliveryAction` → remove the unsupported column. | [Defender custom detections][defender-detections] |
-| `KQLN007` | Warning | defender-nrt / nrt | Yes | NRT query filters `Timestamp`, `TimeGenerated`, `ingestion_time()`, or a direct alias → remove the time filter or use a scheduled detection. | [Defender custom detections][defender-detections] |
+| `KQLN007` | Warning | defender-nrt / nrt | Yes | Defender or Sentinel NRT query filters `Timestamp`, `TimeGenerated`, `ingestion_time()`, or a direct alias → remove the time filter or use a scheduled detection. | [Defender custom detections][defender-detections] |
 | `KQLQ001` | Information | community-detection / detection-quality | No | Detection filters identity-like display names → prefer stable IDs where the source exposes them. This heuristic is intentionally opt-in. | [Detection Engineering Best Practices, part 1][dxbp1] |
 | `KQLQ002` | Information | community-detection / detection-quality | No | `DeviceProcessEvents` filename detection omits original-file-name metadata → consider the original filename to tolerate renamed binaries. | [Detection Engineering Best Practices, part 1][dxbp1] |
 | `KQLQ003` | Information | community-detection / maintainability | No | Inline negative filter has no same-line explanation → document rationale and ownership or centralize the allowlist. | [Detection Engineering Best Practices, part 2][dxbp2] |
