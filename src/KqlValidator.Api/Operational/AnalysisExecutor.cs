@@ -4,18 +4,42 @@ using KqlValidator.Validation;
 
 namespace KqlValidator.Operational;
 
-public sealed class AnalysisExecutor(KqlValidationService validator, AnalysisHealthState health, AnalysisMetrics metrics, TimeProvider timeProvider)
+public sealed class AnalysisExecutor
 {
-    private static readonly TimeSpan AnalysisDeadline = TimeSpan.FromSeconds(5);
+    private readonly Func<ValidateRequest, CancellationToken, ValidationResponse> validate;
+    private readonly AnalysisHealthState health;
+    private readonly AnalysisMetrics metrics;
+    private readonly TimeProvider timeProvider;
+    private readonly TimeSpan analysisDeadline;
     private readonly SemaphoreSlim concurrency = new(2, 2);
     private int queued;
+
+    public AnalysisExecutor(KqlValidationService validator, AnalysisHealthState health, AnalysisMetrics metrics, TimeProvider timeProvider)
+        : this(validator.Validate, health, metrics, timeProvider, TimeSpan.FromSeconds(5))
+    {
+    }
+
+    // Seam for tests: a stub analysis and a short deadline exercise the timeout paths quickly.
+    public AnalysisExecutor(
+        Func<ValidateRequest, CancellationToken, ValidationResponse> validate,
+        AnalysisHealthState health,
+        AnalysisMetrics metrics,
+        TimeProvider timeProvider,
+        TimeSpan analysisDeadline)
+    {
+        this.validate = validate;
+        this.health = health;
+        this.metrics = metrics;
+        this.timeProvider = timeProvider;
+        this.analysisDeadline = analysisDeadline;
+    }
 
     public async Task<ValidationResponse> ExecuteAsync(ValidateRequest request, CancellationToken cancellationToken)
     {
         var started = timeProvider.GetTimestamp();
         metrics.Request();
         var deadline = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        deadline.CancelAfter(AnalysisDeadline);
+        deadline.CancelAfter(analysisDeadline);
         var workStarted = false;
 
         try
@@ -46,7 +70,7 @@ public sealed class AnalysisExecutor(KqlValidationService validator, AnalysisHea
             var operation = health.Start();
             var work = Task.Run(() =>
             {
-                try { return validator.Validate(request, deadline.Token); }
+                try { return validate(request, deadline.Token); }
                 finally
                 {
                     health.Complete(operation);

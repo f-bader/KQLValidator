@@ -135,6 +135,8 @@ public sealed class ApiTests : IClassFixture<WebApplicationFactory<Program>>
                 ["ReverseProxy:TrustForwardedHeaders"] = "true",
                 ["RateLimiting:TokenLimit"] = "2",
                 ["RateLimiting:TokensPerSecond"] = "1",
+                // A slow host startup must not replenish tokens mid-test.
+                ["RateLimiting:ReplenishmentPeriodSeconds"] = "3600",
             })));
         using var limitedClient = configured.CreateClient();
 
@@ -152,6 +154,114 @@ public sealed class ApiTests : IClassFixture<WebApplicationFactory<Program>>
             request.Headers.Add("X-Forwarded-For", address);
             return await limitedClient.SendAsync(request, TestContext.Current.CancellationToken);
         }
+    }
+
+    [Fact]
+    public async Task Global_rate_limit_bounds_spoofed_partitions()
+    {
+        using var configured = factory.WithWebHostBuilder(builder => builder.ConfigureAppConfiguration((_, configuration) =>
+            configuration.AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["ReverseProxy:TrustForwardedHeaders"] = "true",
+                ["RateLimiting:TokenLimit"] = "100",
+                ["RateLimiting:GlobalTokenLimit"] = "2",
+                ["RateLimiting:GlobalTokensPerSecond"] = "1",
+                ["RateLimiting:ReplenishmentPeriodSeconds"] = "3600",
+            })));
+        using var limitedClient = configured.CreateClient();
+
+        // Every request spoofs a different client address; the per-address buckets all have
+        // room, so only the global bucket can stop the flood.
+        Assert.Equal(HttpStatusCode.OK, (await GetFromClient("203.0.113.20")).StatusCode);
+        Assert.Equal(HttpStatusCode.OK, (await GetFromClient("203.0.113.21")).StatusCode);
+        Assert.Equal(HttpStatusCode.TooManyRequests, (await GetFromClient("203.0.113.22")).StatusCode);
+        Assert.Equal(HttpStatusCode.OK, (await limitedClient.GetAsync("/health/ready", TestContext.Current.CancellationToken)).StatusCode);
+
+        async Task<HttpResponseMessage> GetFromClient(string address)
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Get, "/api/v1/environments");
+            request.Headers.Add("X-Forwarded-For", address);
+            return await limitedClient.SendAsync(request, TestContext.Current.CancellationToken);
+        }
+    }
+
+    [Fact]
+    public async Task Oversized_query_returns_problem_details_400()
+    {
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var response = await client.PostAsJsonAsync("/api/v1/validate", new ValidateRequest(
+            new string('a', 65_537), KqlEnvironment.Xdr, LintProfile.General), cancellationToken);
+        using var problem = JsonDocument.Parse(await response.Content.ReadAsStringAsync(cancellationToken));
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal("application/problem+json", response.Content.Headers.ContentType?.MediaType);
+        Assert.Equal("query", problem.RootElement.GetProperty("field").GetString());
+    }
+
+    [Fact]
+    public async Task Schema_endpoints_return_problem_details_for_unknown_environment_and_table()
+    {
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var badEnvironment = await client.GetAsync("/api/v1/environments/nope/schema?query=a", cancellationToken);
+        var missingTable = await client.GetAsync("/api/v1/environments/xdr/tables/NotARealTable", cancellationToken);
+
+        Assert.Equal(HttpStatusCode.BadRequest, badEnvironment.StatusCode);
+        Assert.Equal("application/problem+json", badEnvironment.Content.Headers.ContentType?.MediaType);
+        Assert.Equal(HttpStatusCode.NotFound, missingTable.StatusCode);
+        Assert.Equal("application/problem+json", missingTable.Content.Headers.ContentType?.MediaType);
+    }
+
+    [Fact]
+    public async Task Discovery_reports_a_semantic_version()
+    {
+        var cancellationToken = TestContext.Current.CancellationToken;
+        using var document = JsonDocument.Parse(await client.GetStringAsync("/", cancellationToken));
+
+        Assert.Matches(@"^\d+\.\d+\.\d+", document.RootElement.GetProperty("version").GetString());
+    }
+
+    [Fact]
+    public async Task Mcp_lists_every_tool_and_executes_validation()
+    {
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var listBody = await SendMcp(new
+        {
+            jsonrpc = "2.0",
+            id = 2,
+            method = "tools/list",
+            @params = new { },
+        }, cancellationToken);
+        foreach (var tool in new[] { "validate_kql", "list_kql_lint_rules", "list_kql_environments", "search_kql_schema", "get_kql_table" })
+            Assert.Contains(tool, listBody, StringComparison.Ordinal);
+
+        var callBody = await SendMcp(new
+        {
+            jsonrpc = "2.0",
+            id = 3,
+            method = "tools/call",
+            @params = new
+            {
+                name = "validate_kql",
+                arguments = new
+                {
+                    query = "DeviceProcessEvents | where Timestamp > ago(1h) | project Timestamp, DeviceId, FileName",
+                    environment = "xdr",
+                    profile = "hunting",
+                },
+            },
+        }, cancellationToken);
+        Assert.Contains("\"valid\"", callBody, StringComparison.Ordinal);
+        Assert.DoesNotContain("\"isError\":true", callBody.Replace(" ", string.Empty), StringComparison.Ordinal);
+    }
+
+    private async Task<string> SendMcp(object payload, CancellationToken cancellationToken)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Post, "/mcp") { Content = JsonContent.Create(payload) };
+        request.Headers.Accept.ParseAdd("application/json, text/event-stream");
+        var response = await client.SendAsync(request, cancellationToken);
+        var body = await response.Content.ReadAsStringAsync(cancellationToken);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        return body;
     }
 
     [Fact]
