@@ -30,18 +30,18 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: echo "private=$(gh api "repos/$GITHUB_REPOSITORY" --jq .private)" >> "$GITHUB_OUTPUT"
-      - uses: github/codeql-action/init@5595ccaf912efad79be6eef63a5619ff05969be3 # v4.37.6
+      - uses: github/codeql-action/init@ff2f1c621b7f889edc0d3c761ac2e6a3f8cdb0dd # v4.37.7
         with:
           languages: csharp
           build-mode: manual
-      - uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5.2.0
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with:
           dotnet-version: 10.0.400
           cache: true
           cache-dependency-path: '**/packages.lock.json'
       - run: dotnet restore kql-validator.slnx --locked-mode
       - run: dotnet build kql-validator.slnx --configuration Release --no-restore
-      - uses: github/codeql-action/analyze@5595ccaf912efad79be6eef63a5619ff05969be3 # v4.37.6
+      - uses: github/codeql-action/analyze@ff2f1c621b7f889edc0d3c761ac2e6a3f8cdb0dd # v4.37.7
         with:
           upload: ${{ steps.visibility.outputs.private == 'false' && 'always' || 'never' }}
           upload-database: ${{ steps.visibility.outputs.private == 'false' }}
