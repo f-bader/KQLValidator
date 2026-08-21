@@ -6,7 +6,9 @@ gate enforces so your pull request passes on the first try.
 ## Prerequisites
 
 - .NET SDK 10.0.4xx (see `global.json`).
-- Bash for the scripts in `scripts/` — on Windows use Git Bash or WSL.
+- Bash for the scripts in `scripts/` — on Windows use Git Bash or WSL. Under Git Bash,
+  set `MSYS2_ARG_CONV_EXCL="/p"` first so MSBuild `/p:` switches are not mangled into
+  Windows paths.
 - Docker (only needed for the container build step of the local gate).
 - Azure CLI with Bicep (only needed for the infrastructure validation step).
 
