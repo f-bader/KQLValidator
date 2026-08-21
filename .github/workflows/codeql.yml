@@ -22,6 +22,14 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      # Code scanning uploads need GitHub Advanced Security on private repositories, so
+      # results are only uploaded when the repository is public. Checked at runtime
+      # because scheduled runs have no repository event payload.
+      - name: Determine repository visibility
+        id: visibility
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: echo "private=$(gh api "repos/$GITHUB_REPOSITORY" --jq .private)" >> "$GITHUB_OUTPUT"
       - uses: github/codeql-action/init@5595ccaf912efad79be6eef63a5619ff05969be3 # v4.37.6
         with:
           languages: csharp
@@ -34,3 +42,6 @@ jobs:
       - run: dotnet restore kql-validator.slnx --locked-mode
       - run: dotnet build kql-validator.slnx --configuration Release --no-restore
       - uses: github/codeql-action/analyze@5595ccaf912efad79be6eef63a5619ff05969be3 # v4.37.6
+        with:
+          upload: ${{ steps.visibility.outputs.private == 'false' && 'always' || 'never' }}
+          upload-database: ${{ steps.visibility.outputs.private == 'false' }}

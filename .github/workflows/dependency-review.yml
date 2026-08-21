@@ -7,6 +7,9 @@ permissions: {}
 
 jobs:
   review:
+    # The dependency-review API is available on public repositories (or private ones
+    # with GitHub Advanced Security); skip instead of failing while the repo is private.
+    if: ${{ !github.event.repository.private }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
