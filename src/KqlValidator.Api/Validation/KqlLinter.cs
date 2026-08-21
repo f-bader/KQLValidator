@@ -259,12 +259,6 @@ public sealed partial class KqlLinter
                 $"Sentinel analytics rule queries cannot exceed 10,000 characters; this query is {originalQuery.Length} characters. Shorten it or move large literal lists and pattern data into a watchlist or other managed external source.", 10_000,
                 originalQuery.Length - 10_000);
 
-        Match(diagnostics, policy, searchableQuery, DefenderNrtMultiInput(), "KQLN001",
-            "Defender continuous NRT rules do not support join, union, or externaldata. Rewrite this as a single-input query, or use a scheduled detection when multi-input correlation is required.");
-
-        foreach (Match comment in Comment().Matches(originalQuery))
-            Add(diagnostics, policy, originalQuery, "KQLN002",
-                "Defender continuous NRT rules do not support comments in deployed KQL. Remove the comment, or use a scheduled target if comments must remain.", comment.Index, comment.Length);
     }
 
     private void AddCommunityDiagnostics(
@@ -362,10 +356,6 @@ public sealed partial class KqlLinter
     private static partial Regex EmptyStringComparison();
     [GeneratedRegex("""(?i)\bhas(?:_cs)?\s*["'](?:\d{1,3}\.){3}\d{1,3}["']""", RegexOptions.None, RegexTimeoutMilliseconds)]
     private static partial Regex HasIpv4Literal();
-    [GeneratedRegex(@"(?im)(?:^|\|)\s*(?:join\b|union\b)|\bexternaldata\s*\(", RegexOptions.None, RegexTimeoutMilliseconds)]
-    private static partial Regex DefenderNrtMultiInput();
-    [GeneratedRegex(@"(?m)//[^\r\n]*|/\*[\s\S]*?\*/", RegexOptions.None, RegexTimeoutMilliseconds)]
-    private static partial Regex Comment();
     [GeneratedRegex("""(?i)\b(?:AccountName|AccountDisplayName|DeviceName|ApplicationName|AppDisplayName)\s*(?:==|=~|in~?)\s*["']""", RegexOptions.None, RegexTimeoutMilliseconds)]
     private static partial Regex DisplayNameIdentity();
     [GeneratedRegex(@"(?i)\|\s*where\b[^\r\n|;]*(?:!=|!~|!in\b|!contains\b|!has\b)", RegexOptions.None, RegexTimeoutMilliseconds)]

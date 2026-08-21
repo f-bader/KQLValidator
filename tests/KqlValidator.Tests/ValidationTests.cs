@@ -18,6 +18,7 @@ public sealed class ValidationTests
             new GlobalStateFactory(),
             new RequestValidator(catalog, lintRules),
             new KqlLinter(catalog, lintRules),
+            new DefenderNrtValidator(lintRules),
             lintRules);
     }
 
@@ -357,6 +358,130 @@ public sealed class ValidationTests
         Assert.Contains(result.Diagnostics, x => x.RuleId == "KQLN001" && x.Message.Contains("scheduled detection", StringComparison.Ordinal));
         Assert.Contains(result.Diagnostics, x => x.RuleId == "KQLN002" && x.Message.Contains("Remove the comment", StringComparison.Ordinal));
         Assert.DoesNotContain(result.Diagnostics, x => x.RuleId == "KQLH009");
+    }
+
+    [Fact]
+    public void Defender_nrt_rejects_multiple_tables_referenced_through_let()
+    {
+        var result = Validate(
+            """
+            let Enrichment = DeviceInfo
+            | where DeviceId == "ThisIsJustSomeTest"
+            | distinct DeviceId;
+            DeviceEvents
+            | where DeviceId in (Enrichment)
+            | project Timestamp, DeviceId
+            """,
+            KqlEnvironment.Xdr,
+            LintProfile.Detection,
+            target: KqlTarget.DefenderNrt);
+
+        Assert.Contains(result.Diagnostics, x => x.RuleId == "KQLN001" && x.Severity == DiagnosticSeverity.Error);
+        Assert.Contains("DeviceInfo", result.ReferencedTables);
+        Assert.Contains("DeviceEvents", result.ReferencedTables);
+    }
+
+    [Theory]
+    [InlineData(KqlEnvironment.Xdr, "DeviceEvents", "Timestamp")]
+    [InlineData(KqlEnvironment.Unified, "SigninLogs", "TimeGenerated")]
+    public void Defender_nrt_accepts_documented_table_in_its_environment(KqlEnvironment environment, string table, string timeColumn)
+    {
+        var result = Validate(
+            $"{table} | where 1 == 1 | project {timeColumn}",
+            environment,
+            LintProfile.Detection,
+            target: KqlTarget.DefenderNrt);
+
+        Assert.DoesNotContain(result.Diagnostics, x => x.RuleId is "KQLN001" or "KQLN003" or "KQLN004");
+    }
+
+    [Fact]
+    public void Defender_nrt_rejects_unsupported_table_and_email_columns()
+    {
+        var unsupportedTable = Validate(
+            "DeviceTvmSoftwareInventory | project Timestamp",
+            KqlEnvironment.Xdr,
+            LintProfile.Detection,
+            target: KqlTarget.DefenderNrt);
+        var unsupportedColumn = Validate(
+            "EmailEvents | project Timestamp, LatestDeliveryAction",
+            KqlEnvironment.Unified,
+            LintProfile.Detection,
+            target: KqlTarget.DefenderNrt);
+
+        Assert.Contains(unsupportedTable.Diagnostics, x => x.RuleId == "KQLN003");
+        Assert.Contains(unsupportedColumn.Diagnostics, x => x.RuleId == "KQLN006");
+    }
+
+    [Fact]
+    public void Defender_nrt_enforces_supported_features_and_regex_literals()
+    {
+        var validRegex = Validate(
+            """DeviceEvents | where ActionType matches regex "\\AProcessCreated\\z" | project Timestamp, DeviceId""",
+            KqlEnvironment.Xdr,
+            LintProfile.Detection,
+            target: KqlTarget.DefenderNrt);
+        var invalidRegex = Validate(
+            """DeviceEvents | where ActionType matches regex "\AProcessCreated" | project Timestamp, DeviceId""",
+            KqlEnvironment.Xdr,
+            LintProfile.Detection,
+            target: KqlTarget.DefenderNrt);
+        var unsupportedOperator = Validate(
+            "DeviceEvents | summarize count() by DeviceId | project Timestamp = now(), DeviceId",
+            KqlEnvironment.Xdr,
+            LintProfile.Detection,
+            target: KqlTarget.DefenderNrt);
+
+        Assert.DoesNotContain(validRegex.Diagnostics, x => x.RuleId is "KQLN004" or "KQLN005");
+        Assert.Contains(invalidRegex.Diagnostics, x => x.RuleId == "KQLN005");
+        Assert.Contains(unsupportedOperator.Diagnostics, x => x.RuleId == "KQLN004");
+    }
+
+    [Fact]
+    public void Defender_nrt_allows_scalar_argument_user_defined_functions()
+    {
+        var result = Validate(
+            """
+            let Normalize = (value:string) { tolower(value) };
+            DeviceEvents
+            | where Normalize(ActionType) == "processcreated"
+            | project Timestamp, DeviceId
+            """,
+            KqlEnvironment.Xdr,
+            LintProfile.Detection,
+            target: KqlTarget.DefenderNrt);
+
+        Assert.DoesNotContain(result.Diagnostics, x => x.RuleId == "KQLN004");
+    }
+
+    [Fact]
+    public void Defender_nrt_warns_for_direct_and_aliased_time_filters_only()
+    {
+        var direct = Validate(
+            "DeviceEvents | where Timestamp > ago(1h) | project Timestamp, DeviceId",
+            KqlEnvironment.Xdr,
+            LintProfile.Detection,
+            target: KqlTarget.DefenderNrt);
+        var alias = Validate(
+            "DeviceEvents | extend EventTime = Timestamp | where EventTime between (ago(2h) .. ago(1h)) | project Timestamp, DeviceId",
+            KqlEnvironment.Xdr,
+            LintProfile.Detection,
+            target: KqlTarget.DefenderNrt);
+        var ingestion = Validate(
+            "SigninLogs | where ingestion_time() between (ago(2h) .. ago(1h)) | project TimeGenerated",
+            KqlEnvironment.Unified,
+            LintProfile.Detection,
+            target: KqlTarget.DefenderNrt);
+        var scheduled = Validate(
+            "DeviceEvents | where Timestamp > ago(1h) | project Timestamp, DeviceId",
+            KqlEnvironment.Xdr,
+            LintProfile.Detection,
+            target: KqlTarget.DefenderScheduled);
+
+        Assert.Contains(direct.Diagnostics, x => x.RuleId == "KQLN007" && x.Severity == DiagnosticSeverity.Warning);
+        Assert.Contains(alias.Diagnostics, x => x.RuleId == "KQLN007" && x.Severity == DiagnosticSeverity.Warning);
+        Assert.Contains(ingestion.Diagnostics, x => x.RuleId == "KQLN007" && x.Severity == DiagnosticSeverity.Warning);
+        Assert.DoesNotContain(scheduled.Diagnostics, x => x.RuleId == "KQLN007");
     }
 
     [Fact]

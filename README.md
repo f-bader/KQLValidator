@@ -104,6 +104,10 @@ Lint warnings never invalidate a query. The hunting rules are derived from [Micr
 
 `target` is optional and inferred for ordinary hunting and scheduled detections. XDR and Unified detections use Defender targets; Sentinel detections use Sentinel targets. Set it explicitly to `defender-nrt` or `sentinel-nrt` for target-specific validation. The optional `lint` object selects rule sets, enables or disables stable rule IDs, filters severity, or disables custom lint while leaving parser and semantic diagnostics active. Community detection recommendations are disabled unless the caller explicitly selects `community-detection` or enables an individual community rule.
 
+### Defender continuous NRT validation
+
+`target: "defender-nrt"` applies only to detection queries in the `xdr` and `unified` environments. It enforces Microsoft Defender’s continuous-NRT constraints: exactly one supported table, no joins, unions, `externaldata`, or comments, and only the documented KQL feature subset. `xdr` accepts the Microsoft Defender XDR NRT tables; `unified` additionally accepts the documented Microsoft Sentinel NRT tables. `EmailEvents.LatestDeliveryLocation` and `EmailEvents.LatestDeliveryAction` are excluded. `matches regex` requires a correctly escaped KQL string literal, and filters on `Timestamp`, `TimeGenerated`, `ingestion_time()`, or their direct aliases produce a warning because they can skip qualifying events. See [Microsoft’s NRT requirements](https://learn.microsoft.com/en-us/defender-xdr/custom-detection-rules#continuous-nrt-frequency), [supported KQL features](https://learn.microsoft.com/en-us/azure/azure-monitor/data-collection/data-collection-transformations-kql#supported-kql-features), and [the complete lint-rule reference](docs/lint-rules.md).
+
 See [docs/lint-rules.md](docs/lint-rules.md) for configuration, applicability, examples, every rule ID, and its original source.
 
 The `ConnectedNetworks` output from `AssignedIPAddresses` is intentionally modeled as `dynamic`: Microsoft describes the value as a JSON array even though one documentation table has shown a conflicting scalar type.

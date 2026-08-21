@@ -42,6 +42,16 @@ Use an explicit target for NRT validation. Defender and Sentinel NRT have differ
 - Unknown rule IDs and rule-set names are rejected with HTTP 400.
 - The `community-detection` rule set is not selected by any default profile.
 
+## Defender continuous NRT constraints
+
+These checks run only for `target: defender-nrt` in `xdr` and `unified` detection requests. The query must reference exactly one table and cannot use `join`, `union`, `externaldata`, or comments. The validator follows Microsoft’s [continuous-NRT requirements][defender-detections] and linked [KQL feature allowlist][nrt-kql-features].
+
+- `xdr` tables: `AlertEvidence`, `CloudAppEvents`, `DeviceEvents`, `DeviceFileCertificateInfo`, `DeviceFileEvents`, `DeviceImageLoadEvents`, `DeviceLogonEvents`, `DeviceNetworkEvents`, `DeviceNetworkInfo`, `DeviceInfo`, `DeviceProcessEvents`, `DeviceRegistryEvents`, `EmailAttachmentInfo`, `EmailEvents`, `EmailPostDeliveryEvents`, `EmailUrlInfo`, `IdentityDirectoryEvents`, `IdentityLogonEvents`, `IdentityQueryEvents`, and `UrlClickEvents`.
+- `unified` accepts the preceding XDR tables plus `ABAPAuditLog_C`, `ABAPChangeDocsLog_CL`, `AuditLogs`, `AWSCloudTrail`, `AWSGuardDuty`, `AzureActivity`, `CommonSecurityLog`, `GCPAuditLogs`, `MicrosoftGraphActivityLogs`, `OfficeActivity`, `Okta_CL`, `OktaV2_CL`, `ProofpointPOD`, `ProofPointTAPClicksPermitted_CL`, `ProofPointTAPMessagesDelivered_CL`, `SecurityAlert`, `SecurityEvent`, and `SigninLogs`.
+- Allowed tabular operations are `where`, `extend`, `project`, `project-away`, `project-rename`, `parse`, `print`, and `datatable`; every NRT query must still reference exactly one source table.
+- The supported scalar-operator and function catalog follows Microsoft’s published list. User-defined functions must take scalar arguments only. `matches regex` requires a correctly escaped KQL string literal.
+- `EmailEvents.LatestDeliveryLocation` and `EmailEvents.LatestDeliveryAction` are not eligible. Time predicates on `Timestamp`, `TimeGenerated`, `ingestion_time()`, or a direct alias trigger `KQLN007` because they can skip events.
+
 ## Repair-oriented diagnostics
 
 Parser and semantic diagnostics retain their Kusto rule IDs and blocking severity, but common schema failures include repair guidance. An unknown table or function should first be checked against the selected environment schema; workspace-specific objects can be declared through `extensions.tables` or `extensions.functions`. An unknown ordinary column should be checked against its source table. Workspace-specific `_GetWatchlist()` columns should be declared through `extensions.watchlists` with their actual KQL type.
@@ -98,8 +108,13 @@ Categories are `correctness`, `performance`, `reliability`, `detection`, `detect
 | `KQLP006` | Information | microsoft-kusto / performance | Yes | `Column has "192.0.2.1"` → use `has_ipv4` or `has_any_ipv4`. | [Kusto query best practices][kusto-bp] |
 | `KQLS001` | Error | sentinel-detection / sentinel | Yes | Sentinel detection query exceeds 10,000 characters; the diagnostic reports the measured length → shorten it or move large literal lists and pattern data into a watchlist or other managed external source. | [Sentinel scheduled rules][sentinel-rules] |
 | `KQLS002` | Warning | baseline / sentinel | Yes | `_GetWatchlist('assets') \| project Tags` or `['IP Address']` → define the optional field first, for example `\| extend Tags = column_ifexists('Tags', '')`, to avoid deployment failures when the watchlist lacks that column. | [Fabian Bader][fabian-bader] |
-| `KQLN001` | Error | defender-nrt / nrt | Yes | Defender NRT query uses `join`, `union`, or `externaldata` → rewrite as a single-input query or use a scheduled detection for multi-input correlation. | [Defender custom detections][defender-detections] |
+| `KQLN001` | Error | defender-nrt / nrt | Yes | Defender NRT query references anything other than exactly one table, or uses `join`, `union`, or `externaldata` → rewrite as a single-input query or use a scheduled detection. | [Defender custom detections][defender-detections] |
 | `KQLN002` | Error | defender-nrt / nrt | Yes | Defender NRT query contains a line or block comment → remove it from deployed NRT KQL or use a scheduled target if comments must remain. | [Defender custom detections][defender-detections] |
+| `KQLN003` | Error | defender-nrt / nrt | Yes | Defender NRT query uses a table outside Microsoft’s NRT allowlist for `xdr` or `unified` → select a supported source table. | [Defender custom detections][defender-detections] |
+| `KQLN004` | Error | defender-nrt / nrt | Yes | Defender NRT query uses an unsupported tabular operator, string operator, function, or non-scalar-argument UDF → use the documented KQL subset. | [Supported KQL features][nrt-kql-features] |
+| `KQLN005` | Error | defender-nrt / nrt | Yes | `matches regex` does not use a correctly escaped KQL string literal → encode regex backslashes according to KQL string quoting rules. | [Defender custom detections][defender-detections] |
+| `KQLN006` | Error | defender-nrt / nrt | Yes | `EmailEvents` uses `LatestDeliveryLocation` or `LatestDeliveryAction` → remove the unsupported column. | [Defender custom detections][defender-detections] |
+| `KQLN007` | Warning | defender-nrt / nrt | Yes | NRT query filters `Timestamp`, `TimeGenerated`, `ingestion_time()`, or a direct alias → remove the time filter or use a scheduled detection. | [Defender custom detections][defender-detections] |
 | `KQLQ001` | Information | community-detection / detection-quality | No | Detection filters identity-like display names → prefer stable IDs where the source exposes them. This heuristic is intentionally opt-in. | [Detection Engineering Best Practices, part 1][dxbp1] |
 | `KQLQ002` | Information | community-detection / detection-quality | No | `DeviceProcessEvents` filename detection omits original-file-name metadata → consider the original filename to tolerate renamed binaries. | [Detection Engineering Best Practices, part 1][dxbp1] |
 | `KQLQ003` | Information | community-detection / maintainability | No | Inline negative filter has no same-line explanation → document rationale and ownership or centralize the allowlist. | [Detection Engineering Best Practices, part 2][dxbp2] |
@@ -113,6 +128,7 @@ Static lint cannot reliably determine input cardinality, ingestion delay, expect
 
 [defender-bp]: https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-best-practices
 [defender-detections]: https://learn.microsoft.com/en-us/defender-xdr/custom-detection-rules
+[nrt-kql-features]: https://learn.microsoft.com/en-us/azure/azure-monitor/data-collection/data-collection-transformations-kql#supported-kql-features
 [sentinel-rules]: https://learn.microsoft.com/en-us/azure/sentinel/scheduled-rules-overview
 [alert-queries]: https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-log-query
 [kusto-bp]: https://learn.microsoft.com/en-us/kusto/query/best-practices

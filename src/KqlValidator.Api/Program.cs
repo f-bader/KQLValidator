@@ -19,6 +19,7 @@ builder.Services.AddSingleton<LintRuleCatalog>();
 builder.Services.AddSingleton<GlobalStateFactory>();
 builder.Services.AddSingleton<RequestValidator>();
 builder.Services.AddSingleton<KqlLinter>();
+builder.Services.AddSingleton<DefenderNrtValidator>();
 builder.Services.AddSingleton<KqlValidationService>();
 builder.Services.AddSingleton<SchemaQueryService>();
 builder.Services.AddSingleton(TimeProvider.System);

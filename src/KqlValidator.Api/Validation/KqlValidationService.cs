@@ -12,6 +12,7 @@ public sealed partial class KqlValidationService(
     GlobalStateFactory globalStateFactory,
     RequestValidator requestValidator,
     KqlLinter linter,
+    DefenderNrtValidator defenderNrtValidator,
     LintRuleCatalog lintRules)
 {
     private const int MaxDiagnostics = 500;
@@ -51,6 +52,7 @@ public sealed partial class KqlValidationService(
                 diagnostic.Code.StartsWith("KS", StringComparison.Ordinal) ? "syntax" : "semantic"))
             .Concat(fileProfileDiagnostics)
             .Concat(linter.Analyze(request, lintPolicy, cancellationToken))
+            .Concat(defenderNrtValidator.Analyze(request, lintPolicy, references.Tables, references.Columns))
             .Concat(DetectionOutputDiagnostics(request, outputColumns, references.Tables, schema, lintPolicy))
             .Take(MaxDiagnostics + 1)
             .ToArray();
