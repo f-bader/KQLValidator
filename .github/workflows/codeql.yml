@@ -17,6 +17,7 @@ jobs:
     permissions:
       actions: read
       contents: read
+      security-events: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -33,6 +34,3 @@ jobs:
       - run: dotnet restore kql-validator.slnx --locked-mode
       - run: dotnet build kql-validator.slnx --configuration Release --no-restore
       - uses: github/codeql-action/analyze@5595ccaf912efad79be6eef63a5619ff05969be3 # v4.37.6
-        with:
-          upload: never
-          upload-database: false
