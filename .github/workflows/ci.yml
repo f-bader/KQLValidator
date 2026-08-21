@@ -3,6 +3,7 @@ name: ci
 on:
   push:
     branches: [main]
+    tags: ['v*']
   pull_request:
   workflow_dispatch:
 
@@ -37,8 +38,18 @@ jobs:
         run: dotnet publish src/KqlValidator.Api/KqlValidator.Api.csproj --configuration Release --no-restore --output artifacts/publish /p:UseAppHost=false
       - name: Verify status site build switch
         run: bash scripts/validate-status-site-build.sh
+      - name: Compute version
+        id: version
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=1.0.0-ci.${GITHUB_RUN_NUMBER}" >> "$GITHUB_OUTPUT"
+          fi
       - name: Build container
-        run: docker build --build-arg SOURCE_REVISION=${{ github.sha }} --tag kql-validator:${{ github.sha }} .
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: docker build --build-arg SOURCE_REVISION=${{ github.sha }} --build-arg VERSION="$VERSION" --tag kql-validator:${{ github.sha }} .
       - name: Scan container
         uses: anchore/scan-action@e1165082ffb1fe366ebaf02d8526e7c4989ea9d2 # v7.4.0
         with:

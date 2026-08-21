@@ -1,10 +1,11 @@
 using System.Diagnostics.Metrics;
+using KqlValidator.Validation;
 
 namespace KqlValidator.Operational;
 
 public sealed class AnalysisMetrics : IDisposable
 {
-    private readonly Meter meter = new("KqlValidator.Analysis", "1.0.0");
+    private readonly Meter meter = new("KqlValidator.Analysis", ThisAssembly.Version);
     private readonly Counter<long> requests;
     private readonly Counter<long> deadlineExceeded;
     private readonly Counter<long> queueRejected;

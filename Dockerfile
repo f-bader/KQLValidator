@@ -1,6 +1,7 @@
 # syntax=docker/dockerfile:1.7
 FROM mcr.microsoft.com/dotnet/sdk:10.0.400-noble@sha256:e1ffd2a92ae84c1291bc1b6887501f8af98e6331e7af6d4c8d37168c5e87a64c AS build
 ARG SOURCE_REVISION=unknown
+ARG VERSION=0.0.0-local
 ARG ENABLE_STATUS_SITE=true
 WORKDIR /src
 
@@ -14,6 +15,7 @@ RUN dotnet publish src/KqlValidator.Api/KqlValidator.Api.csproj \
     --no-restore \
     --output /app/publish \
     /p:UseAppHost=false \
+    /p:Version=$VERSION \
     /p:SourceRevisionId=$SOURCE_REVISION \
     /p:EnableStatusSite=$ENABLE_STATUS_SITE
 

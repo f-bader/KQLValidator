@@ -14,6 +14,8 @@ AZURE_ACR_RESOURCE_GROUP="${AZURE_ACR_RESOURCE_GROUP:-$AZURE_RESOURCE_GROUP}"
 image_tag="$(git rev-parse --short=12 HEAD)"
 source_revision="$(git rev-parse HEAD)"
 image_name="kql-validator:$image_tag"
+version="${VERSION:-$(git describe --tags --match 'v*' --abbrev=0 2>/dev/null | sed 's/^v//' || true)}"
+version="${version:-0.0.0-lab}"
 
 az account set --subscription "$AZURE_SUBSCRIPTION_ID"
 az group show --name "$AZURE_RESOURCE_GROUP" >/dev/null
@@ -24,6 +26,7 @@ az acr build \
   --registry "$AZURE_ACR_NAME" \
   --image "$image_name" \
   --build-arg "SOURCE_REVISION=$source_revision" \
+  --build-arg "VERSION=$version" \
   --file Dockerfile \
   .
 
