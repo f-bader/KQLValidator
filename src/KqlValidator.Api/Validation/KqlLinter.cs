@@ -307,8 +307,13 @@ public sealed partial class KqlLinter
     private static Match Find(string input, string pattern) =>
         Regex.Match(input, pattern, RegexOptions.CultureInvariant, RegexTimeout);
 
+    // String literals are matched first and kept verbatim so a "//" inside a literal
+    // (for example a URL) is never mistaken for a line comment.
     private static string MaskComments(string query) => Regex.Replace(
-        query, @"(?m)//[^\r\n]*|/\*[\s\S]*?\*/", m => new string(' ', m.Length), RegexOptions.CultureInvariant, RegexTimeout);
+        query,
+        """(?<literal>@?"(?:""|\\.|[^"])*"|@?'(?:''|\\.|[^'])*')|//[^\r\n]*|/\*[\s\S]*?\*/""",
+        m => m.Groups["literal"].Success ? m.Value : new string(' ', m.Length),
+        RegexOptions.CultureInvariant, RegexTimeout);
 
     private static string MaskStringLiterals(string query) => Regex.Replace(
         query,

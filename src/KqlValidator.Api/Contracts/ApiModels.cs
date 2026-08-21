@@ -19,8 +19,10 @@ public enum KqlTarget
     [JsonStringEnumMemberName("defender-nrt")] DefenderNrt,
 }
 
+// Severity filtering compares these values relationally (Error is most severe), so the
+// numeric assignments are part of the contract and must not be reordered.
 [JsonConverter(typeof(JsonStringEnumConverter<DiagnosticSeverity>))]
-public enum DiagnosticSeverity { Error, Warning, Information }
+public enum DiagnosticSeverity { Error = 0, Warning = 1, Information = 2 }
 
 public sealed record ValidateRequest(
     [property: Required, MaxLength(65_536)] string Query,

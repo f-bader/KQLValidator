@@ -19,7 +19,9 @@ public sealed class DefenderNrtValidator
 
     private static readonly HashSet<string> UnifiedOnlyTables = new(StringComparer.OrdinalIgnoreCase)
     {
-        "ABAPAuditLog_C", "ABAPChangeDocsLog_CL", "AuditLogs", "AWSCloudTrail", "AWSGuardDuty", "AzureActivity",
+        // The Microsoft NRT table list prints "ABAPAuditLog_C", a truncation of the SAP
+        // connector table ABAPAuditLog_CL (docs feedback has been submitted).
+        "ABAPAuditLog_CL", "ABAPChangeDocsLog_CL", "AuditLogs", "AWSCloudTrail", "AWSGuardDuty", "AzureActivity",
         "CommonSecurityLog", "GCPAuditLogs", "MicrosoftGraphActivityLogs", "OfficeActivity", "Okta_CL", "OktaV2_CL",
         "ProofpointPOD", "ProofPointTAPClicksPermitted_CL", "ProofPointTAPMessagesDelivered_CL", "SecurityAlert",
         "SecurityEvent", "SigninLogs",
@@ -269,7 +271,8 @@ public sealed class DefenderNrtValidator
 
     private static (int Start, int Length) FindIdentifier(string query, string identifier)
     {
-        var match = Regex.Match(query, $@"(?i)\b{Regex.Escape(identifier)}\b", RegexOptions.CultureInvariant, RegexTimeout);
+        // An instance regex keeps per-request patterns out of the process-wide static regex cache.
+        var match = new Regex($@"(?i)\b{Regex.Escape(identifier)}\b", RegexOptions.CultureInvariant, RegexTimeout).Match(query);
         return match.Success ? (match.Index, match.Length) : (0, 1);
     }
 
