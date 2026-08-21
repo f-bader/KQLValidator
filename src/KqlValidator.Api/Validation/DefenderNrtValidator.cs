@@ -78,7 +78,8 @@ public sealed class DefenderNrtValidator
         ValidateRequest request,
         LintPolicy policy,
         IReadOnlyList<string> referencedTables,
-        IReadOnlyList<string> referencedColumns)
+        IReadOnlyList<string> referencedColumns,
+        CancellationToken cancellationToken = default)
     {
         var target = LintRuleCatalog.ResolveTarget(request);
         if (target is not (KqlTarget.DefenderNrt or KqlTarget.SentinelNrt))
@@ -92,15 +93,15 @@ public sealed class DefenderNrtValidator
         // still useful because ingestion-time and event-time predicates can skip events.
         if (target == KqlTarget.SentinelNrt)
         {
-            AddTimeFilterDiagnostics(diagnostics, policy, query, searchable);
+            AddTimeFilterDiagnostics(diagnostics, policy, query, searchable, cancellationToken);
             return diagnostics;
         }
 
         AddTableDiagnostics(diagnostics, policy, query, referencedTables, referencedColumns, request.Environment);
-        AddStructuralDiagnostics(diagnostics, policy, query, searchable);
-        AddFeatureDiagnostics(diagnostics, policy, query, searchable);
-        AddRegexDiagnostics(diagnostics, policy, query);
-        AddTimeFilterDiagnostics(diagnostics, policy, query, searchable);
+        AddStructuralDiagnostics(diagnostics, policy, query, searchable, cancellationToken);
+        AddFeatureDiagnostics(diagnostics, policy, query, searchable, cancellationToken);
+        AddRegexDiagnostics(diagnostics, policy, query, cancellationToken);
+        AddTimeFilterDiagnostics(diagnostics, policy, query, searchable, cancellationToken);
         return diagnostics;
     }
 
@@ -141,21 +142,28 @@ public sealed class DefenderNrtValidator
         }
     }
 
-    private void AddStructuralDiagnostics(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string query, string searchable)
+    private void AddStructuralDiagnostics(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string query, string searchable, CancellationToken cancellationToken)
     {
         foreach (Match match in MultiInput.Matches(searchable))
+        {
+            cancellationToken.ThrowIfCancellationRequested();
             Add(diagnostics, policy, query, "KQLN001",
                 "Defender continuous NRT rules do not support join, union, or externaldata. Rewrite this as a single-input query or use a scheduled detection.", match.Index, match.Length);
+        }
 
         foreach (Match match in Comment.Matches(MaskStringLiterals(query)))
+        {
+            cancellationToken.ThrowIfCancellationRequested();
             Add(diagnostics, policy, query, "KQLN002",
                 "Defender continuous NRT rules do not support comments in deployed KQL. Remove the comment or use a scheduled target if comments must remain.", match.Index, match.Length);
+        }
     }
 
-    private void AddFeatureDiagnostics(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string query, string searchable)
+    private void AddFeatureDiagnostics(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string query, string searchable, CancellationToken cancellationToken)
     {
         foreach (Match match in PipeOperator.Matches(searchable))
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var operation = match.Groups["operator"].Value;
             if (!AllowedPipeOperators.Contains(operation))
                 Add(diagnostics, policy, query, "KQLN004",
@@ -163,12 +171,16 @@ public sealed class DefenderNrtValidator
         }
 
         foreach (Match match in UnsupportedStringOperator.Matches(searchable))
+        {
+            cancellationToken.ThrowIfCancellationRequested();
             Add(diagnostics, policy, query, "KQLN004",
                 $"'{match.Value}' is not a supported KQL string operator for Defender continuous NRT rules.", match.Index, match.Length);
+        }
 
-        var localFunctions = CollectLocalScalarFunctions(diagnostics, policy, query);
+        var localFunctions = CollectLocalScalarFunctions(diagnostics, policy, query, cancellationToken);
         foreach (Match match in FunctionCall.Matches(searchable))
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var function = match.Groups["function"].Value;
             if (AllowedFunctions.Contains(function) || localFunctions.Contains(function) || ParenthesizedOperators.Contains(function))
                 continue;
@@ -177,11 +189,12 @@ public sealed class DefenderNrtValidator
         }
     }
 
-    private HashSet<string> CollectLocalScalarFunctions(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string query)
+    private HashSet<string> CollectLocalScalarFunctions(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string query, CancellationToken cancellationToken)
     {
         var functions = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach (Match match in LocalFunction.Matches(MaskCommentsAndStrings(query)))
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var parameters = match.Groups["parameters"].Value;
             var scalar = parameters.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
                 .All(parameter => parameter.Split(':', 2) is [_, var type] && ScalarTypes.Contains(type.Trim()));
@@ -194,10 +207,11 @@ public sealed class DefenderNrtValidator
         return functions;
     }
 
-    private void AddRegexDiagnostics(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string query)
+    private void AddRegexDiagnostics(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string query, CancellationToken cancellationToken)
     {
         foreach (Match match in RegexRhs.Matches(MaskComments(query)))
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var value = match.Groups["value"];
             if (IsNrtRegexLiteral(value.Value))
                 continue;
@@ -206,16 +220,20 @@ public sealed class DefenderNrtValidator
         }
     }
 
-    private void AddTimeFilterDiagnostics(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string query, string searchable)
+    private void AddTimeFilterDiagnostics(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string query, string searchable, CancellationToken cancellationToken)
     {
         var temporalNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "Timestamp", "TimeGenerated", "ingestion_time" };
         foreach (Match alias in Alias.Matches(searchable))
+        {
+            cancellationToken.ThrowIfCancellationRequested();
             temporalNames.Add(alias.Groups["alias"].Value);
+        }
 
         var alternatives = string.Join("|", temporalNames.Select(Regex.Escape).OrderByDescending(name => name.Length));
         var temporal = new Regex($@"(?i)\b(?<field>{alternatives})\b\s*(?:\(\s*\))?\s*(?:(?:==|=~|!=|!~|<=|>=|=|<|>)\s*|(?:between|in)\b)", RegexOptions.CultureInvariant, RegexTimeout);
         foreach (Match clause in WhereClause.Matches(searchable))
         {
+            cancellationToken.ThrowIfCancellationRequested();
             foreach (Match predicate in temporal.Matches(clause.Groups["predicate"].Value))
             {
                 var start = clause.Groups["predicate"].Index + predicate.Index;

@@ -32,62 +32,47 @@ public sealed partial class KqlLinter
         LintPolicy policy,
         CancellationToken cancellationToken = default)
     {
-        try
-        {
-            return AnalyzeCore(request, policy, cancellationToken);
-        }
-        catch (RegexMatchTimeoutException)
-        {
-            throw new RequestValidationException("query", "Query exceeds the lint analysis complexity limit.");
-        }
-    }
-
-    private IReadOnlyList<ValidationDiagnostic> AnalyzeCore(
-        ValidateRequest request,
-        LintPolicy policy,
-        CancellationToken cancellationToken)
-    {
         var diagnostics = new List<ValidationDiagnostic>();
         var query = request.Query;
         var searchable = MaskComments(query);
 
         cancellationToken.ThrowIfCancellationRequested();
         Match(diagnostics, policy, searchable, UnscopedSearch(), "KQLH001",
-            "Scope search to explicit tables with 'search in (...)'.");
+            "Scope search to explicit tables with 'search in (...)'.", cancellationToken);
         Match(diagnostics, policy, searchable, WildcardSearch(), "KQLH002",
-            "Search specific columns instead of using a wildcard column search.");
+            "Search specific columns instead of using a wildcard column search.", cancellationToken);
         Match(diagnostics, policy, searchable, UnscopedUnion(), "KQLH003",
-            "Avoid broad union queries; enumerate only the required tables and time-bound each branch.");
+            "Avoid broad union queries; enumerate only the required tables and time-bound each branch.", cancellationToken);
         Match(diagnostics, policy, searchable, CaseTransformComparison(), "KQLH004",
-            "Avoid transforming every row with tolower()/toupper(); use an appropriate string operator when its matching semantics are acceptable.");
+            "Avoid transforming every row with tolower()/toupper(); use an appropriate string operator when its matching semantics are acceptable.", cancellationToken);
         Match(diagnostics, policy, searchable, RegexUsage(), "KQLH005",
-            "Prefer parse or parse_json for structured values; reserve regular expressions for cases that require them.");
+            "Prefer parse or parse_json for structured values; reserve regular expressions for cases that require them.", cancellationToken);
         Match(diagnostics, policy, searchable, ShortTerm(), "KQLH006",
-            "Terms of three characters or fewer are not indexed and can consume more resources.");
+            "Terms of three characters or fewer are not indexed and can consume more resources.", cancellationToken);
         Match(diagnostics, policy, searchable, CalculatedFilter(), "KQLH007",
-            "Filter source columns before calculating derived values when the query can preserve the same semantics.");
+            "Filter source columns before calculating derived values when the query can preserve the same semantics.", cancellationToken);
         Match(diagnostics, policy, searchable, ExactCommandLine(), "KQLH008",
-            "Exact command-line comparisons are brittle; scope by process filename and match or parse independent command-line components.");
+            "Exact command-line comparisons are brittle; scope by process filename and match or parse independent command-line components.", cancellationToken);
         Match(diagnostics, policy, searchable, DefaultJoin(), "KQLH009",
-            "The default join flavor is innerunique and deduplicates the left side; specify kind=inner when every left-side row must be retained.");
+            "The default join flavor is innerunique and deduplicates the left side; specify kind=inner when every left-side row must be retained.", cancellationToken);
 
         cancellationToken.ThrowIfCancellationRequested();
-        AddTimeFilterDiagnostics(diagnostics, policy, searchable);
+        AddTimeFilterDiagnostics(diagnostics, policy, searchable, cancellationToken);
         AddLateFilterDiagnostics(diagnostics, policy, searchable);
         AddUnboundedResultDiagnostic(diagnostics, policy, searchable);
         AddProcessIdDiagnostic(diagnostics, policy, searchable);
-        AddActionTypeDiagnostics(diagnostics, policy, searchable);
-        AddAnomalousBehaviorLiteralDiagnostics(diagnostics, policy, searchable);
-        AddDetectionTextDiagnostics(diagnostics, policy, searchable);
-        AddWatchlistColumnDiagnostics(diagnostics, policy, searchable);
-        AddMicrosoftKustoDiagnostics(diagnostics, policy, searchable);
+        AddActionTypeDiagnostics(diagnostics, policy, searchable, cancellationToken);
+        AddAnomalousBehaviorLiteralDiagnostics(diagnostics, policy, searchable, cancellationToken);
+        AddDetectionTextDiagnostics(diagnostics, policy, searchable, cancellationToken);
+        AddWatchlistColumnDiagnostics(diagnostics, policy, searchable, cancellationToken);
+        AddMicrosoftKustoDiagnostics(diagnostics, policy, searchable, cancellationToken);
         cancellationToken.ThrowIfCancellationRequested();
-        AddTargetDiagnostics(diagnostics, policy, query, searchable);
-        AddCommunityDiagnostics(diagnostics, policy, query, searchable);
+        AddTargetDiagnostics(diagnostics, policy, query);
+        AddCommunityDiagnostics(diagnostics, policy, query, searchable, cancellationToken);
         return diagnostics;
     }
 
-    private void AddTimeFilterDiagnostics(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string query)
+    private void AddTimeFilterDiagnostics(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string query, CancellationToken cancellationToken)
     {
         var hasXdrTable = IsMatch(query, @"(?im)^\s*(Device|Email|Identity|CloudApp|Alert|Behavior)[A-Za-z]+\b");
         var hasTimeFilter = IsMatch(query, @"(?i)\b(?:Timestamp|TimeGenerated)\s*(?:>|>=|between|in)\b");
@@ -97,6 +82,7 @@ public sealed partial class KqlLinter
 
         foreach (Match join in JoinBranch().Matches(query))
         {
+            cancellationToken.ThrowIfCancellationRequested();
             if (!IsMatch(join.Value, @"(?i)\b(?:Timestamp|TimeGenerated)\s*(?:>|>=|between|in)\b"))
                 Add(diagnostics, policy, query, "KQLH011",
                     "Apply a time filter inside this join branch as well as on the left input.", join.Index, join.Length);
@@ -129,10 +115,11 @@ public sealed partial class KqlLinter
                 "Process IDs are reused; identify a process with its unique ID or creation time.", pid.Index, pid.Length);
     }
 
-    private void AddActionTypeDiagnostics(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string query)
+    private void AddActionTypeDiagnostics(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string query, CancellationToken cancellationToken)
     {
         foreach (Match match in ActionTypeLiteral().Matches(query))
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var value = match.Groups[1].Value;
             if (!knownActionTypes.Contains(value))
                 Add(diagnostics, policy, query, "KQLX001",
@@ -141,10 +128,11 @@ public sealed partial class KqlLinter
         }
     }
 
-    private void AddAnomalousBehaviorLiteralDiagnostics(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string query)
+    private void AddAnomalousBehaviorLiteralDiagnostics(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string query, CancellationToken cancellationToken)
     {
         foreach (Match invocation in AboutLiteral().Matches(query))
         {
+            cancellationToken.ThrowIfCancellationRequested();
             try
             {
                 using var document = JsonDocument.Parse(invocation.Groups[1].Value);
@@ -167,23 +155,29 @@ public sealed partial class KqlLinter
         }
     }
 
-    private void AddDetectionTextDiagnostics(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string query)
+    private void AddDetectionTextDiagnostics(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string query, CancellationToken cancellationToken)
     {
         Match(diagnostics, policy, query, ExactCommandLine(), "KQLD005",
-            "Detection command-line logic should tolerate benign quoting, spacing, and argument ordering differences.");
+            "Detection command-line logic should tolerate benign quoting, spacing, and argument ordering differences.", cancellationToken);
         Match(diagnostics, policy, query, DetectionRowLimit(), "KQLD006",
-            "Avoid take or limit in alert queries; use a deterministic filter or aggregation instead.");
+            "Avoid take or limit in alert queries; use a deterministic filter or aggregation instead.", cancellationToken);
     }
 
-    private void AddWatchlistColumnDiagnostics(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string query)
+    private void AddWatchlistColumnDiagnostics(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string query, CancellationToken cancellationToken)
     {
+        if (!query.Contains("_GetWatchlist", StringComparison.OrdinalIgnoreCase))
+            return;
+
         foreach (Match watchlist in GetWatchlistPipeline().Matches(query))
         {
             var pipeline = watchlist.Groups["pipeline"];
+            var maskedPipeline = MaskStringLiterals(pipeline.Value);
             foreach (var column in OptionalWatchlistColumns)
             {
-                if (HasColumnIfExists(pipeline.Value, column)) continue;
-                var usage = WatchlistColumnUsage(column).Match(MaskStringLiterals(pipeline.Value));
+                cancellationToken.ThrowIfCancellationRequested();
+                var patterns = WatchlistColumnPatterns[column];
+                if (patterns.ColumnIfExists.IsMatch(pipeline.Value)) continue;
+                var usage = patterns.Usage.Match(maskedPipeline);
                 if (!usage.Success) continue;
 
                 var preferred = IsSimpleIdentifier(column)
@@ -196,15 +190,6 @@ public sealed partial class KqlLinter
         }
     }
 
-    private static bool HasColumnIfExists(string pipeline, string column) =>
-        IsMatch(pipeline, $"(?i)\\bcolumn_ifexists\\s*\\(\\s*['\"]{Regex.Escape(column)}['\"]\\s*,");
-
-    private static Regex WatchlistColumnUsage(string column) => new(
-        IsSimpleIdentifier(column)
-            ? $"(?i)(?<!['\"])\\b{Regex.Escape(column)}\\b"
-            : $"(?i)\\[\\s*['\"]{Regex.Escape(column)}['\"]\\s*\\]",
-        RegexOptions.CultureInvariant, RegexTimeout);
-
     private static bool IsSimpleIdentifier(string value) => IsMatch(value, "^[A-Za-z_]\\w*$");
 
     private static readonly string[] OptionalWatchlistColumns =
@@ -216,12 +201,27 @@ public sealed partial class KqlLinter
         "Owner User AAD Object Id", "Owner User On-Prem Sid", "Owner User Principal Name", "Tags",
     ];
 
-    private void Match(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string query, Regex regex, string id, string message)
+    private sealed record ColumnPatterns(Regex ColumnIfExists, Regex Usage);
+
+    private static readonly IReadOnlyDictionary<string, ColumnPatterns> WatchlistColumnPatterns =
+        OptionalWatchlistColumns.ToDictionary(
+            column => column,
+            column => new ColumnPatterns(
+                new Regex($"(?i)\\bcolumn_ifexists\\s*\\(\\s*['\"]{Regex.Escape(column)}['\"]\\s*,", RegexOptions.CultureInvariant, RegexTimeout),
+                new Regex(
+                    IsSimpleIdentifier(column)
+                        ? $"(?i)(?<!['\"])\\b{Regex.Escape(column)}\\b"
+                        : $"(?i)\\[\\s*['\"]{Regex.Escape(column)}['\"]\\s*\\]",
+                    RegexOptions.CultureInvariant, RegexTimeout)),
+            StringComparer.Ordinal);
+
+    private void Match(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string query, Regex regex, string id, string message, CancellationToken cancellationToken)
     {
         var severity = rules.Get(id).DefaultSeverity;
         if (!policy.IsEnabled(id, severity)) return;
         foreach (Match match in regex.Matches(query))
         {
+            cancellationToken.ThrowIfCancellationRequested();
             if (diagnostics.Count >= MaxLintDiagnostics) break;
             diagnostics.Add(rules.CreateDiagnostic(query, id, message, match.Index, match.Length));
         }
@@ -235,37 +235,35 @@ public sealed partial class KqlLinter
             diagnostics.Add(rules.CreateDiagnostic(query, id, message, start, length));
     }
 
-    private void AddMicrosoftKustoDiagnostics(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string query)
+    private void AddMicrosoftKustoDiagnostics(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string query, CancellationToken cancellationToken)
     {
         Match(diagnostics, policy, query, ContainsTerm(), "KQLP001",
-            "If full-term matching is intended, use has instead of contains so Kusto can use the term index.");
+            "If full-term matching is intended, use has instead of contains so Kusto can use the term index.", cancellationToken);
         Match(diagnostics, policy, query, RepeatedEquality(), "KQLP002",
-            "Replace repeated equality comparisons on this column with in() or in~().");
+            "Replace repeated equality comparisons on this column with in() or in~().", cancellationToken);
         Match(diagnostics, policy, query, BagUnpackWithoutSchema(), "KQLP003",
-            "Declare an OutputSchema after bag_unpack() to avoid schema inference during query execution.");
+            "Declare an OutputSchema after bag_unpack() to avoid schema inference during query execution.", cancellationToken);
         Match(diagnostics, policy, query, FormatDateTimePredicate(), "KQLP004",
-            "Compare datetime values directly instead of applying format_datetime() in a where predicate.");
+            "Compare datetime values directly instead of applying format_datetime() in a where predicate.", cancellationToken);
         Match(diagnostics, policy, query, EmptyStringComparison(), "KQLP005",
-            "Use isempty() or isnotempty() instead of comparing a string with an empty literal.");
+            "Use isempty() or isnotempty() instead of comparing a string with an empty literal.", cancellationToken);
         Match(diagnostics, policy, query, HasIpv4Literal(), "KQLP006",
-            "Use has_ipv4() or has_any_ipv4() for an IPv4 literal.");
+            "Use has_ipv4() or has_any_ipv4() for an IPv4 literal.", cancellationToken);
     }
 
-    private void AddTargetDiagnostics(
-        List<ValidationDiagnostic> diagnostics, LintPolicy policy, string originalQuery, string searchableQuery)
+    private void AddTargetDiagnostics(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string originalQuery)
     {
         if (originalQuery.Length > 10_000)
             Add(diagnostics, policy, originalQuery, "KQLS001",
                 $"Sentinel analytics rule queries cannot exceed 10,000 characters; this query is {originalQuery.Length} characters. Shorten it or move large literal lists and pattern data into a watchlist or other managed external source.", 10_000,
                 originalQuery.Length - 10_000);
-
     }
 
     private void AddCommunityDiagnostics(
-        List<ValidationDiagnostic> diagnostics, LintPolicy policy, string originalQuery, string searchableQuery)
+        List<ValidationDiagnostic> diagnostics, LintPolicy policy, string originalQuery, string searchableQuery, CancellationToken cancellationToken)
     {
         Match(diagnostics, policy, searchableQuery, DisplayNameIdentity(), "KQLQ001",
-            "Prefer a stable identifier over this display-name comparison when the source exposes one.");
+            "Prefer a stable identifier over this display-name comparison when the source exposes one.", cancellationToken);
 
         if (IsMatch(searchableQuery, @"(?i)\bDeviceProcessEvents\b") &&
             IsMatch(searchableQuery, @"(?i)\b(?:InitiatingProcess)?FileName\s*(?:==|=~|in~?)") &&
@@ -279,6 +277,7 @@ public sealed partial class KqlLinter
 
         foreach (Match exclusion in InlineExclusion().Matches(searchableQuery))
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var lineStart = originalQuery.LastIndexOf('\n', Math.Max(0, exclusion.Index - 1)) + 1;
             var lineEnd = originalQuery.IndexOf('\n', exclusion.Index);
             if (lineEnd < 0) lineEnd = originalQuery.Length;
@@ -289,7 +288,7 @@ public sealed partial class KqlLinter
         }
 
         Match(diagnostics, policy, searchableQuery, SentinelNrtCorrelation(), "KQLQ004",
-            "Sentinel NRT joins and unions can miss events that arrive in different ingestion windows; prefer a single-event NRT rule when possible.");
+            "Sentinel NRT joins and unions can miss events that arrive in different ingestion windows; prefer a single-event NRT rule when possible.", cancellationToken);
     }
 
     internal static SourceSpan Span(string query, int start, int length)

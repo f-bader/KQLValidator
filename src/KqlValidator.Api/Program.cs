@@ -32,9 +32,15 @@ builder.Services.AddHealthChecks()
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
     options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    // Exactly one hop: behind an appending ingress (Container Apps ingress appends the
+    // observed client address as the rightmost X-Forwarded-For entry) only that entry is
+    // trusted, so a client-supplied header cannot spoof the rate-limit partition key.
     options.ForwardLimit = 1;
     options.KnownIPNetworks.Clear();
     options.KnownProxies.Clear();
+    var knownNetworks = builder.Configuration.GetSection("ReverseProxy:KnownNetworks").Get<string[]>() ?? [];
+    foreach (var network in knownNetworks)
+        options.KnownIPNetworks.Add(System.Net.IPNetwork.Parse(network));
 });
 builder.Services.AddRateLimiter(options =>
 {
@@ -44,6 +50,8 @@ builder.Services.AddRateLimiter(options =>
         context.HttpContext.Response.Headers.RetryAfter = "1";
         return ValueTask.CompletedTask;
     };
+    static TimeSpan ReplenishmentPeriod(IConfiguration configuration) =>
+        TimeSpan.FromSeconds(configuration.GetValue<int?>("RateLimiting:ReplenishmentPeriodSeconds") ?? 1);
     options.AddPolicy("public-api", context =>
     {
         var configuration = context.RequestServices.GetRequiredService<IConfiguration>();
@@ -58,7 +66,32 @@ builder.Services.AddRateLimiter(options =>
             {
                 TokenLimit = tokenLimit,
                 TokensPerPeriod = tokensPerSecond,
-                ReplenishmentPeriod = TimeSpan.FromSeconds(1),
+                ReplenishmentPeriod = ReplenishmentPeriod(configuration),
+                AutoReplenishment = true,
+                QueueLimit = 0,
+            });
+    });
+    // Per-address partitions are spoofable when forwarded headers are trusted and idle
+    // partitions are purged but still cost memory while active, so a single global bucket
+    // bounds total throughput no matter how many partitions a caller manufactures.
+    // Health probes stay exempt so an attack cannot starve the container probes.
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
+    {
+        if (context.Request.Path.StartsWithSegments("/health"))
+            return RateLimitPartition.GetNoLimiter("health");
+
+        var configuration = context.RequestServices.GetRequiredService<IConfiguration>();
+        var environment = context.RequestServices.GetRequiredService<IHostEnvironment>();
+        var tokenLimit = configuration.GetValue<int?>("RateLimiting:GlobalTokenLimit")
+            ?? (environment.IsDevelopment() ? 10_000 : 100);
+        var tokensPerSecond = configuration.GetValue<int?>("RateLimiting:GlobalTokensPerSecond") ?? 25;
+        return RateLimitPartition.GetTokenBucketLimiter(
+            "global",
+            _ => new TokenBucketRateLimiterOptions
+            {
+                TokenLimit = tokenLimit,
+                TokensPerPeriod = tokensPerSecond,
+                ReplenishmentPeriod = ReplenishmentPeriod(configuration),
                 AutoReplenishment = true,
                 QueueLimit = 0,
             });

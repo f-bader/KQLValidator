@@ -18,9 +18,19 @@ public sealed partial class KqlValidationService(
     private const int MaxDiagnostics = 500;
     private const int RegexTimeoutMilliseconds = 250;
 
-    public ValidationResponse Validate(ValidateRequest request) => Validate(request, CancellationToken.None);
+    public ValidationResponse Validate(ValidateRequest request, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            return ValidateCore(request, cancellationToken);
+        }
+        catch (RegexMatchTimeoutException)
+        {
+            throw new RequestValidationException("query", "Query exceeds the static analysis complexity limit.");
+        }
+    }
 
-    public ValidationResponse Validate(ValidateRequest request, CancellationToken cancellationToken)
+    private ValidationResponse ValidateCore(ValidateRequest request, CancellationToken cancellationToken)
     {
         var stopwatch = Stopwatch.StartNew();
         requestValidator.Validate(request);
@@ -39,6 +49,7 @@ public sealed partial class KqlValidationService(
         var fileProfileDiagnostics = ValidateFileProfileColumns(request.Query, code, normalized.Columns, kustoCancellation);
         var references = GatherReferences(code, normalized.Columns.Select(x => x.Name), cancellationToken);
         var lintPolicy = lintRules.CreatePolicy(request);
+        var watchlistPipelines = CollectWatchlistPipelines(normalized.Query);
 
         var candidates = code.GetDiagnostics(kustoCancellation)
             .Select(diagnostic => new ValidationDiagnostic(
@@ -46,13 +57,13 @@ public sealed partial class KqlValidationService(
                 diagnostic.Severity == Kusto.Language.DiagnosticSeverity.Error
                     ? Contracts.DiagnosticSeverity.Error
                     : Contracts.DiagnosticSeverity.Warning,
-                DiagnosticGuidance(normalized.Query, diagnostic.Code, diagnostic.Start, diagnostic.Description),
+                DiagnosticGuidance(watchlistPipelines, diagnostic.Code, diagnostic.Start, diagnostic.Description),
                 KqlLinter.Span(request.Query, diagnostic.Start, diagnostic.Length),
                 "https://learn.microsoft.com/en-us/kusto/query/",
                 diagnostic.Code.StartsWith("KS", StringComparison.Ordinal) ? "syntax" : "semantic"))
             .Concat(fileProfileDiagnostics)
             .Concat(linter.Analyze(request, lintPolicy, cancellationToken))
-            .Concat(defenderNrtValidator.Analyze(request, lintPolicy, references.Tables, references.Columns))
+            .Concat(defenderNrtValidator.Analyze(request, lintPolicy, references.Tables, references.Columns, cancellationToken))
             .Concat(DetectionOutputDiagnostics(request, outputColumns, references.Tables, schema, lintPolicy))
             .Take(MaxDiagnostics + 1)
             .ToArray();
@@ -157,36 +168,49 @@ public sealed partial class KqlValidationService(
         return diagnostics;
     }
 
-    private static string? WatchlistColumnGuidance(string query, int diagnosticPosition, string description)
+    private static IReadOnlyList<WatchlistPipelineSpan> CollectWatchlistPipelines(string query)
     {
-        var unknownName = UnknownColumnName().Match(description);
-        if (!unknownName.Success) return null;
+        if (!query.Contains("_GetWatchlist", StringComparison.OrdinalIgnoreCase))
+            return [];
 
+        var pipelines = new List<WatchlistPipelineSpan>();
         foreach (System.Text.RegularExpressions.Match watchlist in WatchlistPipeline().Matches(query))
         {
             var pipeline = watchlist.Groups["pipeline"];
-            if (diagnosticPosition < pipeline.Index || diagnosticPosition > pipeline.Index + pipeline.Length)
-                continue;
-
             var alias = watchlist.Groups["alias"].Value.Trim();
             if (alias.Length >= 2 && ((alias[0] == '\'' && alias[^1] == '\'') || (alias[0] == '"' && alias[^1] == '"')))
                 alias = alias[1..^1];
             if (string.IsNullOrWhiteSpace(alias) || alias.Contains(')'))
                 alias = "example_alias";
+            pipelines.Add(new WatchlistPipelineSpan(pipeline.Index, pipeline.Index + pipeline.Length, alias));
+        }
+        return pipelines;
+    }
+
+    private static string? WatchlistColumnGuidance(
+        IReadOnlyList<WatchlistPipelineSpan> pipelines, int diagnosticPosition, string description)
+    {
+        var unknownName = UnknownColumnName().Match(description);
+        if (!unknownName.Success) return null;
+
+        foreach (var pipeline in pipelines)
+        {
+            if (diagnosticPosition < pipeline.Start || diagnosticPosition > pipeline.End)
+                continue;
 
             var column = unknownName.Groups["column"].Value;
             return $"The name '{column}' is not a known built-in watchlist column. If it is a workspace-specific field, declare it in the request's extensions.watchlists using its actual KQL type (for example, string): " +
-                $"{{ \"extensions\": {{ \"watchlists\": [{{ \"name\": \"{alias}\", \"columns\": [{{ \"name\": \"{column}\", \"type\": \"string\" }}] }}] }} }}";
+                $"{{ \"extensions\": {{ \"watchlists\": [{{ \"name\": \"{pipeline.Alias}\", \"columns\": [{{ \"name\": \"{column}\", \"type\": \"string\" }}] }}] }} }}";
         }
 
         return null;
     }
 
     private static string DiagnosticGuidance(
-        string query, string code, int diagnosticPosition, string description)
+        IReadOnlyList<WatchlistPipelineSpan> watchlistPipelines, string code, int diagnosticPosition, string description)
     {
         if (code == "KS142")
-            return WatchlistColumnGuidance(query, diagnosticPosition, description)
+            return WatchlistColumnGuidance(watchlistPipelines, diagnosticPosition, description)
                 ?? GenericUnknownColumnGuidance(description);
 
         if (code == "KS204")
@@ -276,6 +300,7 @@ public sealed partial class KqlValidationService(
     }
 
     private sealed record References(IReadOnlyList<string> Tables, IReadOnlyList<string> Columns, IReadOnlyList<string> Functions);
+    private sealed record WatchlistPipelineSpan(int Start, int End, string Alias);
     private sealed record FileProfileColumn(string Name, int Position, int ScopePosition);
     private sealed record NormalizedQuery(string Query, IReadOnlyList<FileProfileColumn> Columns);
 
