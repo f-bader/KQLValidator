@@ -63,7 +63,7 @@ public sealed class LintRuleCatalog
         Rule("KQLN004", "Unsupported Defender NRT KQL feature", DiagnosticSeverity.Error, "nrt", "defender-nrt", "Use only the tabular operators, scalar functions, and scalar-argument user-defined functions documented for continuous NRT.", DefenderDetections, Detection, ["defender-nrt"], XdrUnified),
         Rule("KQLN005", "Invalid Defender NRT regex expression", DiagnosticSeverity.Error, "nrt", "defender-nrt", "Use matches regex with a correctly escaped KQL string literal.", DefenderDetections, Detection, ["defender-nrt"], XdrUnified),
         Rule("KQLN006", "Unsupported Defender NRT EmailEvents column", DiagnosticSeverity.Error, "nrt", "defender-nrt", "Do not use EmailEvents LatestDeliveryLocation or LatestDeliveryAction in a continuous NRT rule.", DefenderDetections, Detection, ["defender-nrt"], XdrUnified),
-        Rule("KQLN007", "Time filter in Defender NRT query", DiagnosticSeverity.Warning, "nrt", "defender-nrt", "Avoid Timestamp, TimeGenerated, and ingestion_time predicates because they can skip qualifying NRT events.", DefenderDetections, Detection, ["defender-nrt"], XdrUnified),
+        Rule("KQLN007", "Time filter in NRT query", DiagnosticSeverity.Warning, "nrt", "defender-nrt", "Avoid Timestamp, TimeGenerated, and ingestion_time predicates because they can skip qualifying NRT events.", DefenderDetections, Detection, ["defender-nrt", "sentinel-nrt"], ["xdr", "unified", "sentinel"]),
 
         Rule("KQLQ001", "Display name used as detection identity", DiagnosticSeverity.Information, "detection-quality", "community-detection", "Prefer stable identifiers over account, device, or application display names when available.", DxBp1, Detection, defaultEnabled: false),
         Rule("KQLQ002", "Filename detection omits original filename", DiagnosticSeverity.Information, "detection-quality", "community-detection", "Consider original-file-name metadata to make renamed-binary detections more resilient.", DxBp1, Detection, defaultEnabled: false),
@@ -145,7 +145,7 @@ public sealed class LintRuleCatalog
             sets.Add("microsoft-kusto");
         if (request.Profile == LintProfile.Detection && request.Environment == KqlEnvironment.Sentinel)
             sets.Add("sentinel-detection");
-        if (target == KqlTarget.DefenderNrt)
+        if (target is KqlTarget.DefenderNrt or KqlTarget.SentinelNrt)
             sets.Add("defender-nrt");
         return sets;
     }

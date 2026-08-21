@@ -377,6 +377,7 @@ public sealed class ValidationTests
             target: KqlTarget.DefenderNrt);
 
         Assert.Contains(result.Diagnostics, x => x.RuleId == "KQLN001" && x.Severity == DiagnosticSeverity.Error);
+        Assert.DoesNotContain(result.Diagnostics, x => x.RuleId == "KQLN004" && x.Message.Contains("'in()'", StringComparison.Ordinal));
         Assert.Contains("DeviceInfo", result.ReferencedTables);
         Assert.Contains("DeviceEvents", result.ReferencedTables);
     }
@@ -477,11 +478,21 @@ public sealed class ValidationTests
             KqlEnvironment.Xdr,
             LintProfile.Detection,
             target: KqlTarget.DefenderScheduled);
+        var sentinelNrt = Validate(
+            "SigninLogs | where ingestion_time() between (ago(2h) .. ago(1h)) | project TimeGenerated",
+            KqlEnvironment.Sentinel,
+            LintProfile.Detection,
+            target: KqlTarget.SentinelNrt);
 
         Assert.Contains(direct.Diagnostics, x => x.RuleId == "KQLN007" && x.Severity == DiagnosticSeverity.Warning);
         Assert.Contains(alias.Diagnostics, x => x.RuleId == "KQLN007" && x.Severity == DiagnosticSeverity.Warning);
         Assert.Contains(ingestion.Diagnostics, x => x.RuleId == "KQLN007" && x.Severity == DiagnosticSeverity.Warning);
         Assert.DoesNotContain(scheduled.Diagnostics, x => x.RuleId == "KQLN007");
+        Assert.Contains(sentinelNrt.Diagnostics, x => x.RuleId == "KQLN007" && x.Severity == DiagnosticSeverity.Warning);
+        Assert.DoesNotContain(sentinelNrt.Diagnostics, x => x.Severity == DiagnosticSeverity.Error);
+        Assert.DoesNotContain(alias.Diagnostics, x => x.RuleId == "KQLN004" && x.Message.Contains("'between()'", StringComparison.Ordinal));
+        Assert.DoesNotContain(ingestion.Diagnostics, x => x.RuleId == "KQLN004" && x.Message.Contains("'between()'", StringComparison.Ordinal));
+        Assert.DoesNotContain(sentinelNrt.Diagnostics, x => x.RuleId == "KQLN004" && x.Message.Contains("'between()'", StringComparison.Ordinal));
     }
 
     [Fact]

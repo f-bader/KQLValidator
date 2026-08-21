@@ -52,6 +52,13 @@ public sealed class DefenderNrtValidator
         "bool", "datetime", "decimal", "dynamic", "guid", "int", "long", "real", "string", "timespan",
     };
 
+    // These operators use parentheses around their operands, so the simple function-call
+    // matcher below would otherwise misidentify them as unsupported scalar functions.
+    private static readonly HashSet<string> ParenthesizedOperators = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "between", "in",
+    };
+
     private static readonly Regex Comment = new(@"(?m)//[^\r\n]*|/\*[\s\S]*?\*/", RegexOptions.CultureInvariant, RegexTimeout);
     private static readonly Regex StringLiteral = new("""@?(?:"(?:""|\\.|[^"])*"|'(?:''|\\.|[^'])*')""", RegexOptions.CultureInvariant, RegexTimeout);
     private static readonly Regex MultiInput = new(@"(?im)(?:^|[;|])\s*(?:join\b|union\b)|\bexternaldata\s*\(", RegexOptions.CultureInvariant, RegexTimeout);
@@ -73,12 +80,21 @@ public sealed class DefenderNrtValidator
         IReadOnlyList<string> referencedTables,
         IReadOnlyList<string> referencedColumns)
     {
-        if (LintRuleCatalog.ResolveTarget(request) != KqlTarget.DefenderNrt)
+        var target = LintRuleCatalog.ResolveTarget(request);
+        if (target is not (KqlTarget.DefenderNrt or KqlTarget.SentinelNrt))
             return [];
 
         var diagnostics = new List<ValidationDiagnostic>();
         var query = request.Query;
         var searchable = MaskCommentsAndStrings(query);
+
+        // Sentinel NRT has separate constraints. The shared time-filter warning is
+        // still useful because ingestion-time and event-time predicates can skip events.
+        if (target == KqlTarget.SentinelNrt)
+        {
+            AddTimeFilterDiagnostics(diagnostics, policy, query, searchable);
+            return diagnostics;
+        }
 
         AddTableDiagnostics(diagnostics, policy, query, referencedTables, referencedColumns, request.Environment);
         AddStructuralDiagnostics(diagnostics, policy, query, searchable);
@@ -154,7 +170,7 @@ public sealed class DefenderNrtValidator
         foreach (Match match in FunctionCall.Matches(searchable))
         {
             var function = match.Groups["function"].Value;
-            if (AllowedFunctions.Contains(function) || localFunctions.Contains(function))
+            if (AllowedFunctions.Contains(function) || localFunctions.Contains(function) || ParenthesizedOperators.Contains(function))
                 continue;
             Add(diagnostics, policy, query, "KQLN004",
                 $"'{function}()' is not a supported KQL scalar function for Defender continuous NRT rules.", match.Index, match.Length);
@@ -204,7 +220,7 @@ public sealed class DefenderNrtValidator
             {
                 var start = clause.Groups["predicate"].Index + predicate.Index;
                 Add(diagnostics, policy, query, "KQLN007",
-                    "Time filters can skip qualifying events in Defender continuous NRT rules; remove this temporal predicate or use a scheduled detection.", start, predicate.Length);
+                    "Time filters can skip qualifying events in continuous NRT rules; remove this temporal predicate or use a scheduled detection.", start, predicate.Length);
             }
         }
     }
