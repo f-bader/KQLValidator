@@ -40,7 +40,7 @@ public sealed class AnalysisExecutor
         metrics.Request();
         var deadline = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         deadline.CancelAfter(analysisDeadline);
-        var workStarted = false;
+        Task<ValidationResponse>? work = null;
 
         try
         {
@@ -68,7 +68,7 @@ public sealed class AnalysisExecutor
             }
 
             var operation = health.Start();
-            var work = Task.Run(() =>
+            work = Task.Run(() =>
             {
                 try { return validate(request, deadline.Token); }
                 finally
@@ -77,14 +77,6 @@ public sealed class AnalysisExecutor
                     concurrency.Release();
                 }
             }, CancellationToken.None);
-            workStarted = true;
-            // An abandoned work task keeps observing the linked token after a deadline
-            // response has already been sent, so the source must outlive this method;
-            // observing t.Exception also keeps the worker's cancellation from surfacing
-            // as an unobserved task exception.
-            _ = work.ContinueWith(
-                completed => { _ = completed.Exception; deadline.Dispose(); },
-                CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
 
             try
             {
@@ -101,8 +93,19 @@ public sealed class AnalysisExecutor
         }
         finally
         {
-            if (!workStarted)
+            // The source is disposed only after both sides are done with the token: this
+            // method no longer awaits on it once the finally runs, and an abandoned work
+            // task keeps observing it until the task completes. Attaching the disposal
+            // continuation any earlier races a fast-failing worker against WaitAsync's
+            // token registration and turns the failure into an ObjectDisposedException.
+            // Observing completed.Exception also keeps the worker's cancellation from
+            // surfacing as an unobserved task exception.
+            if (work is null)
                 deadline.Dispose();
+            else
+                _ = work.ContinueWith(
+                    completed => { _ = completed.Exception; deadline.Dispose(); },
+                    CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
         }
     }
 }

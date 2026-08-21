@@ -82,6 +82,22 @@ public sealed class OperationalTests
     }
 
     [Fact]
+    public async Task Immediately_failing_analysis_surfaces_its_own_exception()
+    {
+        var executor = Executor(
+            (_, _) => throw new Validation.RequestValidationException("query", "invalid"),
+            TimeSpan.FromSeconds(5));
+
+        // A worker that faults before WaitAsync registers on the deadline token used to
+        // race the token-source disposal and surface ObjectDisposedException instead.
+        for (var attempt = 0; attempt < 200; attempt++)
+        {
+            await Assert.ThrowsAsync<Validation.RequestValidationException>(
+                () => executor.ExecuteAsync(AnyRequest, TestContext.Current.CancellationToken));
+        }
+    }
+
+    [Fact]
     public async Task Client_cancellation_propagates_instead_of_reporting_a_deadline()
     {
         var executor = Executor((_, _) => FastResponse());
