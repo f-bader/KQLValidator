@@ -1,0 +1,39 @@
+name: Bug report
+description: A query validates incorrectly, an endpoint misbehaves, or the service errors.
+labels: [bug]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you expect, and what did you get instead?
+    validations:
+      required: true
+  - type: textarea
+    id: query
+    attributes:
+      label: KQL query and request
+      description: >-
+        The query plus the environment, profile, target, and any extensions you sent.
+        Redact anything workspace-specific you do not want public.
+      render: json
+    validations:
+      required: false
+  - type: input
+    id: version
+    attributes:
+      label: Service version
+      description: The `serviceVersion` from the response, or `GET /` on your deployment.
+    validations:
+      required: false
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Surface
+      options:
+        - REST API
+        - MCP
+        - Status site
+        - Container / deployment
+    validations:
+      required: true

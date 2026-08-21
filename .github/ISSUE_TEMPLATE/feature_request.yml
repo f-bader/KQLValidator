@@ -1,0 +1,20 @@
+name: Feature request
+description: Propose a new lint rule, schema improvement, or API capability.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What can't you do today, or what does the validator get wrong?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: >-
+        For lint rules: an example query that should be flagged, the message you would
+        expect, and a link to the practice's source if one exists.
+    validations:
+      required: true

@@ -1,7 +1,7 @@
-using KqlValidator.Contracts;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using KqlValidator.Contracts;
 using Kusto.Language.Symbols;
 
 namespace KqlValidator.Validation;
