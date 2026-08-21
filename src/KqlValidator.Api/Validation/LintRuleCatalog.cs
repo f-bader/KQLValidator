@@ -12,7 +12,7 @@ public sealed class LintRuleCatalog
     private const string DxBp1 = "https://kqlquery.com/posts/dxbp-part1/";
     private const string DxBp2 = "https://kqlquery.com/posts/dxbp-part2/";
     private const string FalconNrt = "https://falconforce.nl/falconfriday-need-for-speed-going-underground-with-near-real-time-nrt-rules-0xff26/";
-    private const string FabianBader = "https://github.com/fabian/kql-validator";
+    private const string RepoDocs = "https://github.com/f-bader/KQLValidator/blob/main/docs/lint-rules.md";
 
     private static readonly string[] GeneralHuntingDetection = ["general", "hunting", "detection"];
     private static readonly string[] HuntingDetection = ["hunting", "detection"];
@@ -56,7 +56,7 @@ public sealed class LintRuleCatalog
         Rule("KQLP006", "Generic term operator for IPv4", DiagnosticSeverity.Information, "performance", "microsoft-kusto", "Use an IPv4-aware operator for IPv4 literals.", KustoBestPractices, HuntingDetection),
 
         Rule("KQLS001", "Sentinel detection exceeds query length", DiagnosticSeverity.Error, "sentinel", "sentinel-detection", "Sentinel analytics rule queries are limited to 10,000 characters; shorten large literals or move pattern data into a watchlist or other managed external source.", SentinelRules, Detection, ["sentinel-scheduled", "sentinel-nrt"], Sentinel),
-        Rule("KQLS002", "Optional watchlist column", DiagnosticSeverity.Warning, "sentinel", "baseline", "Normalize optional _GetWatchlist columns with column_ifexists before using them.", FabianBader, GeneralHuntingDetection, environments: ["sentinel", "unified"], sourceName: "Fabian Bader"),
+        Rule("KQLS002", "Optional watchlist column", DiagnosticSeverity.Warning, "sentinel", "baseline", "Normalize optional _GetWatchlist columns with column_ifexists before using them.", RepoDocs, GeneralHuntingDetection, environments: ["sentinel", "unified"], sourceName: "Fabian Bader"),
         Rule("KQLN001", "Defender NRT single-table constraint", DiagnosticSeverity.Error, "nrt", "defender-nrt", "Defender continuous NRT rules must use exactly one table and do not support join, union, or externaldata.", DefenderDetections, Detection, ["defender-nrt"], XdrUnified),
         Rule("KQLN002", "Comment in Defender NRT query", DiagnosticSeverity.Error, "nrt", "defender-nrt", "Defender continuous NRT rules do not support comments in deployed KQL; remove them or use a scheduled target.", DefenderDetections, Detection, ["defender-nrt"], XdrUnified),
         Rule("KQLN003", "Unsupported Defender NRT table", DiagnosticSeverity.Error, "nrt", "defender-nrt", "Use one of the Microsoft-documented NRT tables for the selected XDR or unified environment.", DefenderDetections, Detection, ["defender-nrt"], XdrUnified),

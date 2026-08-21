@@ -100,7 +100,7 @@ app.MapGet("/", () => new ServiceDiscovery(
     "/api/v1",
     "/mcp",
     "/openapi/v1.json",
-    "https://github.com/fabian/kql-validator"));
+    "https://github.com/f-bader/KQLValidator"));
 
 var api = app.MapGroup("/api/v1").RequireRateLimiting("public-api");
 

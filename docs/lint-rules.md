@@ -140,6 +140,4 @@ Static lint cannot reliably determine input cardinality, ingestion delay, expect
 [dxbp1]: https://kqlquery.com/posts/dxbp-part1/
 [dxbp2]: https://kqlquery.com/posts/dxbp-part2/
 [falcon-nrt]: https://falconforce.nl/falconfriday-need-for-speed-going-underground-with-near-real-time-nrt-rules-0xff26/
-[fabian-bader]: https://github.com/fabian/kql-validator
-[falcon-maintenance]: https://falconforce.nl/why-is-no-one-talking-about-maintenance-in-detection-engineering/
-[falcon-data]: https://falconforce.nl/how-data-science-can-boost-your-detection-engineering-maintenance-and-keep-you-from-herding-sheep/
+[fabian-bader]: https://github.com/f-bader/KQLValidator/blob/main/docs/lint-rules.md

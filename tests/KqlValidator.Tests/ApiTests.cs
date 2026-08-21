@@ -29,6 +29,15 @@ public sealed class ApiTests : IClassFixture<WebApplicationFactory<Program>>
     }
 
     [Fact]
+    public async Task Discovery_documentation_links_to_the_public_repository()
+    {
+        var cancellationToken = TestContext.Current.CancellationToken;
+        using var document = JsonDocument.Parse(await client.GetStringAsync("/", cancellationToken));
+
+        Assert.Contains("github.com/f-bader/KQLValidator", document.RootElement.GetProperty("documentation").GetString(), StringComparison.Ordinal);
+    }
+
+    [Fact]
     public async Task Status_site_is_public_and_requests_crawler_exclusion()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
