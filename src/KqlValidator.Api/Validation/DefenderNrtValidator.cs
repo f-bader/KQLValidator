@@ -27,39 +27,16 @@ public sealed class DefenderNrtValidator
         "SecurityEvent", "SigninLogs",
     };
 
-    private static readonly HashSet<string> AllowedPipeOperators = new(StringComparer.OrdinalIgnoreCase)
-    {
-        "extend", "project", "where", "parse", "print", "project-away", "project-rename",
-    };
+    private static readonly IReadOnlySet<string> AllowedPipeOperators = AzureMonitorTransformationFeatures.AllowedPipeOperators;
 
     // This mirrors the feature families enumerated by the Microsoft page linked from the NRT documentation.
-    private static readonly HashSet<string> AllowedFunctions = new(StringComparer.OrdinalIgnoreCase)
-    {
-        "abs", "ago", "array_concat", "array_length", "base64_decodestring", "base64_encodestring",
-        "binary_and", "binary_not", "binary_or", "binary_shift_left", "binary_shift_right", "binary_xor",
-        "bin", "bool", "case", "ceiling", "columnifexists", "countof", "datatable", "datetime", "datetime_add",
-        "datetime_diff", "datetime_part", "dayofmonth", "dayofweek", "dayofyear", "decimal", "dynamic",
-        "endofday", "endofmonth", "endofweek", "endofyear", "exp", "exp10", "exp2", "extract", "extract_all",
-        "floor", "geo_location", "getmonth", "gettype", "getyear", "guid", "hash_sha256", "hour", "hourofday",
-        "iif", "indexof", "ingestion_time", "int", "isfinite", "isempty", "isinf", "isnan", "isnotempty",
-        "isnotnull", "isnull", "log", "log10", "log2", "long", "make_datetime", "make_timespan", "max_of",
-        "min_of", "monthofyear", "now", "pack", "pack_array", "parse_cef_dictionary", "parse_json", "parse_xml",
-        "pow", "real", "replace", "round", "sign", "split", "startofday", "startofmonth", "startofweek",
-        "startofyear", "strcat", "strcat_delim", "strlen", "substring", "tobool", "todatetime", "todouble",
-        "toguid", "toint", "tolong", "toreal", "tostring", "totimespan", "toupper", "tolower", "weekofyear", "zip",
-    };
+    private static readonly IReadOnlySet<string> AllowedFunctions = AzureMonitorTransformationFeatures.AllowedFunctions;
 
-    private static readonly HashSet<string> ScalarTypes = new(StringComparer.OrdinalIgnoreCase)
-    {
-        "bool", "datetime", "decimal", "dynamic", "guid", "int", "long", "real", "string", "timespan",
-    };
+    private static readonly IReadOnlySet<string> ScalarTypes = AzureMonitorTransformationFeatures.ScalarTypes;
 
     // These operators use parentheses around their operands, so the simple function-call
     // matcher below would otherwise misidentify them as unsupported scalar functions.
-    private static readonly HashSet<string> ParenthesizedOperators = new(StringComparer.OrdinalIgnoreCase)
-    {
-        "between", "in",
-    };
+    private static readonly IReadOnlySet<string> ParenthesizedOperators = AzureMonitorTransformationFeatures.ParenthesizedOperators;
 
     private static readonly Regex Comment = new(@"(?m)//[^\r\n]*|/\*[\s\S]*?\*/", RegexOptions.CultureInvariant, RegexTimeout);
     private static readonly Regex StringLiteral = new("""@?(?:"(?:""|\\.|[^"])*"|'(?:''|\\.|[^'])*')""", RegexOptions.CultureInvariant, RegexTimeout);

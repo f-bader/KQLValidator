@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using KqlValidator.Contracts;
+using Kusto.Language;
 
 namespace KqlValidator.Validation;
 
@@ -30,11 +31,13 @@ public sealed partial class KqlLinter
     public IReadOnlyList<ValidationDiagnostic> Analyze(
         ValidateRequest request,
         LintPolicy policy,
+        KustoCode code,
         CancellationToken cancellationToken = default)
     {
         var diagnostics = new List<ValidationDiagnostic>();
         var query = request.Query;
         var searchable = MaskComments(query);
+        var structural = MaskStringLiterals(searchable);
 
         cancellationToken.ThrowIfCancellationRequested();
         Match(diagnostics, policy, searchable, UnscopedSearch(), "KQLH001",
@@ -58,7 +61,7 @@ public sealed partial class KqlLinter
 
         cancellationToken.ThrowIfCancellationRequested();
         AddTimeFilterDiagnostics(diagnostics, policy, searchable, cancellationToken);
-        AddLateFilterDiagnostics(diagnostics, policy, searchable);
+        AddLateFilterDiagnostics(diagnostics, policy, structural);
         AddUnboundedResultDiagnostic(diagnostics, policy, searchable);
         AddProcessIdDiagnostic(diagnostics, policy, searchable);
         AddActionTypeDiagnostics(diagnostics, policy, searchable, cancellationToken);
@@ -66,10 +69,24 @@ public sealed partial class KqlLinter
         AddDetectionTextDiagnostics(diagnostics, policy, searchable, cancellationToken);
         AddWatchlistColumnDiagnostics(diagnostics, policy, searchable, cancellationToken);
         AddMicrosoftKustoDiagnostics(diagnostics, policy, searchable, cancellationToken);
+        AddLargeParseDiagnostics(diagnostics, policy, request.Query, code, cancellationToken);
         cancellationToken.ThrowIfCancellationRequested();
         AddTargetDiagnostics(diagnostics, policy, query);
         AddCommunityDiagnostics(diagnostics, policy, query, searchable, cancellationToken);
         return diagnostics;
+    }
+
+    private void AddLargeParseDiagnostics(
+        List<ValidationDiagnostic> diagnostics,
+        LintPolicy policy,
+        string query,
+        KustoCode code,
+        CancellationToken cancellationToken)
+    {
+        foreach (var parse in ParseStatementInspector.Find(code.Syntax, cancellationToken).Where(x => x.ExtractionCount > 5))
+            Add(diagnostics, policy, query, "KQLP007",
+                $"This parse statement extracts {parse.ExtractionCount} columns. Split it into statements of no more than five extractions to reduce processing time.",
+                parse.Start, parse.Length);
     }
 
     private void AddTimeFilterDiagnostics(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string query, CancellationToken cancellationToken)
@@ -340,7 +357,7 @@ public sealed partial class KqlLinter
     private static partial Regex DefaultJoin();
     [GeneratedRegex(@"(?is)\|\s*join(?:\s+kind\s*=\s*\w+)?\s*\((.*?)\)\s*on\b", RegexOptions.None, RegexTimeoutMilliseconds)]
     private static partial Regex JoinBranch();
-    [GeneratedRegex(@"(?i)\b(?:parse_json|extractjson|extract|replace|trim|substring|tolower|toupper)\s*\(|matches\s+regex", RegexOptions.None, RegexTimeoutMilliseconds)]
+    [GeneratedRegex(@"(?i)(?:\|\s*parse\b|\b(?:parse_json|parse_xml|extractjson|extract|extract_all|replace|trim|substring|tolower|toupper)\s*\(|matches\s+regex)", RegexOptions.None, RegexTimeoutMilliseconds)]
     private static partial Regex ExpensiveOperation();
     [GeneratedRegex("""(?i)\bActionType\s*(?:==|=~)\s*["']([^"']+)["']""", RegexOptions.None, RegexTimeoutMilliseconds)]
     private static partial Regex ActionTypeLiteral();

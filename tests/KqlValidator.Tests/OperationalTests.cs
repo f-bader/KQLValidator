@@ -6,9 +6,14 @@ namespace KqlValidator.Tests;
 public sealed class OperationalTests
 {
     private static readonly ValidateRequest AnyRequest = new("DeviceEvents | take 1", KqlEnvironment.Xdr, LintProfile.General);
+    private static readonly TransformationValidationRequest AnyTransformation = new(
+        "source | extend TimeGenerated = now()", [new("Message", "string")]);
 
     private static ValidationResponse FastResponse() =>
         new(true, "test", "test", [], [], [], [], [], 0);
+
+    private static TransformationValidationResponse FastTransformationResponse() =>
+        new(true, "test", [], [], [], [], 0);
 
     private static AnalysisExecutor Executor(
         Func<ValidateRequest, CancellationToken, ValidationResponse> validate,
@@ -79,6 +84,33 @@ public sealed class OperationalTests
         release.Set();
         await Task.WhenAll(inFlight);
         Assert.All(inFlight, task => Assert.True(task.Result.Valid));
+    }
+
+    [Fact]
+    public async Task Ordinary_and_transformation_requests_share_the_same_queue()
+    {
+        using var release = new ManualResetEventSlim();
+        var executor = new AnalysisExecutor(
+            (_, token) => { release.Wait(token); return FastResponse(); },
+            (_, token) => { release.Wait(token); return FastTransformationResponse(); },
+            new AnalysisHealthState(TimeProvider.System), new AnalysisMetrics(), TimeProvider.System,
+            TimeSpan.FromSeconds(30));
+
+        var inFlight = new List<Task>
+        {
+            executor.ExecuteAsync(AnyRequest, TestContext.Current.CancellationToken),
+            executor.ExecuteTransformationAsync(AnyTransformation, TestContext.Current.CancellationToken),
+        };
+        for (var index = 0; index < 8; index++)
+            inFlight.Add(index % 2 == 0
+                ? executor.ExecuteAsync(AnyRequest, TestContext.Current.CancellationToken)
+                : executor.ExecuteTransformationAsync(AnyTransformation, TestContext.Current.CancellationToken));
+
+        await Assert.ThrowsAsync<AnalysisQueueFullException>(() =>
+            executor.ExecuteTransformationAsync(AnyTransformation, TestContext.Current.CancellationToken));
+
+        release.Set();
+        await Task.WhenAll(inFlight);
     }
 
     [Fact]

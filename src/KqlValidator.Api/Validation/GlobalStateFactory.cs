@@ -6,6 +6,17 @@ namespace KqlValidator.Validation;
 
 public sealed class GlobalStateFactory
 {
+    public GlobalState CreateTransformation(IReadOnlyList<ColumnDeclaration> sourceColumns)
+    {
+        var members = new Symbol[]
+        {
+            new TableSymbol("source", sourceColumns.Select(x => new ColumnSymbol(x.Name, ResolveType(x.Type)))),
+            new FunctionSymbol("parse_cef_dictionary", ScalarTypes.Dynamic, new Parameter("value", ScalarTypes.String)),
+            new FunctionSymbol("geo_location", ScalarTypes.Dynamic, new Parameter("ip", ScalarTypes.String)),
+        };
+        return GlobalState.Default.WithDatabase(new DatabaseSymbol("AzureMonitorTransformation", members));
+    }
+
     public GlobalState Create(EnvironmentSchema schema, ValidationExtensions? extensions)
     {
         var members = new List<Symbol>();

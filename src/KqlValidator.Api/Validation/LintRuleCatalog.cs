@@ -9,6 +9,8 @@ public sealed class LintRuleCatalog
     private const string KustoBestPractices = "https://learn.microsoft.com/en-us/kusto/query/best-practices";
     private const string SentinelRules = "https://learn.microsoft.com/en-us/azure/sentinel/scheduled-rules-overview";
     private const string AlertQueries = "https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-log-query";
+    private const string AzureMonitorQueryOptimization = "https://learn.microsoft.com/en-us/azure/azure-monitor/logs/query-optimization#break-up-large-parse-commands";
+    private const string AzureMonitorTransformations = "https://learn.microsoft.com/en-us/azure/azure-monitor/data-collection/data-collection-transformations-kql";
     private const string DxBp1 = "https://kqlquery.com/posts/dxbp-part1/";
     private const string DxBp2 = "https://kqlquery.com/posts/dxbp-part2/";
     private const string FalconNrt = "https://falconforce.nl/falconfriday-need-for-speed-going-underground-with-near-real-time-nrt-rules-0xff26/";
@@ -19,6 +21,9 @@ public sealed class LintRuleCatalog
     private static readonly string[] Detection = ["detection"];
     private static readonly string[] XdrUnified = ["xdr", "unified"];
     private static readonly string[] Sentinel = ["sentinel"];
+    private static readonly string[] TransformationProfile = ["transformation"];
+    private static readonly string[] TransformationTarget = ["azure-monitor-transformation"];
+    private static readonly string[] AzureMonitor = ["azure-monitor"];
 
     private static readonly IReadOnlyList<LintRuleInfo> Rules =
     [
@@ -54,6 +59,7 @@ public sealed class LintRuleCatalog
         Rule("KQLP004", "format_datetime in predicate", DiagnosticSeverity.Warning, "performance", "microsoft-kusto", "Filter datetime values directly instead of formatting each row in a predicate.", KustoBestPractices, HuntingDetection),
         Rule("KQLP005", "Null string comparison", DiagnosticSeverity.Warning, "correctness", "microsoft-kusto", "Use isempty or isnotempty instead of comparing a string with an empty literal.", "https://learn.microsoft.com/en-us/kusto/query/isempty-function", HuntingDetection),
         Rule("KQLP006", "Generic term operator for IPv4", DiagnosticSeverity.Information, "performance", "microsoft-kusto", "Use an IPv4-aware operator for IPv4 literals.", KustoBestPractices, HuntingDetection),
+        Rule("KQLP007", "Large parse statement", DiagnosticSeverity.Warning, "performance", "baseline", "Split parse statements that extract more than five columns into smaller statements.", AzureMonitorQueryOptimization, GeneralHuntingDetection),
 
         Rule("KQLS001", "Sentinel detection exceeds query length", DiagnosticSeverity.Error, "sentinel", "sentinel-detection", "Sentinel analytics rule queries are limited to 10,000 characters; shorten large literals or move pattern data into a watchlist or other managed external source.", SentinelRules, Detection, ["sentinel-scheduled", "sentinel-nrt"], Sentinel),
         Rule("KQLS002", "Optional watchlist column", DiagnosticSeverity.Warning, "sentinel", "baseline", "Normalize optional _GetWatchlist columns with column_ifexists before using them.", RepoDocs, GeneralHuntingDetection, environments: ["sentinel", "unified"], sourceName: "Fabian Bader"),
@@ -64,6 +70,15 @@ public sealed class LintRuleCatalog
         Rule("KQLN005", "Invalid Defender NRT regex expression", DiagnosticSeverity.Error, "nrt", "defender-nrt", "Use matches regex with a correctly escaped KQL string literal.", DefenderDetections, Detection, ["defender-nrt"], XdrUnified),
         Rule("KQLN006", "Unsupported Defender NRT EmailEvents column", DiagnosticSeverity.Error, "nrt", "defender-nrt", "Do not use EmailEvents LatestDeliveryLocation or LatestDeliveryAction in a continuous NRT rule.", DefenderDetections, Detection, ["defender-nrt"], XdrUnified),
         Rule("KQLN007", "Time filter in NRT query", DiagnosticSeverity.Warning, "nrt", "defender-nrt", "Avoid Timestamp, TimeGenerated, and ingestion_time predicates because they can skip qualifying NRT events.", DefenderDetections, Detection, ["defender-nrt", "sentinel-nrt"], ["xdr", "unified", "sentinel"]),
+
+        Rule("KQLT001", "Invalid transformation structure", DiagnosticSeverity.Error, "transformation", "azure-monitor-transformation", "Use a supported source and return no more than one tabular row per input record.", AzureMonitorTransformations, TransformationProfile, TransformationTarget, AzureMonitor),
+        Rule("KQLT002", "Unsupported transformation operator", DiagnosticSeverity.Error, "transformation", "azure-monitor-transformation", "Use only Azure Monitor transformation tabular operators.", AzureMonitorTransformations, TransformationProfile, TransformationTarget, AzureMonitor),
+        Rule("KQLT003", "Unsupported transformation scalar feature", DiagnosticSeverity.Error, "transformation", "azure-monitor-transformation", "Use only Azure Monitor transformation scalar operators, functions, and scalar-argument user-defined functions.", AzureMonitorTransformations, TransformationProfile, TransformationTarget, AzureMonitor),
+        Rule("KQLT004", "Transformation parse limit", DiagnosticSeverity.Error, "transformation", "azure-monitor-transformation", "A transformation parse statement can extract at most ten columns.", AzureMonitorTransformations, TransformationProfile, TransformationTarget, AzureMonitor),
+        Rule("KQLT005", "Transformation regex parse semantics", DiagnosticSeverity.Warning, "transformation", "azure-monitor-transformation", "Transformation regex parsing must match the entire input value.", AzureMonitorTransformations, TransformationProfile, TransformationTarget, AzureMonitor),
+        Rule("KQLT006", "Invalid transformation timestamp output", DiagnosticSeverity.Error, "transformation", "azure-monitor-transformation", "Return a TimeGenerated column with the datetime type.", AzureMonitorTransformations, TransformationProfile, TransformationTarget, AzureMonitor),
+        Rule("KQLT007", "Transformation destination type mismatch", DiagnosticSeverity.Error, "transformation", "azure-monitor-transformation", "Match output column types to the destination table schema.", AzureMonitorTransformations, TransformationProfile, TransformationTarget, AzureMonitor),
+        Rule("KQLT008", "Transformation output column is discarded", DiagnosticSeverity.Warning, "transformation", "azure-monitor-transformation", "Remove output columns absent from the destination schema to avoid ingesting discarded data.", AzureMonitorTransformations, TransformationProfile, TransformationTarget, AzureMonitor),
 
         Rule("KQLQ001", "Display name used as detection identity", DiagnosticSeverity.Information, "detection-quality", "community-detection", "Prefer stable identifiers over account, device, or application display names when available.", DxBp1, Detection, defaultEnabled: false),
         Rule("KQLQ002", "Filename detection omits original filename", DiagnosticSeverity.Information, "detection-quality", "community-detection", "Consider original-file-name metadata to make renamed-binary detections more resilient.", DxBp1, Detection, defaultEnabled: false),

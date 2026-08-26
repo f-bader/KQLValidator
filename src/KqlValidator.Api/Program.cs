@@ -19,7 +19,7 @@ builder.Services.AddOpenApi("v1", options => options.AddDocumentTransformer((doc
     {
         Title = "KQL Validator",
         Version = ThisAssembly.Version,
-        Description = "Unauthenticated, stateless static analysis for Microsoft Defender XDR and Microsoft Sentinel KQL. Queries are never executed, logged, or persisted.",
+        Description = "Unauthenticated, stateless static analysis for Microsoft Defender XDR, Microsoft Sentinel, and Azure Monitor transformation KQL. Queries are never executed, logged, or persisted.",
         License = new() { Name = "MIT", Url = new Uri("https://github.com/f-bader/KQLValidator/blob/main/LICENSE") },
     };
     return Task.CompletedTask;
@@ -31,6 +31,7 @@ builder.Services.AddSingleton<RequestValidator>();
 builder.Services.AddSingleton<KqlLinter>();
 builder.Services.AddSingleton<DefenderNrtValidator>();
 builder.Services.AddSingleton<KqlValidationService>();
+builder.Services.AddSingleton<AzureMonitorTransformationValidationService>();
 builder.Services.AddSingleton<SchemaQueryService>();
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<AnalysisHealthState>();
@@ -178,6 +179,18 @@ api.MapPost("/validate", async (ValidateRequest request, AnalysisExecutor execut
     Results.Ok(await executor.ExecuteAsync(request, cancellationToken)))
     .Accepts<ValidateRequest>("application/json")
     .Produces<ValidationResponse>()
+    .ProducesProblem(StatusCodes.Status400BadRequest)
+    .ProducesProblem(StatusCodes.Status413PayloadTooLarge)
+    .ProducesProblem(StatusCodes.Status429TooManyRequests)
+    .ProducesProblem(StatusCodes.Status504GatewayTimeout);
+
+api.MapPost("/validate-transformation", async (
+    TransformationValidationRequest request,
+    AnalysisExecutor executor,
+    CancellationToken cancellationToken) =>
+    Results.Ok(await executor.ExecuteTransformationAsync(request, cancellationToken)))
+    .Accepts<TransformationValidationRequest>("application/json")
+    .Produces<TransformationValidationResponse>()
     .ProducesProblem(StatusCodes.Status400BadRequest)
     .ProducesProblem(StatusCodes.Status413PayloadTooLarge)
     .ProducesProblem(StatusCodes.Status429TooManyRequests)

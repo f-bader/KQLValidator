@@ -48,8 +48,8 @@ public sealed class ApiTests : IClassFixture<WebApplicationFactory<Program>>
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Contains("KQL Validator", body, StringComparison.Ordinal);
-        Assert.Contains("Validate your KQL detections", body, StringComparison.Ordinal);
-        Assert.Contains("A KQL validator for Microsoft Defender XDR and Microsoft Sentinel.", body, StringComparison.Ordinal);
+        Assert.Contains("Validate detections and transformations", body, StringComparison.Ordinal);
+        Assert.Contains("Static KQL analysis for Defender XDR, Sentinel, and Azure Monitor transformations.", body, StringComparison.Ordinal);
         Assert.Contains("claude mcp add --transport http kql-validator", body, StringComparison.Ordinal);
         Assert.Contains("codex mcp add kql-validator --url", body, StringComparison.Ordinal);
         Assert.Contains("opencode mcp add kql-validator --url", body, StringComparison.Ordinal);
@@ -231,7 +231,7 @@ public sealed class ApiTests : IClassFixture<WebApplicationFactory<Program>>
             method = "tools/list",
             @params = new { },
         }, cancellationToken);
-        foreach (var tool in new[] { "validate_kql", "list_kql_lint_rules", "list_kql_environments", "search_kql_schema", "get_kql_table" })
+        foreach (var tool in new[] { "validate_kql", "validate_azure_monitor_transformation", "list_kql_lint_rules", "list_kql_environments", "search_kql_schema", "get_kql_table" })
             Assert.Contains(tool, listBody, StringComparison.Ordinal);
 
         var callBody = await SendMcp(new
@@ -252,6 +252,27 @@ public sealed class ApiTests : IClassFixture<WebApplicationFactory<Program>>
         }, cancellationToken);
         Assert.Contains("\"valid\"", callBody, StringComparison.Ordinal);
         Assert.DoesNotContain("\"isError\":true", callBody.Replace(" ", string.Empty), StringComparison.Ordinal);
+
+        var transformationBody = await SendMcp(new
+        {
+            jsonrpc = "2.0",
+            id = 4,
+            method = "tools/call",
+            @params = new
+            {
+                name = "validate_azure_monitor_transformation",
+                arguments = new
+                {
+                    query = "source | extend TimeGenerated = todatetime(Time) | project TimeGenerated, Message",
+                    sourceColumns = new[]
+                    {
+                        new { name = "Time", type = "string" },
+                        new { name = "Message", type = "string" },
+                    },
+                },
+            },
+        }, cancellationToken);
+        Assert.Contains("\"valid\":true", transformationBody.Replace(" ", string.Empty), StringComparison.OrdinalIgnoreCase);
     }
 
     private async Task<string> SendMcp(object payload, CancellationToken cancellationToken)
@@ -329,6 +350,25 @@ public sealed class ApiTests : IClassFixture<WebApplicationFactory<Program>>
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.True(document.RootElement.GetProperty("paths").TryGetProperty("/api/v1/validate", out _));
+        Assert.True(document.RootElement.GetProperty("paths").TryGetProperty("/api/v1/validate-transformation", out _));
         Assert.True(document.RootElement.GetProperty("paths").TryGetProperty("/api/v1/lint-rules", out _));
+    }
+
+    [Fact]
+    public async Task Transformation_endpoint_returns_static_analysis_and_problem_details()
+    {
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var response = await client.PostAsJsonAsync("/api/v1/validate-transformation", new TransformationValidationRequest(
+            "source | extend TimeGenerated = todatetime(Time) | project TimeGenerated, Message",
+            [new("Time", "string"), new("Message", "string")]), cancellationToken);
+        var result = await response.Content.ReadFromJsonAsync<TransformationValidationResponse>(cancellationToken);
+        var malformed = await client.PostAsJsonAsync("/api/v1/validate-transformation", new TransformationValidationRequest(
+            "source", []), cancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.NotNull(result);
+        Assert.True(result.Valid);
+        Assert.Equal(HttpStatusCode.BadRequest, malformed.StatusCode);
+        Assert.Equal("application/problem+json", malformed.Content.Headers.ContentType?.MediaType);
     }
 }

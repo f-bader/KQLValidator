@@ -7,6 +7,7 @@ namespace KqlValidator.Operational;
 public sealed class AnalysisExecutor
 {
     private readonly Func<ValidateRequest, CancellationToken, ValidationResponse> validate;
+    private readonly Func<TransformationValidationRequest, CancellationToken, TransformationValidationResponse> validateTransformation;
     private readonly AnalysisHealthState health;
     private readonly AnalysisMetrics metrics;
     private readonly TimeProvider timeProvider;
@@ -14,8 +15,13 @@ public sealed class AnalysisExecutor
     private readonly SemaphoreSlim concurrency = new(2, 2);
     private int queued;
 
-    public AnalysisExecutor(KqlValidationService validator, AnalysisHealthState health, AnalysisMetrics metrics, TimeProvider timeProvider)
-        : this(validator.Validate, health, metrics, timeProvider, TimeSpan.FromSeconds(5))
+    public AnalysisExecutor(
+        KqlValidationService validator,
+        AzureMonitorTransformationValidationService transformationValidator,
+        AnalysisHealthState health,
+        AnalysisMetrics metrics,
+        TimeProvider timeProvider)
+        : this(validator.Validate, transformationValidator.Validate, health, metrics, timeProvider, TimeSpan.FromSeconds(5))
     {
     }
 
@@ -26,8 +32,20 @@ public sealed class AnalysisExecutor
         AnalysisMetrics metrics,
         TimeProvider timeProvider,
         TimeSpan analysisDeadline)
+        : this(validate, (_, _) => throw new NotSupportedException(), health, metrics, timeProvider, analysisDeadline)
+    {
+    }
+
+    public AnalysisExecutor(
+        Func<ValidateRequest, CancellationToken, ValidationResponse> validate,
+        Func<TransformationValidationRequest, CancellationToken, TransformationValidationResponse> validateTransformation,
+        AnalysisHealthState health,
+        AnalysisMetrics metrics,
+        TimeProvider timeProvider,
+        TimeSpan analysisDeadline)
     {
         this.validate = validate;
+        this.validateTransformation = validateTransformation;
         this.health = health;
         this.metrics = metrics;
         this.timeProvider = timeProvider;
@@ -35,12 +53,22 @@ public sealed class AnalysisExecutor
     }
 
     public async Task<ValidationResponse> ExecuteAsync(ValidateRequest request, CancellationToken cancellationToken)
+        => await ExecuteCoreAsync(token => validate(request, token), cancellationToken);
+
+    public async Task<TransformationValidationResponse> ExecuteTransformationAsync(
+        TransformationValidationRequest request,
+        CancellationToken cancellationToken)
+        => await ExecuteCoreAsync(token => validateTransformation(request, token), cancellationToken);
+
+    private async Task<TResponse> ExecuteCoreAsync<TResponse>(
+        Func<CancellationToken, TResponse> analyze,
+        CancellationToken cancellationToken)
     {
         var started = timeProvider.GetTimestamp();
         metrics.Request();
         var deadline = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         deadline.CancelAfter(analysisDeadline);
-        Task<ValidationResponse>? work = null;
+        Task<TResponse>? work = null;
 
         try
         {
@@ -70,7 +98,7 @@ public sealed class AnalysisExecutor
             var operation = health.Start();
             work = Task.Run(() =>
             {
-                try { return validate(request, deadline.Token); }
+                try { return analyze(deadline.Token); }
                 finally
                 {
                     health.Complete(operation);
