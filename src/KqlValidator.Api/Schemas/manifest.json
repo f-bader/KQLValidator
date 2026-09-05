@@ -41,6 +41,10 @@
       "sha256": "ee21f945a243d7643f24d23bc7ae676a54df15892b8c33dba31f7e07d1493ff4"
     },
     {
+      "url": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-callactivityevents-table",
+      "sha256": "298ba22fc9793e8bce8429226eb7a76c387c922b5e4aaa53d8a3ab1c50fbf82d"
+    },
+    {
       "url": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-campaigninfo-table",
       "sha256": "560562d149228f0bd0efe587df1fb9eb1983af20f99ce68a74891d383089c218"
     },
@@ -54,7 +58,7 @@
     },
     {
       "url": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-clouddnsevents-table",
-      "sha256": "0e7d5df9635c7508ed5c3d964bca692af89ae0a1dc5318f352f436317cdffe8b"
+      "sha256": "9c2e6bb8cc63e79b0b22429c66f0c6d36ebe619f2a5066ee6186d48ef7f14198"
     },
     {
       "url": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-cloudpolicyenforcementevents-table",
@@ -70,11 +74,11 @@
     },
     {
       "url": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-datasecuritybehaviors-table",
-      "sha256": "ea2f533b0df7ae40d09a085fd404e8f414f532bfa331af1c95850158a28f7ab2"
+      "sha256": "475960dd1339bc06b9181db2dcc34ed9beabe8ea6fe7ad973e9015cfafcaf1bf"
     },
     {
       "url": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-datasecurityevents-table",
-      "sha256": "ca1a1497b2bcb6ccc595dabafec82744b4f2e848de597ca025f36a7ed320b578"
+      "sha256": "e677cd79ecd072be1418b32afb8ba929799f4e6636f3c9bf7f58425e5f3becd8"
     },
     {
       "url": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicebaselinecomplianceassessment-table",
@@ -82,7 +86,7 @@
     },
     {
       "url": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicebaselinecomplianceassessmentkb-table",
-      "sha256": "05fe6c7657d1a117cd092ebf28ecb660a34756a7a52333c1250aa9e0647bb627"
+      "sha256": "c2fad430ab6eddfa93f8bcd8ce597c2409fb47f80ea7d3296728955aac63fcdc"
     },
     {
       "url": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicebaselinecomplianceprofiles-table",
@@ -106,7 +110,7 @@
     },
     {
       "url": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-deviceinfo-table",
-      "sha256": "d0f4b953ea641d694978452ce5bead87189f76862331c7a64f64359c5a180091"
+      "sha256": "3fabf941ba01fe2ae253856e220526089a1c7e6947d02035e88a35728c7c8614"
     },
     {
       "url": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-devicelogonevents-table",
@@ -186,7 +190,7 @@
     },
     {
       "url": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-emailevents-table",
-      "sha256": "4485263fa94b23cf82f8a2f8ab962093d9db2e96827ddb9dc46b5e4ba6b59d1d"
+      "sha256": "076d392d553806650eb926aa19624ef4456fd52da21a2143cc81af3f4aae1e19"
     },
     {
       "url": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-emailpostdeliveryevents-table",
@@ -198,11 +202,11 @@
     },
     {
       "url": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-entraidsigninevents-table",
-      "sha256": "79ef4e75f0038e40d61d594cc1a77653761ac5cabad742e4c89402ec17a533fe"
+      "sha256": "3fa9afb657c92eefbd0ff42f1e5fa0a8d19eb27870a2aafbd99359a72218edce"
     },
     {
       "url": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-entraidspnsigninevents-table",
-      "sha256": "b720d82c4496504fab970abede7ce34471c8e528c0e8cd361ffa3ad159a63481"
+      "sha256": "bb926a8842859339f57f6517b0a4dbe6b0d3745a0db6182d5819b5832e4423c5"
     },
     {
       "url": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-exposuregraphedges-table",
@@ -218,7 +222,7 @@
     },
     {
       "url": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-graphapiauditevents-table",
-      "sha256": "d3d53b0e1ec88282fc4e2524143223a7c1159fa7d78639d67ba4784ed2f067b8"
+      "sha256": "e212b33c52da0348cbfd75f7076b4079f75e2c48117f4a1b9b88e2c80d1a9614"
     },
     {
       "url": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-identityaccountinfo-table",
@@ -258,7 +262,7 @@
     },
     {
       "url": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-oauthappinfo-table",
-      "sha256": "224710df6b24962cdca3cd0abff4f96165b16b94bce288532ebe5795a86ff883"
+      "sha256": "1ff183952f68ca7a633212082637db4d71748647b3067160b77f9dbc95c457cc"
     },
     {
       "url": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-urlclickevents-table",

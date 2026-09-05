@@ -962,6 +962,61 @@
       ]
     },
     {
+      "name": "CallActivityEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-callactivityevents-table",
+      "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-callactivityevents-table.md",
+      "columns": [
+        {
+          "name": "ActivityId",
+          "type": "string"
+        },
+        {
+          "name": "ActivityInitiatorDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "ActivityInitiatorId",
+          "type": "string"
+        },
+        {
+          "name": "ActivityInitiatorUpn",
+          "type": "string"
+        },
+        {
+          "name": "ActivityTimestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "ActivityType",
+          "type": "string"
+        },
+        {
+          "name": "CallId",
+          "type": "string"
+        },
+        {
+          "name": "CallJoinUrl",
+          "type": "string"
+        },
+        {
+          "name": "CallSchedulingType",
+          "type": "string"
+        },
+        {
+          "name": "OriginatorUpn",
+          "type": "string"
+        },
+        {
+          "name": "OriginatorUserDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "ThreadId",
+          "type": "string"
+        }
+      ]
+    },
+    {
       "name": "CampaignInfo",
       "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-campaigninfo-table",
       "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-campaigninfo-table.md",
@@ -1256,6 +1311,14 @@
           "type": "string"
         },
         {
+          "name": "HostName",
+          "type": "string"
+        },
+        {
+          "name": "ImageDigest",
+          "type": "string"
+        },
+        {
           "name": "ImageName",
           "type": "string"
         },
@@ -1273,6 +1336,10 @@
         },
         {
           "name": "ProcessName",
+          "type": "string"
+        },
+        {
+          "name": "Region",
           "type": "string"
         },
         {
@@ -1644,6 +1711,14 @@
           "type": "datetime"
         },
         {
+          "name": "Policies",
+          "type": "string"
+        },
+        {
+          "name": "PolicyInfo",
+          "type": "dynamic"
+        },
+        {
           "name": "PrinterName",
           "type": "dynamic"
         },
@@ -1723,10 +1798,6 @@
           "type": "dynamic"
         },
         {
-          "name": "CloudAppAlertId",
-          "type": "string"
-        },
-        {
           "name": "Department",
           "type": "string"
         },
@@ -1744,10 +1815,6 @@
         },
         {
           "name": "DlpPolicyRuleMatchInfo",
-          "type": "dynamic"
-        },
-        {
-          "name": "EmailAttachmentInfo",
           "type": "dynamic"
         },
         {
@@ -1799,6 +1866,10 @@
           "type": "string"
         },
         {
+          "name": "PhysicalAccessPointInfo",
+          "type": "dynamic"
+        },
+        {
           "name": "PhysicalAccessPointName",
           "type": "string"
         },
@@ -1823,6 +1894,10 @@
           "type": "string"
         },
         {
+          "name": "RemovableMediaInfo",
+          "type": "dynamic"
+        },
+        {
           "name": "RemovableMediaManufacturer",
           "type": "string"
         },
@@ -1833,6 +1908,18 @@
         {
           "name": "RemovableMediaSerialNumber",
           "type": "string"
+        },
+        {
+          "name": "RiskyAIUsageAccessedResourceInfo",
+          "type": "dynamic"
+        },
+        {
+          "name": "RiskyAIUsageAppCategory",
+          "type": "string"
+        },
+        {
+          "name": "RiskyAIUsageSensitivityLabelsInfo",
+          "type": "dynamic"
         },
         {
           "name": "SensitiveInfoTypeInfo",
@@ -1863,18 +1950,6 @@
           "type": "string"
         },
         {
-          "name": "SourceUrlDomain",
-          "type": "string"
-        },
-        {
-          "name": "TargetFilePath",
-          "type": "string"
-        },
-        {
-          "name": "TargetUrlDomain",
-          "type": "string"
-        },
-        {
           "name": "TeamsChannelName",
           "type": "string"
         },
@@ -1891,19 +1966,7 @@
           "type": "datetime"
         },
         {
-          "name": "UnallowedUrlDomains",
-          "type": "string"
-        },
-        {
-          "name": "UrlDomainInfo",
-          "type": "string"
-        },
-        {
           "name": "UserAlternateEmails",
-          "type": "string"
-        },
-        {
-          "name": "Workload",
           "type": "string"
         }
       ]
@@ -1974,6 +2037,10 @@
         },
         {
           "name": "ConfigurationBenchmark",
+          "type": "string"
+        },
+        {
+          "name": "ConfigurationBenchmarkVersion",
           "type": "string"
         },
         {
@@ -2760,6 +2827,10 @@
         },
         {
           "name": "DeviceName",
+          "type": "string"
+        },
+        {
+          "name": "DeviceRoles",
           "type": "string"
         },
         {
@@ -4515,6 +4586,18 @@
           "type": "string"
         },
         {
+          "name": "OriginalConfidenceLevel",
+          "type": "string"
+        },
+        {
+          "name": "OriginalDetectionMethods",
+          "type": "string"
+        },
+        {
+          "name": "OriginalThreatTypes",
+          "type": "string"
+        },
+        {
           "name": "RecipientDomain",
           "type": "string"
         },
@@ -4584,6 +4667,10 @@
         },
         {
           "name": "To",
+          "type": "string"
+        },
+        {
+          "name": "Topics",
           "type": "string"
         },
         {
@@ -4776,15 +4863,19 @@
           "type": "string"
         },
         {
+          "name": "GatewayJA4",
+          "type": "string"
+        },
+        {
           "name": "IPAddress",
           "type": "string"
         },
         {
-          "name": "IsConfidentialClient",
+          "name": "IsGuestUser",
           "type": "bool"
         },
         {
-          "name": "IsGuestUser",
+          "name": "IsSignInThroughGlobalSecureAccess",
           "type": "bool"
         },
         {
@@ -4832,7 +4923,15 @@
           "type": "string"
         },
         {
+          "name": "RiskEventTypes",
+          "type": "string"
+        },
+        {
           "name": "SessionId",
+          "type": "string"
+        },
+        {
+          "name": "SourceSystem",
           "type": "string"
         },
         {
@@ -4840,8 +4939,28 @@
           "type": "string"
         },
         {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "TimeGenerated",
+          "type": "datetime"
+        },
+        {
           "name": "Timestamp",
           "type": "datetime"
+        },
+        {
+          "name": "TokenIssuerType",
+          "type": "string"
+        },
+        {
+          "name": "Type",
+          "type": "string"
+        },
+        {
+          "name": "UniqueTokenId",
+          "type": "string"
         },
         {
           "name": "UserAgent",
@@ -4875,8 +4994,16 @@
           "type": "string"
         },
         {
+          "name": "GatewayJA4",
+          "type": "string"
+        },
+        {
           "name": "IPAddress",
           "type": "string"
+        },
+        {
+          "name": "IsConfidentialClient",
+          "type": "bool"
         },
         {
           "name": "IsManagedIdentity",
@@ -4919,12 +5046,40 @@
           "type": "string"
         },
         {
+          "name": "SessionId",
+          "type": "string"
+        },
+        {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
           "name": "State",
           "type": "string"
         },
         {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "TimeGenerated",
+          "type": "datetime"
+        },
+        {
           "name": "Timestamp",
           "type": "datetime"
+        },
+        {
+          "name": "Type",
+          "type": "string"
+        },
+        {
+          "name": "UniqueTokenId",
+          "type": "string"
+        },
+        {
+          "name": "UserAgent",
+          "type": "string"
         }
       ]
     },
@@ -5074,7 +5229,7 @@
       ]
     },
     {
-      "name": "GraphApiAuditEvents",
+      "name": "GraphAPIAuditEvents",
       "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-graphapiauditevents-table",
       "sourceUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-graphapiauditevents-table.md",
       "columns": [
@@ -5095,11 +5250,15 @@
           "type": "string"
         },
         {
+          "name": "EntityType",
+          "type": "string"
+        },
+        {
           "name": "IdentityProvider",
           "type": "string"
         },
         {
-          "name": "IPAddress",
+          "name": "IpAddress",
           "type": "string"
         },
         {
@@ -5108,6 +5267,10 @@
         },
         {
           "name": "OperationId",
+          "type": "string"
+        },
+        {
+          "name": "ReportId",
           "type": "string"
         },
         {
@@ -5139,11 +5302,27 @@
           "type": "string"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
           "name": "TargetWorkload",
           "type": "string"
         },
         {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "TimeGenerated",
+          "type": "datetime"
+        },
+        {
           "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "Type",
           "type": "string"
         },
         {
@@ -6029,6 +6208,10 @@
           "type": "string"
         },
         {
+          "name": "AssignedRoles",
+          "type": "dynamic"
+        },
+        {
           "name": "ConsentedUsersCount",
           "type": "int"
         },
@@ -6059,6 +6242,10 @@
         {
           "name": "ReportId",
           "type": "string"
+        },
+        {
+          "name": "RiskScore",
+          "type": "int"
         },
         {
           "name": "ServicePrincipalId",
