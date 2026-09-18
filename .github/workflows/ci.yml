@@ -98,6 +98,7 @@ jobs:
           AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
           AZURE_ACR_NAME: ${{ vars.AZURE_ACR_NAME }}
           AZURE_STORAGE_ACCOUNT_NAME: ${{ vars.AZURE_STORAGE_ACCOUNT_NAME }}
+          CUSTOM_SCHEMA_PATH: ${{ vars.CUSTOM_SCHEMA_PATH }}
           AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
           AZURE_APP_NAME: ${{ vars.AZURE_APP_NAME }}
         run: ./scripts/deploy-lab.sh

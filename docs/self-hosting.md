@@ -21,7 +21,7 @@ Update the host file and restart the container. An invalid file is intentional f
 
 Prerequisites: Azure CLI plus the Container Apps extension, a signed-in identity with `Contributor` on the target resource group, and either `Owner` or scoped `Role Based Access Control Administrator` permission to create the app identity's `AcrPull` role assignment. The foundation stage creates the `${AZURE_APP_NAME}-pull` identity; the latter permission can use the existing conditional-assignment approach in [lab-deployment.md](lab-deployment.md), restricted to the `AcrPull` role and that identity.
 
-Choose globally unique registry and storage-account names, create the resource group, then use the fixed deployment helper:
+Choose a globally unique registry name, create the resource group, then use the fixed deployment helper:
 
 ```bash
 az extension add --name containerapp --upgrade
@@ -30,13 +30,18 @@ export AZURE_RESOURCE_GROUP='YOUR_RESOURCE_GROUP'
 export AZURE_LOCATION='westeurope'
 export AZURE_APP_NAME='kql-validator-lab'
 export AZURE_ACR_NAME='YOUR_UNIQUE_ACR_NAME'
-export AZURE_STORAGE_ACCOUNT_NAME='YOUR_UNIQUE_STORAGE_NAME'
-export CUSTOM_SCHEMA_PATH="$PWD/examples/custom-schema.json"
 az group create --name "$AZURE_RESOURCE_GROUP" --location "$AZURE_LOCATION"
 ./scripts/deploy-lab.sh
 ```
 
-The helper provisions a [Basic ACR](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-skus), Standard_LRS storage account, classic Azure Files share, and Container Apps environment; builds the image in ACR; uploads `custom-schema.json`; deploys the immutable image digest; and checks readiness plus a known custom table/function. The app uses the [Container Apps Azure Files mount](https://learn.microsoft.com/en-us/azure/container-apps/storage-mounts) in `ReadOnly` mode at `/mnt/custom-schema` and sets `SchemaOverlay__Path=/mnt/custom-schema/custom-schema.json`.
+The helper provisions a [Basic ACR](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-skus) and Container Apps environment, builds the image in ACR, deploys the immutable image digest, and runs readiness checks. A custom catalog is optional. To enable one, set both variables before deployment:
+
+```bash
+export AZURE_STORAGE_ACCOUNT_NAME='YOUR_UNIQUE_STORAGE_NAME'
+export CUSTOM_SCHEMA_PATH="$PWD/examples/custom-schema.json"
+```
+
+With a catalog enabled, the helper also provisions a Standard_LRS storage account and classic Azure Files share, uploads `custom-schema.json`, and checks the catalog's known table and function. The app uses the [Container Apps Azure Files mount](https://learn.microsoft.com/en-us/azure/container-apps/storage-mounts) in `ReadOnly` mode at `/mnt/custom-schema` and sets `SchemaOverlay__Path=/mnt/custom-schema/custom-schema.json`.
 
 To update the catalog, set `CUSTOM_SCHEMA_PATH` to the replacement file and rerun the helper; it uploads the file and creates a fresh app revision. To tear down a dedicated installation, run `az group delete --name "$AZURE_RESOURCE_GROUP"` after confirming the exact resource group.
 
