@@ -41,6 +41,11 @@
       "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-behaviorinfo-table.md"
     },
     {
+      "tableName": "CallActivityEvents",
+      "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-callactivityevents-table",
+      "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-callactivityevents-table.md"
+    },
+    {
       "tableName": "CampaignInfo",
       "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-campaigninfo-table",
       "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-campaigninfo-table.md"
@@ -261,7 +266,7 @@
       "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-filemaliciouscontentinfo-table.md"
     },
     {
-      "tableName": "GraphApiAuditEvents",
+      "tableName": "GraphAPIAuditEvents",
       "documentationUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-graphapiauditevents-table",
       "markdownUrl": "https://raw.githubusercontent.com/MicrosoftDocs/defender-docs/public/defender-xdr/advanced-hunting-graphapiauditevents-table.md"
     },
