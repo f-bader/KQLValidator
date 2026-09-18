@@ -221,6 +221,19 @@ api.MapGet("/environments/{environment}/tables/{table}", (
     .ProducesProblem(StatusCodes.Status404NotFound)
     .ProducesProblem(StatusCodes.Status429TooManyRequests);
 
+api.MapGet("/environments/{environment}/functions/{function}", (
+    string environment, string function, SchemaQueryService schemas) =>
+    !TryEnvironment(environment, out var parsed)
+        ? UnknownEnvironment()
+        : schemas.GetFunction(parsed, function) is { } result
+            ? Results.Ok(result)
+            : Results.Problem(statusCode: StatusCodes.Status404NotFound, title: "Unknown function",
+                detail: "The function does not exist in the selected environment."))
+    .Produces<SchemaFunction>()
+    .ProducesProblem(StatusCodes.Status400BadRequest)
+    .ProducesProblem(StatusCodes.Status404NotFound)
+    .ProducesProblem(StatusCodes.Status429TooManyRequests);
+
 app.MapHealthChecks("/health/live", new HealthCheckOptions { Predicate = registration => registration.Tags.Contains("live") });
 app.MapHealthChecks("/health/ready", new HealthCheckOptions { Predicate = registration => registration.Tags.Contains("ready") });
 app.MapOpenApi("/openapi/{documentName}.json");

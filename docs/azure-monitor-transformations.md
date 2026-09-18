@@ -31,6 +31,7 @@ The response includes inferred output columns, referenced source columns and fun
 - `TimeGenerated` must be present with type `datetime`.
 - A `parse` statement with 6–10 extracted columns produces performance warning `KQLP007`; more than 10 produces error `KQLT004`.
 - Destination columns omitted from output are allowed. Output types that disagree with the destination are errors; extra output columns are warnings because Azure discards them after ingestion.
+- Equivalent KQL scalar type aliases, such as `long` and `int64`, are compatible. Responses prioritize errors within the 500-diagnostic limit, adding `KQLV001` if truncated; truncation never changes validity.
 
 Invalid KQL is returned as HTTP 200 with `valid: false`. Invalid request shapes use Problem Details with HTTP 400.
 

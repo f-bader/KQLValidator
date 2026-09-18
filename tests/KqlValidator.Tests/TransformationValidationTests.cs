@@ -99,6 +99,31 @@ public sealed class TransformationValidationTests
         Assert.Contains(unsupported.Diagnostics, x => x.RuleId == "KQLT003" && x.Severity == DiagnosticSeverity.Error);
     }
 
+    [Theory]
+    [InlineData("long", "int64")]
+    [InlineData("int64", "long")]
+    [InlineData("bool", "boolean")]
+    public void Destination_accepts_equivalent_scalar_type_aliases(string sourceType, string destinationType)
+    {
+        var result = Validate("source | project TimeGenerated, Value",
+            [new("TimeGenerated", "datetime"), new("Value", sourceType)],
+            [new("TimeGenerated", "datetime"), new("Value", destinationType)]);
+
+        Assert.True(result.Valid, Messages(result));
+    }
+
+    [Fact]
+    public void Truncation_retains_destination_errors_after_discarded_column_warnings()
+    {
+        var columns = Enumerable.Range(0, 500).Select(i => new ColumnDeclaration($"C{i}", "long"))
+            .Append(new ColumnDeclaration("TimeGenerated", "datetime")).ToArray();
+        var result = Validate("source", columns, [new("TimeGenerated", "string")]);
+
+        Assert.False(result.Valid);
+        Assert.Contains(result.Diagnostics, x => x.RuleId == "KQLT007");
+        Assert.Contains(result.Diagnostics, x => x.RuleId == "KQLV001");
+    }
+
     private static TransformationValidationResponse Validate(
         string query,
         IReadOnlyList<ColumnDeclaration> source,

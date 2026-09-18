@@ -26,10 +26,17 @@ public sealed class GlobalStateFactory
             var function = schemaFunction;
             if (function.Name.Equals("_GetWatchlist", StringComparison.OrdinalIgnoreCase) && extensions?.Watchlists is { Count: > 0 })
             {
-                var extra = extensions.Watchlists.SelectMany(x => x.Columns)
-                    .GroupBy(x => x.Name, StringComparer.OrdinalIgnoreCase)
-                    .Select(x => new SchemaColumn(x.Key, x.First().Type));
-                function = function with { OutputColumns = [.. function.OutputColumns ?? [], .. extra] };
+                var watchlists = extensions.Watchlists.ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
+                members.Add(new FunctionSymbol(function.Name, context =>
+                {
+                    var columns = (function.OutputColumns ?? []).ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
+                    if (context.Arguments.Count > 0 && context.Arguments[0].ConstantValue is string alias &&
+                        watchlists.TryGetValue(alias, out var watchlist))
+                        foreach (var column in watchlist.Columns)
+                            columns[column.Name] = new SchemaColumn(column.Name, column.Type);
+                    return new TableSymbol(columns.Values.Select(x => new ColumnSymbol(x.Name, ResolveType(x.Type))));
+                }, Tabularity.Tabular, function.Parameters.Select(ToParameter).ToArray()));
+                continue;
             }
             members.Add(ToFunction(function));
         }

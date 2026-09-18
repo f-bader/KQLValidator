@@ -978,6 +978,128 @@ public sealed class ValidationTests
         Assert.Equal(3, first.Select(x => x.SchemaVersion).Distinct(StringComparer.Ordinal).Count());
     }
 
+    [Fact]
+    public void Diagnostic_truncation_preserves_blocking_nrt_errors()
+    {
+        var query = "DeviceProcessEvents | project " + string.Join(", ",
+            Enumerable.Range(0, 500).Select(i => $"A{i}=extract('a', 0, FileName)")) + " | summarize count()";
+        var result = Validate(query, profile: LintProfile.Detection, target: KqlTarget.DefenderNrt);
+
+        Assert.False(result.Valid);
+        Assert.Contains(result.Diagnostics, x => x.RuleId == "KQLN004" && x.Severity == DiagnosticSeverity.Error);
+        Assert.Contains(result.Diagnostics, x => x.RuleId == "KQLV001");
+        Assert.Equal(501, result.Diagnostics.Count);
+    }
+
+    [Theory]
+    [InlineData("print Message = \"invoke FileProfile(SHA1)\"")]
+    [InlineData("print Message = 'invoke FileProfile(SHA1)'")]
+    [InlineData("// invoke FileProfile(Missing)\nprint Value = 1")]
+    public void Fileprofile_text_outside_invocations_does_not_change_analysis(string query)
+    {
+        var result = Validate(query);
+
+        Assert.True(result.Valid, Messages(result));
+        Assert.Empty(result.ReferencedColumns);
+    }
+
+    [Fact]
+    public void Linter_errors_after_many_advisories_remain_blocking()
+    {
+        var query = "print " + string.Join(", ",
+            Enumerable.Range(0, 500).Select(i => $"A{i}=extract('a', 0, 'abc')"));
+        var result = Validate(query, KqlEnvironment.Sentinel, LintProfile.Detection);
+
+        Assert.False(result.Valid);
+        Assert.Contains(result.Diagnostics, x => x.RuleId == "KQLS001");
+        Assert.Contains(result.Diagnostics, x => x.RuleId == "KQLV001");
+    }
+
+    [Theory]
+    [InlineData("['Hash value']")]
+    [InlineData("H")]
+    [InlineData("[\"Hash value\"]")]
+    public void Fileprofile_accepts_quoted_hash_column_aliases(string column)
+    {
+        var result = Validate($"DeviceFileEvents | project {column} = SHA1 | invoke FileProfile({column})");
+
+        Assert.True(result.Valid, Messages(result));
+    }
+
+    [Fact]
+    public void Fileprofile_diagnostic_positions_match_the_original_query()
+    {
+        const string query = "DeviceFileEvents | invoke FileProfile(SHA1) | project MissingAfterInvoke";
+        var result = Validate(query);
+        var diagnostic = Assert.Single(result.Diagnostics, x => x.RuleId == "KS142");
+
+        Assert.Equal(query.IndexOf("MissingAfterInvoke", StringComparison.Ordinal), diagnostic.Span.Start);
+    }
+
+    [Theory]
+    [InlineData("0", false)]
+    [InlineData("-1", false)]
+    [InlineData("(-1)", false)]
+    [InlineData("int(1001)", false)]
+    [InlineData("1001", false)]
+    [InlineData("1", true)]
+    [InlineData("1000", true)]
+    public void Fileprofile_checks_constant_limit_boundaries(string limit, bool valid)
+    {
+        var result = Validate($"DeviceFileEvents | invoke FileProfile(SHA1, {limit})");
+
+        Assert.Equal(valid, result.Valid);
+        Assert.Equal(!valid, result.Diagnostics.Any(x => x.RuleId == "KQLV002"));
+    }
+
+    [Theory]
+    [InlineData("1001")]
+    [InlineData("-1")]
+    public void Fileprofile_checks_let_constant_limit_with_lint_disabled(string limit)
+    {
+        var result = validator.Validate(new ValidateRequest(
+            $"let maximum = {limit}; DeviceFileEvents | invoke FileProfile(SHA1, maximum)",
+            KqlEnvironment.Xdr, LintProfile.General, Lint: new LintOptions(Enabled: false)), TestContext.Current.CancellationToken);
+
+        Assert.False(result.Valid);
+        Assert.Contains(result.Diagnostics, x => x.RuleId == "KQLV002");
+    }
+
+    [Theory]
+    [InlineData("> ago(1h)")]
+    [InlineData(">ago(1h)")]
+    [InlineData(">= ago(1h)")]
+    [InlineData(">=ago(1h)")]
+    public void Time_filter_detection_is_independent_of_comparison_whitespace(string predicate)
+    {
+        var query = $"DeviceEvents | where Timestamp {predicate} | join kind=inner " +
+            $"(DeviceProcessEvents | where Timestamp {predicate}) on DeviceId | take 10";
+        var result = Validate(query, profile: LintProfile.Hunting);
+
+        Assert.True(result.Valid, Messages(result));
+        Assert.DoesNotContain(result.Diagnostics, x => x.RuleId is "KQLH010" or "KQLH011");
+    }
+
+    [Fact]
+    public void Watchlist_extensions_are_resolved_per_alias_and_type()
+    {
+        var extensions = new ValidationExtensions(Watchlists:
+        [
+            new("A", [new("OnlyA", "string"), new("Value", "string")]),
+            new("B", [new("Value", "long")]),
+        ]);
+        var wrongAlias = Validate("_GetWatchlist('B') | project OnlyA", KqlEnvironment.Sentinel, extensions: extensions);
+        var correctAlias = Validate("let alias = 'B'; _GetWatchlist(alias) | project Value", KqlEnvironment.Sentinel, extensions: extensions);
+        var firstAlias = Validate("_GetWatchlist('A') | project Value", KqlEnvironment.Sentinel, extensions: extensions);
+        var noExtensions = Validate("_GetWatchlist('A') | project OnlyA", KqlEnvironment.Sentinel);
+
+        Assert.False(wrongAlias.Valid);
+        Assert.True(correctAlias.Valid, Messages(correctAlias));
+        Assert.Equal("long", Assert.Single(correctAlias.OutputColumns).Type);
+        Assert.Equal("string", Assert.Single(firstAlias.OutputColumns).Type);
+        Assert.False(noExtensions.Valid);
+    }
+
     private ValidationResponse Validate(
         string query,
         KqlEnvironment environment = KqlEnvironment.Xdr,

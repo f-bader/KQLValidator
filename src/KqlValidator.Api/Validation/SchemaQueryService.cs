@@ -21,6 +21,9 @@ public sealed class SchemaQueryService
     public SchemaTable? GetTable(KqlEnvironment environment, string table) =>
         catalog.Get(environment).Tables.GetValueOrDefault(table);
 
+    public SchemaFunction? GetFunction(KqlEnvironment environment, string function) =>
+        catalog.Get(environment).Functions.GetValueOrDefault(function);
+
     public SchemaSearchResponse Search(KqlEnvironment environment, string? query, string? kind, int limit, string? cursor)
     {
         limit = Math.Clamp(limit, 1, 100);

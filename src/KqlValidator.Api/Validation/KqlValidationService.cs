@@ -36,9 +36,9 @@ public sealed partial class KqlValidationService(
         requestValidator.Validate(request);
         var schema = catalog.Get(request.Environment);
         var globals = globalStateFactory.Create(schema, request.Extensions);
-        var normalized = NormalizeFileProfileColumnArguments(request.Query);
         Kusto.Language.Utils.CancellationToken kustoCancellation = cancellationToken;
-        var code = KustoCode.ParseAndAnalyze(normalized.Query, globals, kustoCancellation);
+        var code = KustoCode.ParseAndAnalyze(request.Query, globals, kustoCancellation);
+        var fileProfileColumns = CollectFileProfileColumns(code, cancellationToken);
 
         var outputColumns = code.ResultType?.Members.OfType<ColumnSymbol>()
             .GroupBy(x => x.Name, StringComparer.OrdinalIgnoreCase)
@@ -46,12 +46,16 @@ public sealed partial class KqlValidationService(
             .ToArray() ?? [];
 
         cancellationToken.ThrowIfCancellationRequested();
-        var fileProfileDiagnostics = ValidateFileProfileColumns(request.Query, code, normalized.Columns, kustoCancellation);
-        var references = GatherReferences(code, normalized.Columns.Select(x => x.Name), cancellationToken);
+        var fileProfileDiagnostics = ValidateFileProfileColumns(request.Query, code, fileProfileColumns, kustoCancellation);
+        var references = GatherReferences(code, fileProfileColumns.Select(x => x.Name), cancellationToken);
         var lintPolicy = lintRules.CreatePolicy(request);
-        var watchlistPipelines = CollectWatchlistPipelines(normalized.Query);
+        var watchlistPipelines = CollectWatchlistPipelines(request.Query);
+        var fileProfilePositions = fileProfileColumns.Select(x => x.Position).ToHashSet();
 
         var candidates = code.GetDiagnostics(kustoCancellation)
+            // Kusto clears row scope inside invoke arguments. FileProfile's column
+            // selector is checked against the input scope separately below.
+            .Where(diagnostic => diagnostic.Code != "KS142" || !fileProfilePositions.Contains(diagnostic.Start))
             .Select(diagnostic => new ValidationDiagnostic(
                 diagnostic.Code,
                 diagnostic.Severity == Kusto.Language.DiagnosticSeverity.Error
@@ -62,13 +66,14 @@ public sealed partial class KqlValidationService(
                 "https://learn.microsoft.com/en-us/kusto/query/",
                 diagnostic.Code.StartsWith("KS", StringComparison.Ordinal) ? "syntax" : "semantic"))
             .Concat(fileProfileDiagnostics)
+            .Concat(ValidateFileProfileLimits(request.Query, code, cancellationToken))
             .Concat(linter.Analyze(request, lintPolicy, code, cancellationToken))
             .Concat(defenderNrtValidator.Analyze(request, lintPolicy, references.Tables, references.Columns, cancellationToken))
             .Concat(DetectionOutputDiagnostics(request, outputColumns, references.Tables, schema, lintPolicy))
-            .Take(MaxDiagnostics + 1)
             .ToArray();
         var truncated = candidates.Length > MaxDiagnostics;
         var diagnostics = candidates
+            .OrderBy(x => x.Severity)
             .Take(MaxDiagnostics)
             .AppendIf(truncated, new ValidationDiagnostic(
                 "KQLV001",
@@ -82,7 +87,7 @@ public sealed partial class KqlValidationService(
 
         stopwatch.Stop();
         return new ValidationResponse(
-            !diagnostics.Any(x => x.Severity == Contracts.DiagnosticSeverity.Error),
+            !candidates.Any(x => x.Severity == Contracts.DiagnosticSeverity.Error),
             ThisAssembly.Version,
             schema.Version,
             diagnostics,
@@ -161,7 +166,7 @@ public sealed partial class KqlValidationService(
                 symbol is null
                     ? $"The name '{column.Name}' does not refer to a column in the FileProfile input."
                     : $"FileProfile column '{column.Name}' has an incompatible type. Expected: string.",
-                KqlLinter.Span(originalQuery, column.Position, column.Name.Length),
+                KqlLinter.Span(originalQuery, column.Position, column.Length),
                 "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-fileprofile-function",
                 "semantic"));
         }
@@ -249,17 +254,78 @@ public sealed partial class KqlValidationService(
         return $"{description} Verify the function name and signature in the selected environment schema. If it is workspace-specific, declare its parameters and return schema under extensions.functions.";
     }
 
-    private static NormalizedQuery NormalizeFileProfileColumnArguments(string query)
+    private static IReadOnlyList<ValidationDiagnostic> ValidateFileProfileLimits(
+        string query, KustoCode code, CancellationToken cancellationToken)
+    {
+        var diagnostics = new List<ValidationDiagnostic>();
+        SyntaxElement.WalkNodes(code.Syntax, node =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (node is not FunctionCallExpression call || call.Parent is not InvokeOperator ||
+                call.ReferencedSymbol is not FunctionSymbol { Name: "FileProfile" } ||
+                !code.Globals.Database.Members.Contains(call.ReferencedSymbol) ||
+                call.ArgumentList.Expressions.Count != 2)
+                return;
+            var limit = call.ArgumentList.Expressions[1].Element;
+            var value = GetIntegerConstant(limit, cancellationToken);
+            if (value is < 1 or > 1000)
+                diagnostics.Add(new ValidationDiagnostic(
+                    "KQLV002", Contracts.DiagnosticSeverity.Error,
+                    "FileProfile enrichment limit must be between 1 and 1000.",
+                    KqlLinter.Span(query, limit.TextStart, limit.Width),
+                    "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-fileprofile-function",
+                    "semantic"));
+        });
+        return diagnostics;
+    }
+
+    private static decimal? GetIntegerConstant(Expression expression, CancellationToken cancellationToken)
+    {
+        var negate = false;
+        var visited = new HashSet<Expression>();
+        while (visited.Add(expression))
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            decimal? value = expression.ConstantValue switch
+            {
+                long number => number,
+                int number => number,
+                _ => null,
+            };
+            if (value is not null) return negate ? -value : value;
+            switch (expression)
+            {
+                case ParenthesizedExpression parenthesized:
+                    expression = parenthesized.Expression;
+                    break;
+                case PrefixUnaryExpression unary when unary.Kind is SyntaxKind.UnaryMinusExpression or SyntaxKind.UnaryPlusExpression:
+                    negate ^= unary.Kind == SyntaxKind.UnaryMinusExpression;
+                    expression = unary.Expression;
+                    break;
+                case NameReference { ReferencedSymbol: VariableSymbol { Source: { } source } }:
+                    expression = source;
+                    break;
+                default:
+                    return null;
+            }
+        }
+        return null;
+    }
+
+    private static IReadOnlyList<FileProfileColumn> CollectFileProfileColumns(KustoCode code, CancellationToken cancellationToken)
     {
         var columns = new List<FileProfileColumn>();
-        var normalized = BareFileProfileColumn().Replace(query, match =>
+        SyntaxElement.WalkNodes(code.Syntax, node =>
         {
-            var column = match.Groups["column"];
-            if (column.Length < 2) return match.Value;
-            columns.Add(new FileProfileColumn(column.Value, column.Index, match.Index));
-            return match.Groups["prefix"].Value + $"\"{column.Value[1..^1]}\"";
+            cancellationToken.ThrowIfCancellationRequested();
+            if (node is not FunctionCallExpression call || call.Parent is not InvokeOperator invoke ||
+                call.ReferencedSymbol is not FunctionSymbol { Name: "FileProfile" } || call.ArgumentList.Expressions.Count == 0 ||
+                !code.Globals.Database.Members.Contains(call.ReferencedSymbol) ||
+                call.ArgumentList.Expressions[0].Element is not NameReference column)
+                return;
+            columns.Add(new FileProfileColumn(column.SimpleName, column.TextStart, column.Width, invoke.TextStart));
         });
-        return new NormalizedQuery(normalized, columns);
+        return columns;
     }
 
     private static References GatherReferences(
@@ -301,11 +367,7 @@ public sealed partial class KqlValidationService(
 
     private sealed record References(IReadOnlyList<string> Tables, IReadOnlyList<string> Columns, IReadOnlyList<string> Functions);
     private sealed record WatchlistPipelineSpan(int Start, int End, string Alias);
-    private sealed record FileProfileColumn(string Name, int Position, int ScopePosition);
-    private sealed record NormalizedQuery(string Query, IReadOnlyList<FileProfileColumn> Columns);
-
-    [GeneratedRegex(@"(?i)(?<prefix>\binvoke\s+FileProfile\s*\(\s*)(?<column>[A-Za-z_]\w*)(?=\s*(?:,|\)))", RegexOptions.None, RegexTimeoutMilliseconds)]
-    private static partial Regex BareFileProfileColumn();
+    private sealed record FileProfileColumn(string Name, int Position, int Length, int ScopePosition);
 
     [GeneratedRegex(@"(?i)The name '(?<column>[^']+)'", RegexOptions.None, RegexTimeoutMilliseconds)]
     private static partial Regex UnknownColumnName();

@@ -62,4 +62,9 @@ public sealed class KqlTools
     [Description("Get the typed columns for one table in a KQL environment.")]
     public static SchemaTable? GetKqlTable(SchemaQueryService schemas, KqlEnvironment environment, string table) =>
         schemas.GetTable(environment, table);
+
+    [McpServerTool(Name = "get_kql_function", Title = "Get KQL function", ReadOnly = true, Destructive = false, Idempotent = true, OpenWorld = false, UseStructuredContent = true)]
+    [Description("Get a catalog function's typed parameters, optional arguments, return schema, and tabular input requirements. Returns null if it is absent from the selected environment.")]
+    public static SchemaFunction? GetKqlFunction(SchemaQueryService schemas, KqlEnvironment environment, string function) =>
+        schemas.GetFunction(environment, function);
 }

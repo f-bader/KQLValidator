@@ -64,10 +64,10 @@ public sealed partial class AzureMonitorTransformationValidationService(
             .Concat(blockingKustoDiagnostic
                 ? []
                 : OutputDiagnostics(request, outputColumns, code.ResultType is TableSymbol))
-            .Take(MaxDiagnostics + 1)
             .ToArray();
         var truncated = candidates.Length > MaxDiagnostics;
         var diagnostics = candidates
+            .OrderBy(x => x.Severity)
             .Take(MaxDiagnostics)
             .AppendIf(truncated, new ValidationDiagnostic(
                 "KQLV001",
@@ -81,7 +81,7 @@ public sealed partial class AzureMonitorTransformationValidationService(
 
         stopwatch.Stop();
         return new(
-            !diagnostics.Any(x => x.Severity == ContractSeverity.Error),
+            !candidates.Any(x => x.Severity == ContractSeverity.Error),
             ThisAssembly.Version,
             diagnostics,
             outputColumns,
@@ -215,7 +215,7 @@ public sealed partial class AzureMonitorTransformationValidationService(
                     $"Output column '{output.Name}' is absent from the destination schema and will be discarded after ingestion.", end);
                 continue;
             }
-            if (!output.Type.Equals(expected.Type, StringComparison.OrdinalIgnoreCase))
+            if (GlobalStateFactory.ResolveType(output.Type) != GlobalStateFactory.ResolveType(expected.Type))
                 yield return Create(request.Query, "KQLT007",
                     $"Output column '{output.Name}' has type '{output.Type}', but the destination requires '{expected.Type}'.", end);
         }
