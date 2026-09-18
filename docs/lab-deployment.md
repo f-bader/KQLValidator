@@ -4,12 +4,11 @@ This runbook keeps the lab isolated and builds the Linux image inside its dedica
 
 ## One-time resources
 
-Choose globally unique registry, storage-account, and dedicated resource-group names. The deployment helper creates the Basic ACR, a standard storage account, a classic Azure Files share, and the Container Apps environment on its first run:
+Choose a globally unique registry and dedicated resource-group names. The deployment helper creates the Basic ACR and Container Apps environment on its first run:
 
 ```bash
 export AZURE_RESOURCE_GROUP='YOUR_RESOURCE_GROUP'
 export AZURE_ACR_NAME='YOUR_UNIQUE_ACR_NAME'
-export AZURE_STORAGE_ACCOUNT_NAME='YOUR_UNIQUE_STORAGE_ACCOUNT_NAME'
 export AZURE_LOCATION='YOUR_AZURE_REGION'
 
 az group create \
@@ -19,7 +18,7 @@ az group create \
 
 ```
 
-A Basic registry is the lab's fixed-cost floor; check current Azure Container Registry pricing for your region. Container Apps is configured for Consumption scale-to-zero and normally remains inside its monthly free grant at low traffic. Azure Files capacity and transactions are charged separately.
+A Basic registry is the lab's fixed-cost floor; check current Azure Container Registry pricing for your region. Container Apps is configured for Consumption scale-to-zero and normally remains inside its monthly free grant at low traffic. When enabled, Azure Files capacity and transactions are charged separately.
 
 ## Build, deploy, and validate
 
@@ -29,18 +28,23 @@ Run the complete local gate first:
 ./scripts/validate-local.sh
 ```
 
-The helper provisions foundation resources, builds in ACR, uploads the catalog as `custom-schema.json`, deploys the immutable digest, and runs REST/MCP/catalog smoke checks. The share is mounted read-only; catalog changes take effect only through the next revision.
+The helper provisions foundation resources, builds in ACR, deploys the immutable digest, and runs REST/MCP smoke checks.
 
 ```bash
 export AZURE_SUBSCRIPTION_ID='YOUR_SUBSCRIPTION_ID'
 export AZURE_RESOURCE_GROUP='YOUR_RESOURCE_GROUP'
 export AZURE_ACR_NAME='YOUR_UNIQUE_ACR_NAME'
-export AZURE_STORAGE_ACCOUNT_NAME='YOUR_UNIQUE_STORAGE_ACCOUNT_NAME'
 export AZURE_LOCATION='YOUR_AZURE_REGION'
 export AZURE_APP_NAME='YOUR_APP_NAME'
-export CUSTOM_SCHEMA_PATH="$PWD/examples/custom-schema.json"
 
 ./scripts/deploy-lab.sh
+```
+
+To mount a persistent custom catalog, set both optional variables before running the helper. It then creates a standard storage account and classic Azure Files share, uploads the file as `custom-schema.json`, mounts it read-only, and includes catalog checks in the smoke suite:
+
+```bash
+export AZURE_STORAGE_ACCOUNT_NAME='YOUR_UNIQUE_STORAGE_ACCOUNT_NAME'
+export CUSTOM_SCHEMA_PATH="$PWD/examples/custom-schema.json"
 ```
 
 ## GitHub Actions deployment
@@ -58,8 +62,14 @@ gh variable set AZURE_RESOURCE_GROUP --repo "$GITHUB_REPOSITORY" --body 'YOUR_RE
 gh variable set AZURE_LOCATION --repo "$GITHUB_REPOSITORY" --body 'YOUR_AZURE_REGION'
 gh variable set AZURE_APP_NAME --repo "$GITHUB_REPOSITORY" --body 'YOUR_APP_NAME'
 gh variable set AZURE_ACR_NAME --repo "$GITHUB_REPOSITORY" --body 'YOUR_ACR_NAME'
-gh variable set AZURE_STORAGE_ACCOUNT_NAME --repo "$GITHUB_REPOSITORY" --body 'YOUR_STORAGE_ACCOUNT_NAME'
 gh variable set AZURE_MANAGED_IDENTITY_NAME --repo "$GITHUB_REPOSITORY" --body 'YOUR_DEPLOYMENT_IDENTITY_NAME'
+```
+
+To enable the optional catalog in CI, configure both variables. `CUSTOM_SCHEMA_PATH` is relative to the repository root, for example `examples/custom-schema.json`:
+
+```bash
+gh variable set AZURE_STORAGE_ACCOUNT_NAME --repo "$GITHUB_REPOSITORY" --body 'YOUR_STORAGE_ACCOUNT_NAME'
+gh variable set CUSTOM_SCHEMA_PATH --repo "$GITHUB_REPOSITORY" --body 'examples/custom-schema.json'
 ```
 
 To add an approval gate, open **Settings → Environments → lab**, add a user or team under **Required reviewers**, and save the protection rule. The deployment job already targets this environment, so no workflow change is needed. Environment protection rules are available on public repositories on every GitHub plan.
@@ -143,9 +153,9 @@ az role assignment list \
 
 For another repository or environment, use its owner/repository names and immutable IDs in the subject, create a matching federated credential, and update the repository variables. Never reuse a subject from another repository.
 
-The deployment creates a Consumption Container Apps environment, one scale-to-zero app, a user-assigned identity with only `AcrPull` on the selected registry, a Basic ACR, and a standard storage account with a classic Azure Files share. It does not create Log Analytics, Application Insights, a VNet, Dapr, or a database.
+The deployment creates a Consumption Container Apps environment, one scale-to-zero app, a user-assigned identity with only `AcrPull` on the selected registry, and a Basic ACR. When `CUSTOM_SCHEMA_PATH` is set, it also creates a standard storage account with a classic Azure Files share. It does not create Log Analytics, Application Insights, a VNet, Dapr, or a database.
 
-The app has external HTTPS ingress and no authentication. REST, MCP, schema, and lint-rule endpoints are public; do not deploy a Sentinel snapshot or custom catalog whose table, function, parameter, or column names are not approved for public disclosure. The deployment mounts the catalog read-only and passes the full Git revision into the image, so the discovery endpoint and validation responses can report the immutable source revision alongside the content-derived schema version.
+The app has external HTTPS ingress and no authentication. REST, MCP, schema, and lint-rule endpoints are public; do not deploy a Sentinel snapshot or custom catalog whose table, function, parameter, or column names are not approved for public disclosure. When configured, the deployment mounts the catalog read-only and passes the full Git revision into the image, so the discovery endpoint and validation responses can report the immutable source revision alongside the content-derived schema version.
 
 REST and MCP requests share a production token bucket of 10 requests with one replenished token per second per client IP. Excess requests receive HTTP 429 and `Retry-After: 1`; health probes are exempt. Analysis is bounded to five seconds and can return HTTP 504. Readiness fails for an active analysis older than 10 seconds, while liveness fails after 30 seconds. Container Apps uses `/health/ready` and `/health/live` for deployment routing and restart decisions.
 

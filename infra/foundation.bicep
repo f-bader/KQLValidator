@@ -13,10 +13,11 @@ param location string = resourceGroup().location
 @maxLength(50)
 param registryName string
 
-@description('Globally unique standard storage account name for the static catalog file.')
-@minLength(3)
-@maxLength(24)
-param storageAccountName string
+@description('Whether to provision Azure Files storage for an optional custom schema catalog.')
+param customSchemaEnabled bool = false
+
+@description('Globally unique standard storage account name for the optional custom schema catalog.')
+param storageAccountName string = ''
 
 @description('Classic Azure Files share that holds custom-schema.json.')
 param schemaShareName string = 'schema-catalog'
@@ -33,7 +34,7 @@ resource registry 'Microsoft.ContainerRegistry/registries@2023-07-01' = {
   }
 }
 
-resource storage 'Microsoft.Storage/storageAccounts@2023-05-01' = {
+resource storage 'Microsoft.Storage/storageAccounts@2023-05-01' = if (customSchemaEnabled) {
   name: storageAccountName
   location: location
   sku: {
@@ -47,12 +48,12 @@ resource storage 'Microsoft.Storage/storageAccounts@2023-05-01' = {
   }
 }
 
-resource fileService 'Microsoft.Storage/storageAccounts/fileServices@2023-05-01' = {
+resource fileService 'Microsoft.Storage/storageAccounts/fileServices@2023-05-01' = if (customSchemaEnabled) {
   parent: storage
   name: 'default'
 }
 
-resource schemaShare 'Microsoft.Storage/storageAccounts/fileServices/shares@2023-05-01' = {
+resource schemaShare 'Microsoft.Storage/storageAccounts/fileServices/shares@2023-05-01' = if (customSchemaEnabled) {
   parent: fileService
   name: schemaShareName
   properties: {
@@ -77,6 +78,6 @@ resource pullIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-
 output managedEnvironmentName string = environment.name
 output registryName string = registry.name
 output registryServer string = registry.properties.loginServer
-output storageAccountName string = storage.name
-output schemaShareName string = schemaShare.name
+output storageAccountName string = customSchemaEnabled ? storage.name : ''
+output schemaShareName string = customSchemaEnabled ? schemaShare.name : ''
 output pullIdentityPrincipalId string = pullIdentity.properties.principalId

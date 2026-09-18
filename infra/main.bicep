@@ -17,8 +17,11 @@ param registryName string
 @description('Managed environment provisioned by foundation.bicep.')
 param managedEnvironmentName string = '${appName}-env'
 
-@description('Storage account provisioned by foundation.bicep for the read-only catalog mount.')
-param storageAccountName string
+@description('Whether to mount an Azure Files custom schema catalog.')
+param customSchemaEnabled bool = false
+
+@description('Storage account provisioned by foundation.bicep for the optional read-only catalog mount.')
+param storageAccountName string = ''
 
 @description('Classic Azure Files share containing custom-schema.json.')
 param schemaShareName string = 'schema-catalog'
@@ -31,17 +34,17 @@ resource environment 'Microsoft.App/managedEnvironments@2025-01-01' existing = {
   name: managedEnvironmentName
 }
 
-resource storage 'Microsoft.Storage/storageAccounts@2023-05-01' existing = {
+resource storage 'Microsoft.Storage/storageAccounts@2023-05-01' existing = if (customSchemaEnabled) {
   name: storageAccountName
 }
 
-resource schemaStorage 'Microsoft.App/managedEnvironments/storages@2025-01-01' = {
+resource schemaStorage 'Microsoft.App/managedEnvironments/storages@2025-01-01' = if (customSchemaEnabled) {
   parent: environment
   name: 'custom-schema'
   properties: {
     azureFile: {
       accountName: storage.name
-      accountKey: storage.listKeys().keys[0].value
+      accountKey: storage!.listKeys().keys[0].value
       shareName: schemaShareName
       accessMode: 'ReadOnly'
     }
@@ -51,6 +54,28 @@ resource schemaStorage 'Microsoft.App/managedEnvironments/storages@2025-01-01' =
 resource pullIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
   name: '${appName}-pull'
 }
+
+var customSchemaEnvironmentVariables = customSchemaEnabled ? [
+  {
+    name: 'SchemaOverlay__Path'
+    value: '/mnt/custom-schema/custom-schema.json'
+  }
+] : []
+
+var customSchemaVolumeMounts = customSchemaEnabled ? [
+  {
+    volumeName: 'custom-schema'
+    mountPath: '/mnt/custom-schema'
+  }
+] : []
+
+var customSchemaVolumes = customSchemaEnabled ? [
+  {
+    name: 'custom-schema'
+    storageType: 'AzureFile'
+    storageName: 'custom-schema'
+  }
+] : []
 
 module registryAccess './registry-access.bicep' = {
   name: '${appName}-acr-pull'
@@ -91,7 +116,7 @@ resource app 'Microsoft.App/containerApps@2025-01-01' = {
         {
           name: 'validator'
           image: image
-          env: [
+          env: concat([
             {
               name: 'ASPNETCORE_ENVIRONMENT'
               value: 'Production'
@@ -100,17 +125,8 @@ resource app 'Microsoft.App/containerApps@2025-01-01' = {
               name: 'ReverseProxy__TrustForwardedHeaders'
               value: 'true'
             }
-            {
-              name: 'SchemaOverlay__Path'
-              value: '/mnt/custom-schema/custom-schema.json'
-            }
-          ]
-          volumeMounts: [
-            {
-              volumeName: 'custom-schema'
-              mountPath: '/mnt/custom-schema'
-            }
-          ]
+          ], customSchemaEnvironmentVariables)
+          volumeMounts: customSchemaVolumeMounts
           resources: {
             cpu: json('0.25')
             memory: '0.5Gi'
@@ -143,13 +159,7 @@ resource app 'Microsoft.App/containerApps@2025-01-01' = {
           ]
         }
       ]
-      volumes: [
-        {
-          name: 'custom-schema'
-          storageType: 'AzureFile'
-          storageName: schemaStorage.name
-        }
-      ]
+      volumes: customSchemaVolumes
       scale: {
         minReplicas: 0
         maxReplicas: 1
