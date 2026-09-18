@@ -1,275 +1,51 @@
 # KQL Validator
 
 [![ci](https://github.com/f-bader/KQLValidator/actions/workflows/ci.yml/badge.svg)](https://github.com/f-bader/KQLValidator/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-An unauthenticated, stateless KQL validator for Microsoft Defender XDR and Microsoft Sentinel. It exposes the same validation engine through a regular REST API and a Streamable HTTP MCP server.
+An unauthenticated, stateless static KQL validator for Microsoft Defender XDR, Microsoft Sentinel, and Azure Monitor transformations. It offers REST and Streamable HTTP MCP; it never executes, stores, or logs submitted KQL.
 
-The service performs static analysis only. It never executes a query, contacts a tenant, or persists submitted KQL.
+## Start here
 
-## Capabilities
-
-- Kusto parser and semantic diagnostics using `Microsoft.Azure.Kusto.Language`.
-- `xdr`, `sentinel`, and merged `unified` schema environments.
-- `general`, `hunting`, and `detection` lint profiles.
-- Target-aware scheduled and NRT linting for Defender XDR and Sentinel.
-- Caller-selectable rule sets, per-rule overrides, severity filtering, and public rule discovery.
-- Defender-specific functions including `AssignedIPAddresses`, `SeenBy`, and the six anomalous-behavior `invoke` functions.
-- Request-scoped custom tables, functions, and watchlists.
-- Azure Monitor data collection transformation validation with typed source and optional destination schemas.
-- Deterministic Defender hunting guidance with stable rule IDs and source spans.
-- REST/OpenAPI plus stateless MCP tools for validation and schema inspection.
-- No authentication, CORS, query logging, query execution, or tenant access.
+- [Run and self-host with Docker or Azure Container Apps](docs/self-hosting.md)
+- [Add a persistent custom schema catalog](docs/custom-schema-catalog.md)
+- [Connect an MCP client and use the API](#api-and-mcp)
+- [Validate Azure Monitor transformations](docs/azure-monitor-transformations.md)
+- [Configure lint rules](docs/lint-rules.md)
+- [Maintain the Azure lab deployment](docs/lab-deployment.md)
 
 ## Run locally
 
-Requires the .NET 10 SDK.
+Requires the .NET SDK pinned in `global.json`:
 
 ```bash
 dotnet restore kql-validator.slnx
 dotnet run --project src/KqlValidator.Api --urls http://127.0.0.1:8080
 ```
 
-Validate through REST:
-
 ```bash
 curl --fail-with-body http://127.0.0.1:8080/api/v1/validate \
   --header 'content-type: application/json' \
-  --data '{
-    "query": "DeviceProcessEvents | where Timestamp > ago(1h) | project Timestamp, DeviceId, FileName",
-    "environment": "xdr",
-    "profile": "hunting"
-  }'
+  --data '{"query":"DeviceEvents | take 1","environment":"xdr","profile":"general"}'
 ```
 
-Important endpoints:
+## API and MCP
 
-| Endpoint | Purpose |
-| --- | --- |
-| `POST /api/v1/validate` | Validate and lint KQL |
-| `POST /api/v1/validate-transformation` | Validate Azure Monitor transformation KQL |
-| `GET /api/v1/lint-rules` | List and filter every lint rule and original source |
-| `GET /api/v1/environments` | List environments and schema versions |
-| `GET /api/v1/environments/{environment}/schema` | Search tables, columns, and functions |
-| `GET /api/v1/environments/{environment}/tables/{table}` | Inspect one table |
-| `GET /api/v1/environments/{environment}/functions/{function}` | Inspect a catalog function's parameters and return schema |
-| `POST /mcp` | Stateless Streamable HTTP MCP |
-| `GET /openapi/v1.json` | OpenAPI document |
-| `GET /health/live` and `/health/ready` | Health probes |
-| `GET /status/` | Optional non-indexed status and schema website |
+`POST /api/v1/validate` validates KQL. `POST /api/v1/validate-transformation` validates transform KQL. `GET /api/v1/environments`, schema search and table/function lookup expose the effective catalog; `/openapi/v1.json` describes every REST endpoint. Health probes are `/health/live` and `/health/ready`.
 
-All validation, schema, lint-rule, and MCP endpoints are unauthenticated and publicly accessible when the service is deployed with external ingress. Schema and lint-rule catalogs are publicly enumerable; health probes are intentionally not rate limited.
-
-`GET /api/v1/lint-rules` accepts optional `ruleSet`, `category`, `profile`, `target`, and `environment` filters. The schema-search endpoint accepts `query`, `kind` (`table`, `column`, or `function`), `limit` (1–100, default 50), and an opaque `cursor` for pagination.
-
-### Status website
-
-The optional unauthenticated status website is available at `/status`. It shows live readiness, service and schema versions, environment counts, schema search and table details, lint rules, and integration links. It does not collect analytics or query data. The page sends best-effort crawler exclusion signals (`robots.txt`, `noindex`, and `X-Robots-Tag`); this is not access control against a determined client.
-
-The website is enabled by default. Disable it when building the API image if only the API and MCP are wanted:
-
-```bash
-docker build --build-arg ENABLE_STATUS_SITE=false --tag kql-validator:no-status .
-```
-
-The equivalent project-level switch is `/p:EnableStatusSite=false`. A disabled build omits the website assets and returns `404` for `/status`; the API, MCP, discovery, and health endpoints remain available.
-
-### Public API safeguards
-
-- Request bodies are limited to 256 KiB; the KQL query is limited to 65,536 characters.
-- Each ordinary request may include at most 100 tables, functions, or watchlists, 5,000 declared output columns in aggregate, and 1,000 function parameters. Transformation source and destination schemas are limited to 5,000 columns combined. Each lint selection list is limited to 100 entries.
-- Responses retain up to 500 diagnostics, prioritizing errors, plus a `KQLV001` warning when truncated. Validity is calculated before truncation, so omitted diagnostics cannot turn an invalid query valid. Oversized or malformed requests return Problem Details with HTTP 400 or 413.
-- Production REST and MCP traffic is partitioned by client IP with a token bucket of 10 requests and one replenished token per second. Rejected requests return HTTP 429 and `Retry-After: 1`; the analysis queue can reject additional work with HTTP 429.
-- A global token bucket (100 tokens, 25 replenished per second in production) bounds total throughput regardless of how many client-IP partitions exist, so spoofed forwarded addresses cannot bypass rate limiting. Health probes are exempt from the global bucket.
-- The buckets are tunable through `RateLimiting:TokenLimit`, `RateLimiting:TokensPerSecond`, `RateLimiting:GlobalTokenLimit`, `RateLimiting:GlobalTokensPerSecond`, and `RateLimiting:ReplenishmentPeriodSeconds`.
-- Analysis has a five-second deadline that cancels the underlying work cooperatively, so an abandoned analysis frees its slot within roughly one regex-timeout interval. A deadline returns HTTP 504; client cancellation returns HTTP 499 where the client connection remains writable.
-- Readiness becomes unhealthy when an active analysis exceeds 10 seconds; liveness becomes unhealthy after 30 seconds. Completed analyses immediately clear both conditions.
-
-When deployed behind a reverse proxy, forwarded client addresses are trusted only when `ReverseProxy:TrustForwardedHeaders` is enabled, and only for exactly one hop. Enable it only when the service is reachable exclusively through the proxy (the Azure Container Apps deployment satisfies this; its ingress appends the observed client address as the rightmost forwarded entry). Optionally restrict the trusted sources further with a `ReverseProxy:KnownNetworks` CIDR array. Local deployments leave forwarding disabled by default.
-
-## MCP clients
-
-Claude Code:
-
-```bash
-claude mcp add --transport http kql-validator http://127.0.0.1:8080/mcp
-```
-
-Codex (CLI, or the equivalent `[mcp_servers.kql_validator]` TOML entry with `url`):
+Connect a Streamable HTTP MCP client to `http://127.0.0.1:8080/mcp`:
 
 ```bash
 codex mcp add kql-validator --url http://127.0.0.1:8080/mcp
 ```
 
-opencode:
+Available tools are `validate_kql`, `validate_azure_monitor_transformation`, `list_kql_lint_rules`, `list_kql_environments`, `search_kql_schema`, `get_kql_table`, and `get_kql_function`.
+
+All REST and MCP endpoints are public when deployed with external ingress. Schema catalogs are enumerable, so do not put sensitive table, function, column, or workspace metadata in built-in snapshots or mounted custom catalogs.
+
+## Quality gate
 
 ```bash
-opencode mcp add kql-validator --url http://127.0.0.1:8080/mcp
+bash scripts/validate-local.sh
 ```
 
-Available tools are `validate_kql`, `validate_azure_monitor_transformation`, `list_kql_lint_rules`, `list_kql_environments`, `search_kql_schema`, `get_kql_table`, and `get_kql_function`. They are annotated as read-only, idempotent, non-destructive, and closed-world.
-
-Function lookup returns `parameters` (including each argument's `type` and `optional` flag), `outputColumns` or `scalarReturnType`, and `preserveInput`, `requiresTabularInput`, `requiredInputColumn`, and `requiredInputType`. For example, inspect `/api/v1/environments/xdr/functions/FileProfile` or call `get_kql_function` with `environment: "xdr"` and `function: "FileProfile"`. Lookup covers the selected environment's bundled catalog, including Sentinel native functions; it does not enumerate every Kusto scalar builtin or request-scoped extension. Unknown functions return HTTP 404 through REST and null through MCP, matching table lookup.
-
-## Azure Monitor transformations
-
-Validate a DCR `transformKql` or `transform.KQL` expression against the typed virtual `source` table:
-
-```bash
-curl --fail-with-body http://127.0.0.1:8080/api/v1/validate-transformation \
-  --header 'content-type: application/json' \
-  --data '{
-    "query": "source | extend TimeGenerated = todatetime(Time) | project TimeGenerated, Message",
-    "sourceColumns": [{"name":"Time","type":"string"},{"name":"Message","type":"string"}],
-    "destinationColumns": [{"name":"TimeGenerated","type":"datetime"},{"name":"Message","type":"string"}]
-  }'
-```
-
-The source schema is required; the destination schema is optional. The validator enforces the documented single-record KQL subset, the ten-column transformation `parse` limit, and `TimeGenerated:datetime`. When a destination is supplied, type mismatches are errors and output columns Azure would discard are warnings. See [docs/azure-monitor-transformations.md](docs/azure-monitor-transformations.md).
-
-## Validation behavior
-
-Invalid KQL is a successful HTTP 200 response with `valid: false` and diagnostics. Request or service failures use Problem Details and an appropriate 4xx/5xx status.
-
-Semantic diagnostics include repair-oriented context where the validator can identify a likely fix. Unknown tables and functions should be checked against the selected environment schema or declared through `extensions.tables` and `extensions.functions`; unknown ordinary columns should be checked against the source table schema. Workspace-specific watchlist fields can be declared through `extensions.watchlists` as described below.
-
-Lint warnings never invalidate a query. The hunting rules are derived from [Microsoft Defender XDR advanced hunting best practices](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-best-practices). The XDR table and ActionType snapshots are normalized from [xdrinternals.com](https://xdrinternals.com/), with their source URLs and digests recorded in the schema manifest.
-
-`target` is optional and inferred for ordinary hunting and scheduled detections. XDR and Unified detections use Defender targets; Sentinel detections use Sentinel targets. Set it explicitly to `defender-nrt` or `sentinel-nrt` for target-specific validation. The optional `lint` object selects rule sets, enables or disables stable rule IDs, filters severity, or disables custom lint while leaving parser and semantic diagnostics active. Community detection recommendations are disabled unless the caller explicitly selects `community-detection` or enables an individual community rule.
-
-### Defender continuous NRT validation
-
-`target: "defender-nrt"` applies only to detection queries in the `xdr` and `unified` environments. It enforces Microsoft Defender’s continuous-NRT constraints: exactly one supported table, no joins, unions, `externaldata`, or comments, and only the documented KQL feature subset. `xdr` accepts the Microsoft Defender XDR NRT tables; `unified` additionally accepts the documented Microsoft Sentinel NRT tables. `EmailEvents.LatestDeliveryLocation` and `EmailEvents.LatestDeliveryAction` are excluded. `matches regex` requires a correctly escaped KQL string literal. Filters on `Timestamp`, `TimeGenerated`, `ingestion_time()`, or their direct aliases produce `KQLN007` because they can skip qualifying events; this warning applies to both `defender-nrt` and `sentinel-nrt`. See [Microsoft’s NRT requirements](https://learn.microsoft.com/en-us/defender-xdr/custom-detection-rules#continuous-nrt-frequency), [supported KQL features](https://learn.microsoft.com/en-us/azure/azure-monitor/data-collection/data-collection-transformations-kql#supported-kql-features), and [the complete lint-rule reference](docs/lint-rules.md).
-
-See [docs/lint-rules.md](docs/lint-rules.md) for configuration, applicability, examples, every rule ID, and its original source.
-
-The `ConnectedNetworks` output from `AssignedIPAddresses` is intentionally modeled as `dynamic`: Microsoft describes the value as a JSON array even though one documentation table has shown a conflicting scalar type.
-
-FileProfile constant enrichment limits outside 1–1000 produce semantic error `KQLV002`, including limits supplied through constant `let` bindings. This check remains active when lint is disabled. Limits whose values cannot be determined statically are type-checked only.
-
-`FileProfile` is modeled as a row-preserving XDR enrichment function. `| invoke FileProfile()`, `| invoke FileProfile(SHA1)`, and `| invoke FileProfile(SHA1, 1000)` are supported; any in-scope string alias of a file hash, such as `LoadedDLLSHA1`, is also accepted. The optional second argument is the 1–1000 enrichment limit. Its output schema includes the live Defender fields such as `SignerHash`, signature metadata, `Publisher`, `SoftwareName`, and `ProfileAvailability`.
-
-Schema responses expose a content-derived version in the form `sha256:<24 hex characters>`. The service discovery response and validation responses expose the service revision when the image was built with `SOURCE_REVISION`.
-
-## Local quality gate
-
-```bash
-dotnet restore kql-validator.slnx
-dotnet build kql-validator.slnx --no-restore
-dotnet test tests/KqlValidator.Tests/KqlValidator.Tests.csproj --no-build
-dotnet format kql-validator.slnx --verify-no-changes --no-restore
-dotnet publish src/KqlValidator.Api/KqlValidator.Api.csproj --no-restore --configuration Release --output artifacts/publish
-```
-
-CI additionally runs a locked dependency vulnerability audit, dependency review on pull requests, CodeQL, high-severity container scanning, and weekly pinned-action analysis with zizmor. Dependabot checks GitHub Actions, NuGet, and Docker dependencies weekly. Pushes to `main` and manual runs from `main` deploy the validated image to the Azure `lab` environment after CI succeeds.
-
-This repository does not currently require environment approval for lab deployments. To add that control, open repository **Settings → Environments → lab**, add the desired user or team under **Required reviewers**, and save the environment protection rule. Environment protection rules are available on public repositories on every GitHub plan.
-
-The application instruments analysis requests with the `KqlValidator.Analysis` meter (`kql.analysis.requests`, `kql.analysis.deadline_exceeded`, `kql.analysis.queue_rejected`, and `kql.analysis.duration`). The default deployment does not configure an exporter or telemetry backend, and these instruments never include submitted query text.
-
-Azure deployment and public publishing are intentionally separate stages. The CI deployment job builds the image in the private ACR, deploys its immutable digest to the lab Container App, and runs the live smoke suite; it does not publish images or modify Azure resources for pull requests.
-
-See [docs/lab-deployment.md](docs/lab-deployment.md) for the isolated ACR build, immutable deployment, validation, budget, and cleanup runbook.
-
-The lab deployment expects an existing Azure Container Registry, which may be in a different resource group. A dedicated Basic registry adds a small fixed monthly cost (check current Azure Container Registry pricing for your region); reusing an existing registry avoids it. Light Container Apps usage normally remains inside the monthly Consumption free grant. `infra/budget.bicep` therefore defaults to a US$10-equivalent monthly alert threshold. Budget alerts do not stop spending.
-
-## Schema updates
-
-`KqlValidator.SchemaSync` normalizes the public XDR schema and ActionType feeds and applies duplicate and large-drop safeguards:
-
-```bash
-dotnet run --project tools/KqlValidator.SchemaSync -- \
-  --out src/KqlValidator.Api/Schemas
-```
-
-The sync discovers every `advanced-hunting-*-table.md` document in the public Defender XDR documentation directory, derives its table name from the H1 heading, and generates `xdr-official-table-sources.json` plus the companion `xdr-official-tables.json` snapshot. These official definitions supplement XDRInternals for tables that can be absent from a tenant because of licensing. A failed directory listing, download, or Markdown parse retains the checked-in catalog and last known schema; ordinary syncs only add or update tables and never remove them. Intentional removals require the explicit `--prune-official-xdr-tables` flag.
-
-The daily GitHub Actions `schema-sync` workflow already runs this command and opens a review PR whenever the generated schemas or source digests change.
-
-An optional `--sentinel-dir` can point at a checkout of official Azure Monitor table-reference Markdown.
-
-### Sentinel workspace sync
-
-To validate against the tables visible in a specific Sentinel Log Analytics workspace, generate the checked-in snapshot before building the image. The snapshot contains only table names, column names, and KQL types. `sentinel.json` is part of the public schema catalog and is included in Docker and ACR builds.
-
-Prerequisites:
-
-- Azure CLI installed and signed in to the correct tenant.
-- The Log Analytics **Workspace ID** (a GUID), rather than its Azure resource name.
-- The signed-in identity has Log Analytics API `Data.Read` permission and Reader access to that workspace. See [Azure Monitor API access and authentication](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/api/access-api).
-
-```bash
-az login
-az account set --subscription YOUR_SUBSCRIPTION_ID
-
-dotnet run --project tools/KqlValidator.SchemaSync -- \
-  --out src/KqlValidator.Api/Schemas \
-  --sentinel-workspace-id YOUR_WORKSPACE_ID \
-  --sentinel-only
-
-./scripts/validate-local.sh
-./scripts/deploy-lab.sh
-```
-
-The sync calls the [Log Analytics Metadata API](https://learn.microsoft.com/en-us/rest/api/logsquery/metadata/post?view=rest-logsquery-v1), not a telemetry query. After `sentinel.json` is generated, builds and deployments use that offline file as the authoritative Sentinel schema and do not contact Azure Log Analytics. Re-run the sync explicitly to refresh it; deployment scripts never do so automatically. If no local snapshot exists, the validator uses its small built-in Sentinel baseline.
-
-Custom Log Analytics tables (the Azure-required `_CL` suffix) are excluded by default. Include them only when needed:
-
-```bash
-dotnet run --project tools/KqlValidator.SchemaSync -- \
-  --out src/KqlValidator.Api/Schemas \
-  --sentinel-workspace-id YOUR_WORKSPACE_ID \
-  --include-custom-tables
-```
-
-The deployed API exposes Sentinel schema-search endpoints publicly, and the committed snapshot is enumerable through that API. Only generate it from a workspace whose table and column names are approved for public disclosure. Custom Log Analytics tables remain excluded unless `--include-custom-tables` is explicitly supplied.
-
-For a future CI/CD integration, run the identical sync command after an `azure/login` OIDC step. Supply the workspace ID as a protected environment variable and grant the federated identity the same workspace access; do not add a client secret. Review the resulting `sentinel.json` diff before publishing it.
-
-`_GetWatchlist()` also recognizes the union of fields from Microsoft Sentinel's built-in watchlist templates. This checks documented column spelling without assuming a particular watchlist alias; workspace-specific columns can still be supplied with request extensions.
-
-Watchlist extensions apply only to the matching `_GetWatchlist()` alias, including aliases supplied by constant `let` bindings. Declarations with the same column name on different aliases retain their own types. An explicit declaration overrides a bundled template column for that alias. When the alias cannot be resolved statically, only bundled columns are available.
-
-When a query uses a workspace-specific watchlist field, declare that field in the validation request so semantic analysis has its type. For example, a query using `CustomPattern` from `example_alias` can include:
-
-```json
-{
-  "extensions": {
-    "watchlists": [
-      {
-        "name": "example_alias",
-        "columns": [{ "name": "CustomPattern", "type": "string" }]
-      }
-    ]
-  }
-}
-```
-
-If the declaration is omitted, the validator keeps the semantic error but explains this extension shape in its diagnostic so an automated client can repair the request.
-
-### Public Sentinel native functions
-
-The committed `sentinel-native-functions.json` catalog models Microsoft-documented Sentinel functions independently of a workspace snapshot. It includes `_GetWatchlistAlias`, the ASIM helper functions, and public ASIM built-in parser names and parameters. This means those functions validate in both `sentinel` and `unified` even when the workspace metadata endpoint does not list them.
-
-To refresh the public ASIM parser catalog, use a temporary checkout of the official Azure Sentinel repository:
-
-```bash
-git clone --depth 1 --filter=blob:none --sparse https://github.com/Azure/Azure-Sentinel.git /tmp/azure-sentinel
-git -C /tmp/azure-sentinel sparse-checkout set Parsers
-
-dotnet run --project tools/KqlValidator.SchemaSync -- \
-  --out src/KqlValidator.Api/Schemas \
-  --sentinel-workspace-id YOUR_WORKSPACE_ID \
-  --sentinel-only \
-  --asim-dir /tmp/azure-sentinel/Parsers
-```
-
-The generator reads only parser YAML metadata (built-in parser name, ASIM schema, and declared parameters), never parser bodies. Parser result schemas expose portable ASIM fields for semantic validation; a parser that exists only in a private workspace remains opt-in through request extensions.
-
-## Contributing and security
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for the local quality gate and pull-request expectations, and [SECURITY.md](SECURITY.md) for how to report vulnerabilities privately.
-
-## License
-
-[MIT](LICENSE)
+This runs locked restore, formatting, Release build, tests, publish, dependency checks, Bicep compilation, and a Docker build when Docker is available.

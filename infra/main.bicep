@@ -5,39 +5,55 @@ targetScope = 'resourceGroup'
 @maxLength(32)
 param appName string = 'kql-validator-lab'
 
-@description('Azure region for the Container Apps environment.')
+@description('Azure region for the Container App.')
 param location string = resourceGroup().location
 
 @description('Immutable private ACR image reference, preferably tagged with a Git commit SHA.')
 param image string
 
-@description('Existing Azure Container Registry name containing the image.')
+@description('Registry provisioned by foundation.bicep containing the image.')
 param registryName string
 
-@description('Resource group containing the existing registry.')
-param registryResourceGroupName string = resourceGroup().name
+@description('Managed environment provisioned by foundation.bicep.')
+param managedEnvironmentName string = '${appName}-env'
+
+@description('Storage account provisioned by foundation.bicep for the read-only catalog mount.')
+param storageAccountName string
+
+@description('Classic Azure Files share containing custom-schema.json.')
+param schemaShareName string = 'schema-catalog'
 
 resource registry 'Microsoft.ContainerRegistry/registries@2023-07-01' existing = {
   name: registryName
-  scope: resourceGroup(registryResourceGroupName)
 }
 
-resource environment 'Microsoft.App/managedEnvironments@2025-01-01' = {
-  name: '${appName}-env'
-  location: location
+resource environment 'Microsoft.App/managedEnvironments@2025-01-01' existing = {
+  name: managedEnvironmentName
+}
+
+resource storage 'Microsoft.Storage/storageAccounts@2023-05-01' existing = {
+  name: storageAccountName
+}
+
+resource schemaStorage 'Microsoft.App/managedEnvironments/storages@2025-01-01' = {
+  parent: environment
+  name: 'custom-schema'
   properties: {
-    zoneRedundant: false
+    azureFile: {
+      accountName: storage.name
+      accountKey: storage.listKeys().keys[0].value
+      shareName: schemaShareName
+      accessMode: 'ReadOnly'
+    }
   }
 }
 
-resource pullIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
+resource pullIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
   name: '${appName}-pull'
-  location: location
 }
 
 module registryAccess './registry-access.bicep' = {
   name: '${appName}-acr-pull'
-  scope: resourceGroup(registryResourceGroupName)
   params: {
     registryName: registryName
     principalId: pullIdentity.properties.principalId
@@ -84,6 +100,16 @@ resource app 'Microsoft.App/containerApps@2025-01-01' = {
               name: 'ReverseProxy__TrustForwardedHeaders'
               value: 'true'
             }
+            {
+              name: 'SchemaOverlay__Path'
+              value: '/mnt/custom-schema/custom-schema.json'
+            }
+          ]
+          volumeMounts: [
+            {
+              volumeName: 'custom-schema'
+              mountPath: '/mnt/custom-schema'
+            }
           ]
           resources: {
             cpu: json('0.25')
@@ -115,6 +141,13 @@ resource app 'Microsoft.App/containerApps@2025-01-01' = {
               failureThreshold: 3
             }
           ]
+        }
+      ]
+      volumes: [
+        {
+          name: 'custom-schema'
+          storageType: 'AzureFile'
+          storageName: schemaStorage.name
         }
       ]
       scale: {

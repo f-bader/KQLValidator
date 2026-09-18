@@ -6,6 +6,8 @@ using KqlValidator.Validation;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace KqlValidator.Tests;
 
@@ -98,6 +100,48 @@ public sealed class ApiTests : IClassFixture<WebApplicationFactory<Program>>
         Assert.NotNull(search);
         Assert.Contains(search.Items, x => x.Name == "BehaviorInfo");
         Assert.Equal(HttpStatusCode.OK, table.StatusCode);
+    }
+
+    [Fact]
+    public async Task Mounted_catalog_is_used_by_rest_and_mcp_discovery()
+    {
+        var path = Path.Combine(Path.GetTempPath(), $"kql-validator-catalog-{Guid.NewGuid():N}.json");
+        await File.WriteAllTextAsync(path, """
+            {"common":{"tables":[{"name":"MountedEvents","columns":[{"name":"Timestamp","type":"datetime"}]}],"functions":[{"name":"MountedName","parameters":[],"returns":{"kind":"scalar","type":"string"}}]},"environments":{}}
+            """, TestContext.Current.CancellationToken);
+        try
+        {
+            using var configured = factory.WithWebHostBuilder(builder => builder.ConfigureServices(services =>
+            {
+                services.RemoveAll<SchemaCatalog>();
+                services.AddSingleton(new SchemaCatalog(overlayPath: path));
+            }));
+            using var configuredClient = configured.CreateClient();
+            var table = await configuredClient.GetAsync("/api/v1/environments/xdr/tables/MountedEvents", TestContext.Current.CancellationToken);
+            var validation = await configuredClient.PostAsJsonAsync("/api/v1/validate", new ValidateRequest(
+                "MountedEvents | project Timestamp", KqlEnvironment.Xdr, LintProfile.General), TestContext.Current.CancellationToken);
+            using var mcpRequest = new HttpRequestMessage(HttpMethod.Post, "/mcp")
+            {
+                Content = JsonContent.Create(new
+                {
+                    jsonrpc = "2.0",
+                    id = 7,
+                    method = "tools/call",
+                    @params = new { name = "get_kql_function", arguments = new { environment = "xdr", function = "MountedName" } },
+                }),
+            };
+            mcpRequest.Headers.Accept.ParseAdd("application/json, text/event-stream");
+            var mcp = await configuredClient.SendAsync(mcpRequest, TestContext.Current.CancellationToken);
+
+            Assert.Equal(HttpStatusCode.OK, table.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, validation.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, mcp.StatusCode);
+            Assert.Contains("MountedName", await mcp.Content.ReadAsStringAsync(TestContext.Current.CancellationToken), StringComparison.Ordinal);
+        }
+        finally
+        {
+            File.Delete(path);
+        }
     }
 
     [Fact]

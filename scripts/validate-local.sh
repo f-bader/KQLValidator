@@ -21,8 +21,11 @@ dotnet list kql-validator.slnx package --deprecated --include-transitive
 if command -v az >/dev/null 2>&1; then
   az bicep version >/dev/null 2>&1 || az bicep install
   az bicep build --file infra/main.bicep --outfile /tmp/kql-validator-main.json
+  az bicep build --file infra/foundation.bicep --outfile /tmp/kql-validator-foundation.json
   az bicep build --file infra/budget.bicep --outfile /tmp/kql-validator-budget.json
 fi
+
+bash -n scripts/smoke-test.sh scripts/deploy-lab.sh scripts/validate-local.sh
 
 if command -v docker >/dev/null 2>&1; then
   docker build --tag kql-validator:local .

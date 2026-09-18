@@ -1,0 +1,80 @@
+{
+  "common": {
+    "tables": [
+      {
+        "name": "SharedAudit",
+        "columns": [
+          { "name": "TimeGenerated", "type": "datetime" },
+          { "name": "Actor", "type": "string" },
+          { "name": "Details", "type": "dynamic" }
+        ]
+      },
+      {
+        "name": "DeviceEvents",
+        "columns": [
+          { "name": "TenantTag", "type": "string" }
+        ]
+      }
+    ],
+    "functions": [
+      {
+        "name": "NormalizeActor",
+        "parameters": [
+          { "name": "actor", "type": "string" },
+          { "name": "fallback", "type": "string", "optional": true }
+        ],
+        "returns": { "kind": "scalar", "type": "string" }
+      },
+      {
+        "name": "AddCustomContext",
+        "parameters": [
+          { "name": "label", "type": "string", "optional": true }
+        ],
+        "returns": {
+          "kind": "tabular",
+          "preserveInput": true,
+          "columns": [
+            { "name": "CustomContext", "type": "string" }
+          ]
+        }
+      }
+    ]
+  },
+  "environments": {
+    "xdr": {
+      "tables": [
+        {
+          "name": "XdrOnlyEvents",
+          "columns": [
+            { "name": "Timestamp", "type": "datetime" },
+            { "name": "DeviceId", "type": "string" }
+          ]
+        }
+      ],
+      "functions": []
+    },
+    "sentinel": {
+      "tables": [
+        {
+          "name": "SentinelOnlyEvents",
+          "columns": [
+            { "name": "TimeGenerated", "type": "datetime" },
+            { "name": "Workspace", "type": "string" }
+          ]
+        }
+      ],
+      "functions": []
+    },
+    "unified": {
+      "tables": [
+        {
+          "name": "SharedAudit",
+          "columns": [
+            { "name": "CorrelationId", "type": "string" }
+          ]
+        }
+      ],
+      "functions": []
+    }
+  }
+}
