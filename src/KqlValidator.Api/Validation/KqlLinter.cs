@@ -8,7 +8,6 @@ namespace KqlValidator.Validation;
 public sealed partial class KqlLinter
 {
     private const int RegexTimeoutMilliseconds = 250;
-    private const int MaxLintDiagnostics = 500;
     private static readonly TimeSpan RegexTimeout = TimeSpan.FromMilliseconds(RegexTimeoutMilliseconds);
     private static readonly HashSet<string> FallbackActionTypes = new(StringComparer.OrdinalIgnoreCase)
     {
@@ -92,7 +91,7 @@ public sealed partial class KqlLinter
     private void AddTimeFilterDiagnostics(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string query, CancellationToken cancellationToken)
     {
         var hasXdrTable = IsMatch(query, @"(?im)^\s*(Device|Email|Identity|CloudApp|Alert|Behavior)[A-Za-z]+\b");
-        var hasTimeFilter = IsMatch(query, @"(?i)\b(?:Timestamp|TimeGenerated)\s*(?:>|>=|between|in)\b");
+        var hasTimeFilter = IsMatch(query, @"(?i)\b(?:Timestamp|TimeGenerated)\s*(?:>=?|\b(?:between|in)\b)");
         if (hasXdrTable && !hasTimeFilter)
             Add(diagnostics, policy, query, "KQLH010",
                 "Add an early Timestamp or TimeGenerated filter to bound scanned data.", 0);
@@ -100,7 +99,7 @@ public sealed partial class KqlLinter
         foreach (Match join in JoinBranch().Matches(query))
         {
             cancellationToken.ThrowIfCancellationRequested();
-            if (!IsMatch(join.Value, @"(?i)\b(?:Timestamp|TimeGenerated)\s*(?:>|>=|between|in)\b"))
+            if (!IsMatch(join.Value, @"(?i)\b(?:Timestamp|TimeGenerated)\s*(?:>=?|\b(?:between|in)\b)"))
                 Add(diagnostics, policy, query, "KQLH011",
                     "Apply a time filter inside this join branch as well as on the left input.", join.Index, join.Length);
         }
@@ -239,7 +238,6 @@ public sealed partial class KqlLinter
         foreach (Match match in regex.Matches(query))
         {
             cancellationToken.ThrowIfCancellationRequested();
-            if (diagnostics.Count >= MaxLintDiagnostics) break;
             diagnostics.Add(rules.CreateDiagnostic(query, id, message, match.Index, match.Length));
         }
     }
@@ -248,7 +246,7 @@ public sealed partial class KqlLinter
         string message, int start, int length = 1)
     {
         var severity = rules.Get(id).DefaultSeverity;
-        if (diagnostics.Count < MaxLintDiagnostics && policy.IsEnabled(id, severity))
+        if (policy.IsEnabled(id, severity))
             diagnostics.Add(rules.CreateDiagnostic(query, id, message, start, length));
     }
 

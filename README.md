@@ -52,6 +52,7 @@ Important endpoints:
 | `GET /api/v1/environments` | List environments and schema versions |
 | `GET /api/v1/environments/{environment}/schema` | Search tables, columns, and functions |
 | `GET /api/v1/environments/{environment}/tables/{table}` | Inspect one table |
+| `GET /api/v1/environments/{environment}/functions/{function}` | Inspect a catalog function's parameters and return schema |
 | `POST /mcp` | Stateless Streamable HTTP MCP |
 | `GET /openapi/v1.json` | OpenAPI document |
 | `GET /health/live` and `/health/ready` | Health probes |
@@ -77,7 +78,7 @@ The equivalent project-level switch is `/p:EnableStatusSite=false`. A disabled b
 
 - Request bodies are limited to 256 KiB; the KQL query is limited to 65,536 characters.
 - Each ordinary request may include at most 100 tables, functions, or watchlists, 5,000 declared output columns in aggregate, and 1,000 function parameters. Transformation source and destination schemas are limited to 5,000 columns combined. Each lint selection list is limited to 100 entries.
-- Diagnostics are capped at 500 results. Oversized or malformed requests return Problem Details with HTTP 400 or 413.
+- Responses retain up to 500 diagnostics, prioritizing errors, plus a `KQLV001` warning when truncated. Validity is calculated before truncation, so omitted diagnostics cannot turn an invalid query valid. Oversized or malformed requests return Problem Details with HTTP 400 or 413.
 - Production REST and MCP traffic is partitioned by client IP with a token bucket of 10 requests and one replenished token per second. Rejected requests return HTTP 429 and `Retry-After: 1`; the analysis queue can reject additional work with HTTP 429.
 - A global token bucket (100 tokens, 25 replenished per second in production) bounds total throughput regardless of how many client-IP partitions exist, so spoofed forwarded addresses cannot bypass rate limiting. Health probes are exempt from the global bucket.
 - The buckets are tunable through `RateLimiting:TokenLimit`, `RateLimiting:TokensPerSecond`, `RateLimiting:GlobalTokenLimit`, `RateLimiting:GlobalTokensPerSecond`, and `RateLimiting:ReplenishmentPeriodSeconds`.
@@ -106,7 +107,9 @@ opencode:
 opencode mcp add kql-validator --url http://127.0.0.1:8080/mcp
 ```
 
-Available tools are `validate_kql`, `validate_azure_monitor_transformation`, `list_kql_lint_rules`, `list_kql_environments`, `search_kql_schema`, and `get_kql_table`. They are annotated as read-only, idempotent, non-destructive, and closed-world.
+Available tools are `validate_kql`, `validate_azure_monitor_transformation`, `list_kql_lint_rules`, `list_kql_environments`, `search_kql_schema`, `get_kql_table`, and `get_kql_function`. They are annotated as read-only, idempotent, non-destructive, and closed-world.
+
+Function lookup returns `parameters` (including each argument's `type` and `optional` flag), `outputColumns` or `scalarReturnType`, and `preserveInput`, `requiresTabularInput`, `requiredInputColumn`, and `requiredInputType`. For example, inspect `/api/v1/environments/xdr/functions/FileProfile` or call `get_kql_function` with `environment: "xdr"` and `function: "FileProfile"`. Lookup covers the selected environment's bundled catalog, including Sentinel native functions; it does not enumerate every Kusto scalar builtin or request-scoped extension. Unknown functions return HTTP 404 through REST and null through MCP, matching table lookup.
 
 ## Azure Monitor transformations
 
@@ -141,6 +144,8 @@ Lint warnings never invalidate a query. The hunting rules are derived from [Micr
 See [docs/lint-rules.md](docs/lint-rules.md) for configuration, applicability, examples, every rule ID, and its original source.
 
 The `ConnectedNetworks` output from `AssignedIPAddresses` is intentionally modeled as `dynamic`: Microsoft describes the value as a JSON array even though one documentation table has shown a conflicting scalar type.
+
+FileProfile constant enrichment limits outside 1–1000 produce semantic error `KQLV002`, including limits supplied through constant `let` bindings. This check remains active when lint is disabled. Limits whose values cannot be determined statically are type-checked only.
 
 `FileProfile` is modeled as a row-preserving XDR enrichment function. `| invoke FileProfile()`, `| invoke FileProfile(SHA1)`, and `| invoke FileProfile(SHA1, 1000)` are supported; any in-scope string alias of a file hash, such as `LoadedDLLSHA1`, is also accepted. The optional second argument is the 1–1000 enrichment limit. Its output schema includes the live Defender fields such as `SignerHash`, signature metadata, `Publisher`, `SoftwareName`, and `ProfileAvailability`.
 
@@ -222,6 +227,8 @@ The deployed API exposes Sentinel schema-search endpoints publicly, and the comm
 For a future CI/CD integration, run the identical sync command after an `azure/login` OIDC step. Supply the workspace ID as a protected environment variable and grant the federated identity the same workspace access; do not add a client secret. Review the resulting `sentinel.json` diff before publishing it.
 
 `_GetWatchlist()` also recognizes the union of fields from Microsoft Sentinel's built-in watchlist templates. This checks documented column spelling without assuming a particular watchlist alias; workspace-specific columns can still be supplied with request extensions.
+
+Watchlist extensions apply only to the matching `_GetWatchlist()` alias, including aliases supplied by constant `let` bindings. Declarations with the same column name on different aliases retain their own types. An explicit declaration overrides a bundled template column for that alias. When the alias cannot be resolved statically, only bundled columns are available.
 
 When a query uses a workspace-specific watchlist field, declare that field in the validation request so semantic analysis has its type. For example, a query using `CustomPattern` from `example_alias` can include:
 

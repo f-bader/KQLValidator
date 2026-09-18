@@ -225,7 +225,7 @@ public sealed class DefenderNrtValidator
     private void Add(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string query, string ruleId, string message, int start, int length = 1)
     {
         var diagnostic = rules.CreateDiagnostic(query, ruleId, message, start, Math.Max(1, length));
-        if (policy.IsEnabled(ruleId, diagnostic.Severity) && diagnostics.Count < 500)
+        if (policy.IsEnabled(ruleId, diagnostic.Severity))
             diagnostics.Add(diagnostic);
     }
 

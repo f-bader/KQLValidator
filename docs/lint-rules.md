@@ -56,6 +56,10 @@ These checks run only for `target: defender-nrt` in `xdr` and `unified` detectio
 
 ## Repair-oriented diagnostics
 
+Responses retain up to 500 diagnostics with errors prioritized, plus `KQLV001` when results are truncated. Validity uses all diagnostics before truncation. `KQLV002` is a semantic error for a statically known FileProfile enrichment limit outside 1–1000; it cannot be disabled through lint selections. FileProfile column selectors are checked against the input scope of parsed invocations without rewriting query text, leaving comments and strings untouched.
+
+Hunting time-filter rules `KQLH010` and `KQLH011` recognize `Timestamp > ago(1h)` and `Timestamp >ago(1h)` equivalently, including `>=` and filters inside join branches.
+
 Parser and semantic diagnostics retain their Kusto rule IDs and blocking severity, but common schema failures include repair guidance. An unknown table or function should first be checked against the selected environment schema; workspace-specific objects can be declared through `extensions.tables` or `extensions.functions`. An unknown ordinary column should be checked against its source table. Workspace-specific `_GetWatchlist()` columns should be declared through `extensions.watchlists` with their actual KQL type.
 
 For `KQLX002`, the valid literal shape is `dynamic([{"Kind":"Account","Value":"example"}])`: use one to three objects, require a string `Kind`, and supply an optional string `Value`. For `KQLD001`, retaining `TimeGenerated` in a `where` clause is not enough; it must remain in the final output projection.

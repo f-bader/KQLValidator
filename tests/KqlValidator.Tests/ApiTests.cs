@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 using KqlValidator.Contracts;
+using KqlValidator.Validation;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
@@ -231,7 +232,7 @@ public sealed class ApiTests : IClassFixture<WebApplicationFactory<Program>>
             method = "tools/list",
             @params = new { },
         }, cancellationToken);
-        foreach (var tool in new[] { "validate_kql", "validate_azure_monitor_transformation", "list_kql_lint_rules", "list_kql_environments", "search_kql_schema", "get_kql_table" })
+        foreach (var tool in new[] { "validate_kql", "validate_azure_monitor_transformation", "list_kql_lint_rules", "list_kql_environments", "search_kql_schema", "get_kql_table", "get_kql_function" })
             Assert.Contains(tool, listBody, StringComparison.Ordinal);
 
         var callBody = await SendMcp(new
@@ -273,6 +274,54 @@ public sealed class ApiTests : IClassFixture<WebApplicationFactory<Program>>
             },
         }, cancellationToken);
         Assert.Contains("\"valid\":true", transformationBody.Replace(" ", string.Empty), StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task Function_lookup_exposes_signature_and_input_requirements()
+    {
+        var token = TestContext.Current.CancellationToken;
+        var function = await client.GetFromJsonAsync<SchemaFunction>(
+            "/api/v1/environments/xdr/functions/FileProfile", token);
+
+        Assert.NotNull(function);
+        Assert.Equal("FileProfile", function.Name);
+        Assert.Contains(function.Parameters, x => x.Name == "limit" && x.Type == "long" && x.Optional);
+        Assert.Contains(function.OutputColumns!, x => x.Name == "GlobalPrevalence" && x.Type == "long");
+        Assert.True(function.PreserveInput);
+        Assert.True(function.RequiresTabularInput);
+
+        var scalar = await client.GetFromJsonAsync<SchemaFunction>(
+            "/api/v1/environments/sentinel/functions/_ASIM_GetUsernameType", token);
+        Assert.NotNull(scalar);
+        Assert.Equal("string", scalar.ScalarReturnType);
+        Assert.Contains(scalar.Parameters, x => x.Name == "username" && !x.Optional);
+
+        Assert.Equal(HttpStatusCode.NotFound,
+            (await client.GetAsync("/api/v1/environments/xdr/functions/MissingFunction", token)).StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest,
+            (await client.GetAsync("/api/v1/environments/missing/functions/FileProfile", token)).StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound,
+            (await client.GetAsync("/api/v1/environments/xdr/functions/_ASIM_GetUsernameType", token)).StatusCode);
+    }
+
+    [Fact]
+    public async Task Mcp_function_lookup_matches_rest_signature()
+    {
+        var body = await SendMcp(new
+        {
+            jsonrpc = "2.0",
+            id = 5,
+            method = "tools/call",
+            @params = new
+            {
+                name = "get_kql_function",
+                arguments = new { environment = "xdr", function = "FileProfile" },
+            },
+        }, TestContext.Current.CancellationToken);
+
+        Assert.Contains("GlobalPrevalence", body, StringComparison.Ordinal);
+        Assert.Contains("fileColumn", body, StringComparison.Ordinal);
+        Assert.DoesNotContain("\"isError\":true", body.Replace(" ", string.Empty), StringComparison.Ordinal);
     }
 
     private async Task<string> SendMcp(object payload, CancellationToken cancellationToken)
