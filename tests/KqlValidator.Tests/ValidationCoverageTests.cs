@@ -42,6 +42,31 @@ public sealed class ValidationCoverageTests
         Assert.Contains(result.Diagnostics, x => x.RuleId == expectedRule);
     }
 
+    [Fact]
+    public void Ordinary_queries_warn_when_parse_extracts_more_than_five_columns()
+    {
+        var query = "DeviceEvents | parse AdditionalFields with " +
+            string.Join(' ', Enumerable.Range(1, 6).Select(i => $"' f{i}=' Field{i}:string")) +
+            " | take 1";
+
+        var result = validator.Validate(new ValidateRequest(query, KqlEnvironment.Xdr, LintProfile.General),
+            TestContext.Current.CancellationToken);
+
+        Assert.Contains(result.Diagnostics, x => x.RuleId == "KQLP007");
+    }
+
+    [Theory]
+    [InlineData("DeviceEvents | parse AdditionalFields with * 'x=' Value | where Value != '' | take 1")]
+    [InlineData("DeviceEvents | extend Parsed = parse_xml(AdditionalFields) | where Timestamp > ago(1h) | take 1")]
+    [InlineData("DeviceEvents | extend Parsed = extract_all('(x)', AdditionalFields) | where Timestamp > ago(1h) | take 1")]
+    public void Late_filter_rule_covers_documented_expensive_parsing(string query)
+    {
+        var result = validator.Validate(new ValidateRequest(query, KqlEnvironment.Xdr, LintProfile.Hunting),
+            TestContext.Current.CancellationToken);
+
+        Assert.Contains(result.Diagnostics, x => x.RuleId == "KQLH012");
+    }
+
     [Theory]
     [InlineData("""DeviceProcessEvents | where AccountName == "admin" | project Timestamp, DeviceId, ReportId""", KqlEnvironment.Xdr, KqlTarget.DefenderScheduled, "KQLQ001")]
     [InlineData("""DeviceProcessEvents | where FileName != "explorer.exe" | project Timestamp, DeviceId""", KqlEnvironment.Xdr, KqlTarget.DefenderScheduled, "KQLQ003")]

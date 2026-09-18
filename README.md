@@ -16,6 +16,7 @@ The service performs static analysis only. It never executes a query, contacts a
 - Caller-selectable rule sets, per-rule overrides, severity filtering, and public rule discovery.
 - Defender-specific functions including `AssignedIPAddresses`, `SeenBy`, and the six anomalous-behavior `invoke` functions.
 - Request-scoped custom tables, functions, and watchlists.
+- Azure Monitor data collection transformation validation with typed source and optional destination schemas.
 - Deterministic Defender hunting guidance with stable rule IDs and source spans.
 - REST/OpenAPI plus stateless MCP tools for validation and schema inspection.
 - No authentication, CORS, query logging, query execution, or tenant access.
@@ -46,6 +47,7 @@ Important endpoints:
 | Endpoint | Purpose |
 | --- | --- |
 | `POST /api/v1/validate` | Validate and lint KQL |
+| `POST /api/v1/validate-transformation` | Validate Azure Monitor transformation KQL |
 | `GET /api/v1/lint-rules` | List and filter every lint rule and original source |
 | `GET /api/v1/environments` | List environments and schema versions |
 | `GET /api/v1/environments/{environment}/schema` | Search tables, columns, and functions |
@@ -74,7 +76,7 @@ The equivalent project-level switch is `/p:EnableStatusSite=false`. A disabled b
 ### Public API safeguards
 
 - Request bodies are limited to 256 KiB; the KQL query is limited to 65,536 characters.
-- Each request may include at most 100 tables, functions, or watchlists, 5,000 declared output columns in aggregate, and 1,000 function parameters. Each lint selection list is limited to 100 entries.
+- Each ordinary request may include at most 100 tables, functions, or watchlists, 5,000 declared output columns in aggregate, and 1,000 function parameters. Transformation source and destination schemas are limited to 5,000 columns combined. Each lint selection list is limited to 100 entries.
 - Diagnostics are capped at 500 results. Oversized or malformed requests return Problem Details with HTTP 400 or 413.
 - Production REST and MCP traffic is partitioned by client IP with a token bucket of 10 requests and one replenished token per second. Rejected requests return HTTP 429 and `Retry-After: 1`; the analysis queue can reject additional work with HTTP 429.
 - A global token bucket (100 tokens, 25 replenished per second in production) bounds total throughput regardless of how many client-IP partitions exist, so spoofed forwarded addresses cannot bypass rate limiting. Health probes are exempt from the global bucket.
@@ -104,7 +106,23 @@ opencode:
 opencode mcp add kql-validator --url http://127.0.0.1:8080/mcp
 ```
 
-Available tools are `validate_kql`, `list_kql_lint_rules`, `list_kql_environments`, `search_kql_schema`, and `get_kql_table`. They are annotated as read-only, idempotent, non-destructive, and closed-world.
+Available tools are `validate_kql`, `validate_azure_monitor_transformation`, `list_kql_lint_rules`, `list_kql_environments`, `search_kql_schema`, and `get_kql_table`. They are annotated as read-only, idempotent, non-destructive, and closed-world.
+
+## Azure Monitor transformations
+
+Validate a DCR `transformKql` or `transform.KQL` expression against the typed virtual `source` table:
+
+```bash
+curl --fail-with-body http://127.0.0.1:8080/api/v1/validate-transformation \
+  --header 'content-type: application/json' \
+  --data '{
+    "query": "source | extend TimeGenerated = todatetime(Time) | project TimeGenerated, Message",
+    "sourceColumns": [{"name":"Time","type":"string"},{"name":"Message","type":"string"}],
+    "destinationColumns": [{"name":"TimeGenerated","type":"datetime"},{"name":"Message","type":"string"}]
+  }'
+```
+
+The source schema is required; the destination schema is optional. The validator enforces the documented single-record KQL subset, the ten-column transformation `parse` limit, and `TimeGenerated:datetime`. When a destination is supplied, type mismatches are errors and output columns Azure would discard are warnings. See [docs/azure-monitor-transformations.md](docs/azure-monitor-transformations.md).
 
 ## Validation behavior
 

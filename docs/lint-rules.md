@@ -42,6 +42,8 @@ Use an explicit target for NRT validation. Defender and Sentinel NRT have differ
 - Unknown rule IDs and rule-set names are rejected with HTTP 400.
 - The `community-detection` rule set is not selected by any default profile.
 
+The transformation endpoint always applies the `azure-monitor-transformation` platform rules. It does not accept ordinary lint-selection options. A `parse` statement extracting 6–10 columns also receives the shared `KQLP007` performance warning; more than 10 is invalid for transformations.
+
 ## Defender continuous NRT constraints
 
 These checks run only for `target: defender-nrt` in `xdr` and `unified` detection requests. The query must reference exactly one table and cannot use `join`, `union`, `externaldata`, or comments. The validator follows Microsoft’s [continuous-NRT requirements][defender-detections] and linked [KQL feature allowlist][nrt-kql-features].
@@ -67,9 +69,10 @@ For `KQLX002`, the valid literal shape is `dynamic([{"Kind":"Account","Value":"e
 | `defender-xdr` | XDR and unified environments |
 | `sentinel-detection` | Sentinel detection |
 | `defender-nrt` | Explicit `defender-nrt` target, plus `sentinel-nrt` for shared `KQLN007` time-filter validation |
+| `azure-monitor-transformation` | Always for `validate-transformation`; never selected by ordinary validation profiles |
 | `community-detection` | Never; caller opt-in only |
 
-Categories are `correctness`, `performance`, `reliability`, `detection`, `detection-quality`, `maintainability`, `nrt`, `sentinel`, and `xdr`. `sourceKind` is `microsoft` or `community`.
+Categories are `correctness`, `performance`, `reliability`, `detection`, `detection-quality`, `maintainability`, `nrt`, `sentinel`, `transformation`, and `xdr`. `sourceKind` is `microsoft` or `community`.
 
 ## Complete rule catalog
 
@@ -106,6 +109,7 @@ Categories are `correctness`, `performance`, `reliability`, `detection`, `detect
 | `KQLP004` | Warning | microsoft-kusto / performance | Yes | `where format_datetime(Time, ...) == ...` → compare the datetime value or range directly. | [Kusto query best practices][kusto-bp] |
 | `KQLP005` | Warning | microsoft-kusto / correctness | Yes | `Column == ""` or `Column != ""` → `isempty(Column)` or `isnotempty(Column)`. | [isempty function][isempty] |
 | `KQLP006` | Information | microsoft-kusto / performance | Yes | `Column has "192.0.2.1"` → use `has_ipv4` or `has_any_ipv4`. | [Kusto query best practices][kusto-bp] |
+| `KQLP007` | Warning | baseline / performance | Yes | One `parse` statement extracts more than five columns → split it into smaller parse statements. Transformations allow at most ten. | [Azure Monitor query optimization][azure-monitor-query-optimization] |
 | `KQLS001` | Error | sentinel-detection / sentinel | Yes | Sentinel detection query exceeds 10,000 characters; the diagnostic reports the measured length → shorten it or move large literal lists and pattern data into a watchlist or other managed external source. | [Sentinel scheduled rules][sentinel-rules] |
 | `KQLS002` | Warning | baseline / sentinel | Yes | `_GetWatchlist('assets') \| project Tags` or `['IP Address']` → define the optional field first, for example `\| extend Tags = column_ifexists('Tags', '')`, to avoid deployment failures when the watchlist lacks that column. | [Fabian Bader][fabian-bader] |
 | `KQLN001` | Error | defender-nrt / nrt | Yes | Defender NRT query references anything other than exactly one table, or uses `join`, `union`, or `externaldata` → rewrite as a single-input query or use a scheduled detection. | [Defender custom detections][defender-detections] |
@@ -115,6 +119,14 @@ Categories are `correctness`, `performance`, `reliability`, `detection`, `detect
 | `KQLN005` | Error | defender-nrt / nrt | Yes | `matches regex` does not use a correctly escaped KQL string literal → encode regex backslashes according to KQL string quoting rules. | [Defender custom detections][defender-detections] |
 | `KQLN006` | Error | defender-nrt / nrt | Yes | `EmailEvents` uses `LatestDeliveryLocation` or `LatestDeliveryAction` → remove the unsupported column. | [Defender custom detections][defender-detections] |
 | `KQLN007` | Warning | defender-nrt / nrt | Yes | Defender or Sentinel NRT query filters `Timestamp`, `TimeGenerated`, `ingestion_time()`, or a direct alias → remove the time filter or use a scheduled detection. | [Defender custom detections][defender-detections] |
+| `KQLT001` | Error | azure-monitor-transformation / transformation | Yes | Transformation uses an invalid source, returns a non-tabular value, or can expand one input into multiple rows. | [Supported transformation KQL][nrt-kql-features] |
+| `KQLT002` | Error | azure-monitor-transformation / transformation | Yes | Transformation uses an unsupported tabular operator. | [Supported transformation KQL][nrt-kql-features] |
+| `KQLT003` | Error | azure-monitor-transformation / transformation | Yes | Transformation uses an unsupported scalar/string feature or a UDF with a tabular argument. | [Supported transformation KQL][nrt-kql-features] |
+| `KQLT004` | Error | azure-monitor-transformation / transformation | Yes | One transformation `parse` statement extracts more than ten columns. | [Supported transformation KQL][nrt-kql-features] |
+| `KQLT005` | Warning | azure-monitor-transformation / transformation | Yes | `parse kind=regex` requires a full-input match in transformations. | [Supported transformation KQL][nrt-kql-features] |
+| `KQLT006` | Error | azure-monitor-transformation / transformation | Yes | Transformation output omits `TimeGenerated:datetime`. | [Create a transformation][azure-monitor-transformations-create] |
+| `KQLT007` | Error | azure-monitor-transformation / transformation | Yes | Output column type differs from the supplied destination schema. | [Create a transformation][azure-monitor-transformations-create] |
+| `KQLT008` | Warning | azure-monitor-transformation / transformation | Yes | Output column is absent from the supplied destination and Azure will discard it after ingestion. | [Create a transformation][azure-monitor-transformations-create] |
 | `KQLQ001` | Information | community-detection / detection-quality | No | Detection filters identity-like display names → prefer stable IDs where the source exposes them. This heuristic is intentionally opt-in. | [Detection Engineering Best Practices, part 1][dxbp1] |
 | `KQLQ002` | Information | community-detection / detection-quality | No | `DeviceProcessEvents` filename detection omits original-file-name metadata → consider the original filename to tolerate renamed binaries. | [Detection Engineering Best Practices, part 1][dxbp1] |
 | `KQLQ003` | Information | community-detection / maintainability | No | Inline negative filter has no same-line explanation → document rationale and ownership or centralize the allowlist. | [Detection Engineering Best Practices, part 2][dxbp2] |
@@ -135,6 +147,8 @@ Static lint cannot reliably determine input cardinality, ingestion delay, expect
 [in-operator]: https://learn.microsoft.com/en-us/kusto/query/in-cs-operator
 [bag-unpack]: https://learn.microsoft.com/en-us/kusto/query/bag-unpack-plugin
 [isempty]: https://learn.microsoft.com/en-us/kusto/query/isempty-function
+[azure-monitor-query-optimization]: https://learn.microsoft.com/en-us/azure/azure-monitor/logs/query-optimization#break-up-large-parse-commands
+[azure-monitor-transformations-create]: https://learn.microsoft.com/en-us/azure/azure-monitor/data-collection/data-collection-transformations-create
 [xdrinternals]: https://xdrinternals.com/
 [about-function]: https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-getanomalousbehaviorsabout-function
 [dxbp1]: https://kqlquery.com/posts/dxbp-part1/

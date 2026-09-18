@@ -62,7 +62,7 @@ public sealed partial class KqlValidationService(
                 "https://learn.microsoft.com/en-us/kusto/query/",
                 diagnostic.Code.StartsWith("KS", StringComparison.Ordinal) ? "syntax" : "semantic"))
             .Concat(fileProfileDiagnostics)
-            .Concat(linter.Analyze(request, lintPolicy, cancellationToken))
+            .Concat(linter.Analyze(request, lintPolicy, code, cancellationToken))
             .Concat(defenderNrtValidator.Analyze(request, lintPolicy, references.Tables, references.Columns, cancellationToken))
             .Concat(DetectionOutputDiagnostics(request, outputColumns, references.Tables, schema, lintPolicy))
             .Take(MaxDiagnostics + 1)

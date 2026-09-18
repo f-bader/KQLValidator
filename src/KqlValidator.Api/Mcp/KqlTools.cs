@@ -22,6 +22,17 @@ public sealed class KqlTools
         CancellationToken cancellationToken = default) =>
         executor.ExecuteAsync(new ValidateRequest(query, environment, profile, extensions, target, lint), cancellationToken);
 
+    [McpServerTool(Name = "validate_azure_monitor_transformation", Title = "Validate Azure Monitor transformation", ReadOnly = true, Destructive = false, Idempotent = true, OpenWorld = false, UseStructuredContent = true)]
+    [Description("Statically validate a data collection rule or Azure Monitor transform.KQL expression. The query is never executed.")]
+    public static Task<TransformationValidationResponse> ValidateAzureMonitorTransformation(
+        AnalysisExecutor executor,
+        [Description("Transformation KQL query using the virtual source table, limited to 64 KiB.")] string query,
+        [Description("Typed columns exposed by the virtual source table.")] IReadOnlyList<ColumnDeclaration> sourceColumns,
+        [Description("Optional typed destination table columns for output compatibility checks.")] IReadOnlyList<ColumnDeclaration>? destinationColumns = null,
+        CancellationToken cancellationToken = default) =>
+        executor.ExecuteTransformationAsync(
+            new TransformationValidationRequest(query, sourceColumns, destinationColumns), cancellationToken);
+
     [McpServerTool(Name = "list_kql_lint_rules", Title = "List KQL lint rules", ReadOnly = true, Destructive = false, Idempotent = true, OpenWorld = false, UseStructuredContent = true)]
     [Description("List lint rules, their rule sets, applicability, severities, and original sources.")]
     public static LintRuleListResponse ListKqlLintRules(

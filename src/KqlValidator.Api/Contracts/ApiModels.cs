@@ -32,6 +32,11 @@ public sealed record ValidateRequest(
     KqlTarget? Target = null,
     LintOptions? Lint = null);
 
+public sealed record TransformationValidationRequest(
+    [property: Required, MaxLength(65_536)] string Query,
+    [property: Required] IReadOnlyList<ColumnDeclaration> SourceColumns,
+    IReadOnlyList<ColumnDeclaration>? DestinationColumns = null);
+
 public sealed record LintOptions(
     bool Enabled = true,
     IReadOnlyList<string>? RuleSets = null,
@@ -104,6 +109,15 @@ public sealed record ValidationResponse(
     IReadOnlyList<ValidationDiagnostic> Diagnostics,
     IReadOnlyList<ColumnDeclaration> OutputColumns,
     IReadOnlyList<string> ReferencedTables,
+    IReadOnlyList<string> ReferencedColumns,
+    IReadOnlyList<string> ReferencedFunctions,
+    long ElapsedMilliseconds);
+
+public sealed record TransformationValidationResponse(
+    bool Valid,
+    string ServiceVersion,
+    IReadOnlyList<ValidationDiagnostic> Diagnostics,
+    IReadOnlyList<ColumnDeclaration> OutputColumns,
     IReadOnlyList<string> ReferencedColumns,
     IReadOnlyList<string> ReferencedFunctions,
     long ElapsedMilliseconds);
