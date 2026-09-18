@@ -9,6 +9,9 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
+// The optional overlay is intentionally read once, before the server starts accepting
+// traffic. A bad mounted file is a deployment failure rather than a partially ready API.
+var schemaCatalog = new SchemaCatalog(overlayPath: builder.Configuration["SchemaOverlay:Path"]);
 builder.WebHost.ConfigureKestrel(options => options.Limits.MaxRequestBodySize = 262_144);
 builder.Services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = 262_144);
 builder.Services.AddProblemDetails();
@@ -24,7 +27,7 @@ builder.Services.AddOpenApi("v1", options => options.AddDocumentTransformer((doc
     };
     return Task.CompletedTask;
 }));
-builder.Services.AddSingleton<SchemaCatalog>();
+builder.Services.AddSingleton(schemaCatalog);
 builder.Services.AddSingleton<LintRuleCatalog>();
 builder.Services.AddSingleton<GlobalStateFactory>();
 builder.Services.AddSingleton<RequestValidator>();

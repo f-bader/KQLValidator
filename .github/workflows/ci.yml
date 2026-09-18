@@ -65,6 +65,7 @@ jobs:
         with:
           inlineScript: |
             az bicep build --file infra/main.bicep --outfile /tmp/main.json
+            az bicep build --file infra/foundation.bicep --outfile /tmp/foundation.json
             az bicep build --file infra/budget.bicep --outfile /tmp/budget.json
 
   deploy:
@@ -95,8 +96,8 @@ jobs:
         env:
           AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
-          AZURE_ACR_RESOURCE_GROUP: ${{ vars.AZURE_ACR_RESOURCE_GROUP }}
           AZURE_ACR_NAME: ${{ vars.AZURE_ACR_NAME }}
+          AZURE_STORAGE_ACCOUNT_NAME: ${{ vars.AZURE_STORAGE_ACCOUNT_NAME }}
           AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
           AZURE_APP_NAME: ${{ vars.AZURE_APP_NAME }}
         run: ./scripts/deploy-lab.sh

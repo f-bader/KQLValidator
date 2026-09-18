@@ -10,17 +10,36 @@ public sealed class SchemaCatalog
 {
     private readonly IReadOnlyDictionary<KqlEnvironment, EnvironmentSchema> schemas;
 
-    public SchemaCatalog(string? schemasDirectory = null)
+    public SchemaCatalog(string? schemasDirectory = null, string? overlayPath = null)
     {
         var schemaDirectory = schemasDirectory ?? Path.Combine(AppContext.BaseDirectory, "Schemas");
         var xdr = BuildXdr(schemaDirectory);
         var sentinel = BuildSentinel(schemaDirectory);
-        schemas = new Dictionary<KqlEnvironment, EnvironmentSchema>
+        if (!string.IsNullOrWhiteSpace(overlayPath))
         {
-            [KqlEnvironment.Xdr] = xdr,
-            [KqlEnvironment.Sentinel] = sentinel,
-            [KqlEnvironment.Unified] = Merge(xdr, sentinel),
-        };
+            var overlay = CustomSchemaOverlay.Load(overlayPath);
+            xdr = Apply(xdr, overlay.Common);
+            sentinel = Apply(sentinel, overlay.Common);
+            xdr = Apply(xdr, overlay.Environments.GetValueOrDefault(KqlEnvironment.Xdr));
+            sentinel = Apply(sentinel, overlay.Environments.GetValueOrDefault(KqlEnvironment.Sentinel));
+            var unified = Merge(xdr, sentinel);
+            unified = Apply(unified, overlay.Environments.GetValueOrDefault(KqlEnvironment.Unified));
+            schemas = new Dictionary<KqlEnvironment, EnvironmentSchema>
+            {
+                [KqlEnvironment.Xdr] = xdr,
+                [KqlEnvironment.Sentinel] = sentinel,
+                [KqlEnvironment.Unified] = unified,
+            };
+        }
+        else
+        {
+            schemas = new Dictionary<KqlEnvironment, EnvironmentSchema>
+            {
+                [KqlEnvironment.Xdr] = xdr,
+                [KqlEnvironment.Sentinel] = sentinel,
+                [KqlEnvironment.Unified] = Merge(xdr, sentinel),
+            };
+        }
         ActionTypes = LoadActionTypes(schemaDirectory);
     }
 
@@ -129,6 +148,31 @@ public sealed class SchemaCatalog
         foreach (var function in xdr.Functions)
             functions[function.Key] = function.Value;
         return CreateSchema("unified", tables, functions);
+    }
+
+    private static EnvironmentSchema Apply(EnvironmentSchema schema, CatalogSection? overlay)
+    {
+        if (overlay is null) return schema;
+
+        var tables = new Dictionary<string, SchemaTable>(schema.Tables, StringComparer.OrdinalIgnoreCase);
+        foreach (var table in overlay.Tables)
+        {
+            if (!tables.TryGetValue(table.Name, out var existing))
+            {
+                tables[table.Name] = table;
+                continue;
+            }
+
+            var columns = existing.Columns.ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
+            foreach (var column in table.Columns)
+                columns[column.Name] = column;
+            tables[table.Name] = new SchemaTable(existing.Name, columns.Values.ToArray());
+        }
+
+        var functions = new Dictionary<string, SchemaFunction>(schema.Functions, StringComparer.OrdinalIgnoreCase);
+        foreach (var function in overlay.Functions)
+            functions[function.Name] = function;
+        return CreateSchema(schema.Name, tables, functions);
     }
 
     private static EnvironmentSchema CreateSchema(

@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-base_url="${1:?usage: smoke-test.sh BASE_URL}"
+base_url="${1:?usage: smoke-test.sh BASE_URL [CUSTOM_TABLE CUSTOM_FUNCTION]}"
 base_url="${base_url%/}"
+custom_table="${2:-}"
+custom_function="${3:-}"
 
 curl --fail --silent --show-error --output /dev/null "$base_url/health/live"
 curl --fail --silent --show-error --output /dev/null "$base_url/health/ready"
@@ -26,4 +28,24 @@ initialize="$(curl --fail --silent --show-error \
   "$base_url/mcp")"
 grep -q 'kql-validator' <<<"$initialize"
 
-echo "REST, OpenAPI, health, validation, and MCP smoke tests passed for $base_url"
+if [[ -n "$custom_table" || -n "$custom_function" ]]; then
+  [[ -n "$custom_table" && -n "$custom_function" ]] || {
+    echo 'CUSTOM_TABLE and CUSTOM_FUNCTION must be supplied together.' >&2
+    exit 64
+  }
+  curl --fail --silent --show-error --output /dev/null \
+    "$base_url/api/v1/environments/xdr/tables/$custom_table"
+  curl --fail --silent --show-error --output /dev/null \
+    "$base_url/api/v1/environments/xdr/functions/$custom_function"
+  custom_response="$(curl --fail --silent --show-error \
+    --header 'content-type: application/json' \
+    --data "{\"query\":\"$custom_table | take 1\",\"environment\":\"xdr\",\"profile\":\"general\"}" \
+    "$base_url/api/v1/validate")"
+  if command -v jq >/dev/null 2>&1; then
+    jq --exit-status '.valid == true' <<<"$custom_response" >/dev/null
+  else
+    grep -q '"valid":true' <<<"$custom_response"
+  fi
+fi
+
+echo "REST, OpenAPI, health, validation, MCP, and optional catalog smoke tests passed for $base_url"
