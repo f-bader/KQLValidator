@@ -11,7 +11,7 @@ export DOTNET_BUNDLE_EXTRACT_BASE_DIR="${DOTNET_BUNDLE_EXTRACT_BASE_DIR:-/tmp/kq
 dotnet restore kql-validator.slnx --locked-mode
 dotnet format kql-validator.slnx --verify-no-changes --no-restore
 dotnet build kql-validator.slnx --configuration Release --no-restore --disable-build-servers -m:1 -nodeReuse:false
-dotnet test tests/KqlValidator.Tests/KqlValidator.Tests.csproj --configuration Release --no-build --no-restore --disable-build-servers -m:1 -nodeReuse:false
+dotnet test tests/KqlValidator.Tests/KqlValidator.Tests.csproj --configuration Release --no-build --no-restore
 dotnet publish src/KqlValidator.Api/KqlValidator.Api.csproj --configuration Release --no-restore --output artifacts/publish /p:UseAppHost=false
 mkdir -p artifacts
 dotnet list kql-validator.slnx package --vulnerable --include-transitive --format json --output-version 1 --no-restore > artifacts/vulnerable-packages.json
