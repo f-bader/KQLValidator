@@ -114,6 +114,24 @@ builder.Services.AddRateLimiter(options =>
 builder.Services.AddMcpServer(options =>
     {
         options.ServerInfo = new() { Name = "kql-validator", Version = ThisAssembly.Version };
+        options.ServerInstructions = """
+            Use this server while writing, editing, debugging, or reviewing Microsoft Defender XDR,
+            Microsoft Sentinel, and Azure Monitor transformation KQL. Validate new or changed supported
+            KQL before presenting it as checked, and revalidate after repairs. Analysis is static:
+            queries are never executed, stored, or logged, and catalogs do not inspect a live workspace.
+            Choose the intended platform and purpose from the user's context; ask when ambiguous rather
+            than using unified to hide schema errors. Discover environments when needed. Search for
+            uncertain schema identifiers, then fetch known table/function definitions as needed;
+            skip discovery calls when the required schema is already known. Catalogs include mounted
+            custom declarations. Request missing custom schemas rather than inventing them.
+            Route ordinary queries and hunting/detection rules to validate_kql; route DCR transformKql
+            or transform.KQL expressions to validate_azure_monitor_transformation with actual source
+            columns. Extract the expression from a full DCR document. NRT detection needs an explicit
+            platform-specific target. Use list_kql_lint_rules to discover lint controls or explain rules.
+            Inspect valid and diagnostics even when the tool call succeeds: valid=false means validation
+            failed; warnings can remain when valid=true. Report remaining diagnostics and the limits of
+            static validation; it does not prove runtime success or detection effectiveness.
+            """;
     })
     .WithHttpTransport(options => options.Stateless = true)
     .WithTools<KqlTools>();
