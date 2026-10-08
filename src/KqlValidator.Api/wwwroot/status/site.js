@@ -226,12 +226,21 @@
     select.value = values.includes(current) ? current : "";
   }
 
+  function lintSourceName(rule) {
+    if (rule.sourceName?.trim()) return rule.sourceName.trim();
+    try {
+      return new URL(rule.documentationUrl).hostname.replace(/^www\./, "");
+    } catch {
+      return "Unknown source";
+    }
+  }
+
   function renderLintRules() {
     const query = $("#lint-search").value.trim().toLowerCase();
     const ruleSet = $("#lint-ruleset").value;
     const severity = $("#lint-severity").value;
     const rules = state.lintRules.filter((rule) => {
-      const haystack = [rule.ruleId, rule.title, rule.description, rule.category, rule.ruleSet].join(" ").toLowerCase();
+      const haystack = [rule.ruleId, rule.title, rule.description, rule.category, rule.ruleSet, lintSourceName(rule)].join(" ").toLowerCase();
       return (!query || haystack.includes(query)) && (!ruleSet || rule.ruleSet === ruleSet) && (!severity || rule.defaultSeverity === severity);
     });
     $("#lint-caption").textContent = `${rules.length} of ${state.lintRules.length} rules`;
@@ -240,7 +249,7 @@
         <div class="lint-card-head"><div><span class="lint-id">${escapeHtml(rule.ruleId)}</span><h3>${escapeHtml(rule.title)}</h3></div><span class="severity severity-${String(rule.defaultSeverity).toLowerCase()}">${escapeHtml(rule.defaultSeverity)}</span></div>
         <p class="lint-description">${escapeHtml(rule.description)}</p>
         <div class="lint-meta"><span class="meta-chip">${escapeHtml(rule.category)}</span><span class="meta-chip">${escapeHtml(rule.ruleSet)}</span>${(rule.profiles || []).slice(0, 2).map((profile) => `<span class="meta-chip">${escapeHtml(profile)}</span>`).join("")}</div>
-        ${rule.documentationUrl ? `<a class="lint-source" href="${escapeHtml(rule.documentationUrl)}" target="_blank" rel="noopener noreferrer">Original guidance ↗</a>` : ""}
+        ${rule.documentationUrl ? `<a class="lint-source" href="${escapeHtml(rule.documentationUrl)}" target="_blank" rel="noopener noreferrer"><span class="lint-source-label">Source:</span> ${escapeHtml(lintSourceName(rule))} <span aria-hidden="true">↗</span></a>` : ""}
       </article>`).join("") : `<div class="empty-state"><div><span class="detail-symbol" aria-hidden="true">⌕</span><p>No lint rules matched these filters.</p></div></div>`;
   }
 

@@ -147,8 +147,9 @@ button.schema-result:hover { background: rgba(101,230,208,.06); }
 .lint-description { min-height: 38px; margin-bottom: 13px; color: var(--muted); font-size: .77rem; }
 .lint-meta { display: flex; flex-wrap: wrap; gap: 6px; }
 .meta-chip { padding: 3px 6px; border: 1px solid var(--line); border-radius: 4px; color: var(--soft); font-size: .62rem; }
-.lint-source { display: inline-block; margin-top: 12px; color: var(--cyan); font-size: .7rem; text-decoration: none; }
-.lint-source:hover { text-decoration: underline; }
+.lint-source { display: inline-flex; align-items: baseline; flex-wrap: wrap; gap: 5px; max-width: 100%; margin-top: 12px; padding: 4px 8px; border: 1px solid rgba(101,230,208,.3); border-radius: 4px; color: var(--cyan); background: var(--cyan-dim); font-size: .7rem; overflow-wrap: anywhere; text-decoration: none; }
+.lint-source-label { color: var(--soft); }
+.lint-source:hover { border-color: var(--cyan); text-decoration: underline; }
 
 .integration-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
 .integration-card { position: relative; display: flex; min-height: 156px; flex-direction: column; align-items: start; padding: 19px; border-radius: 9px; text-decoration: none; transition: border-color .2s, transform .2s; }
