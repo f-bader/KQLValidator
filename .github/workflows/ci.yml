@@ -61,6 +61,7 @@ jobs:
           image: kql-validator:${{ github.sha }}
           fail-build: true
           severity-cutoff: high
+          output-format: table
       - uses: azure/CLI@9eb25b8360668fb0ecbafa808d40e2197b2f5f52 # v3.0.0
         with:
           inlineScript: |
