@@ -10,6 +10,10 @@ cd "$repo_root"
 
 AZURE_LOCATION="${AZURE_LOCATION:-westeurope}"
 AZURE_APP_NAME="${AZURE_APP_NAME:-kql-validator-lab}"
+if [[ -n "${AZURE_CUSTOM_DOMAIN:-}" || -n "${AZURE_MANAGED_CERTIFICATE_NAME:-}" ]]; then
+  : "${AZURE_CUSTOM_DOMAIN:?Set AZURE_CUSTOM_DOMAIN when AZURE_MANAGED_CERTIFICATE_NAME is set}"
+  : "${AZURE_MANAGED_CERTIFICATE_NAME:?Set AZURE_MANAGED_CERTIFICATE_NAME when AZURE_CUSTOM_DOMAIN is set}"
+fi
 custom_schema_enabled=false
 if [[ -n "${CUSTOM_SCHEMA_PATH:-}" ]]; then
   custom_schema_enabled=true
@@ -38,6 +42,8 @@ main_parameters=(
   location="$AZURE_LOCATION"
   registryName="$AZURE_ACR_NAME"
   managedEnvironmentName="${AZURE_APP_NAME}-env"
+  customDomainName="${AZURE_CUSTOM_DOMAIN:-}"
+  managedCertificateName="${AZURE_MANAGED_CERTIFICATE_NAME:-}"
 )
 smoke_test_parameters=()
 

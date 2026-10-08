@@ -17,6 +17,12 @@ param registryName string
 @description('Managed environment provisioned by foundation.bicep.')
 param managedEnvironmentName string = '${appName}-env'
 
+@description('Optional custom HTTPS hostname. Leave empty to deploy without a custom domain.')
+param customDomainName string = ''
+
+@description('Existing Azure-managed certificate in the selected Container Apps environment. Required when customDomainName is set.')
+param managedCertificateName string = ''
+
 @description('Whether to mount an Azure Files custom schema catalog.')
 param customSchemaEnabled bool = false
 
@@ -32,6 +38,11 @@ resource registry 'Microsoft.ContainerRegistry/registries@2023-07-01' existing =
 
 resource environment 'Microsoft.App/managedEnvironments@2025-01-01' existing = {
   name: managedEnvironmentName
+}
+
+resource managedCertificate 'Microsoft.App/managedEnvironments/managedCertificates@2025-01-01' existing = if (!empty(customDomainName)) {
+  parent: environment
+  name: managedCertificateName
 }
 
 resource storage 'Microsoft.Storage/storageAccounts@2023-05-01' existing = if (customSchemaEnabled) {
@@ -103,6 +114,13 @@ resource app 'Microsoft.App/containerApps@2025-01-01' = {
         targetPort: 8080
         transport: 'auto'
         allowInsecure: false
+        customDomains: !empty(customDomainName) ? [
+          {
+            name: customDomainName
+            certificateId: managedCertificate!.id
+            bindingType: 'SniEnabled'
+          }
+        ] : []
       }
       registries: [
         {
@@ -184,6 +202,6 @@ resource app 'Microsoft.App/containerApps@2025-01-01' = {
 
 output appId string = app.id
 output fqdn string = app.properties.configuration.ingress.fqdn
-output url string = 'https://${app.properties.configuration.ingress.fqdn}'
+output url string = !empty(customDomainName) ? 'https://${customDomainName}' : 'https://${app.properties.configuration.ingress.fqdn}'
 output principalId string = pullIdentity.properties.principalId
 output registryServer string = registry.properties.loginServer

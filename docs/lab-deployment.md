@@ -47,6 +47,27 @@ export AZURE_STORAGE_ACCOUNT_NAME='YOUR_UNIQUE_STORAGE_ACCOUNT_NAME'
 export CUSTOM_SCHEMA_PATH="$PWD/examples/custom-schema.json"
 ```
 
+### Custom domain and certificate binding
+
+Custom domains are optional. With no domain configuration, the deployment URL and smoke checks use the Container App's generated HTTPS hostname. To enable a custom domain, supply both the hostname and the name of an existing Azure-managed certificate in the selected Container Apps environment. The app template declares the `SniEnabled` binding, and the deployment URL and smoke checks use the custom HTTPS hostname.
+
+The certificate and DNS records must already exist; this template references the certificate rather than issuing a new one. For a local deployment, set both variables before running the helper:
+
+```bash
+export AZURE_CUSTOM_DOMAIN='YOUR_CUSTOM_HOSTNAME'
+export AZURE_MANAGED_CERTIFICATE_NAME='YOUR_EXISTING_MANAGED_CERTIFICATE_NAME'
+```
+
+These map to the Bicep parameters `customDomainName` and `managedCertificateName`. For GitHub Actions, configure the same names as variables in the `lab` environment. The workflow passes them to the helper without storing deployment-specific hostnames or certificate names in the repository:
+
+```bash
+export GITHUB_REPOSITORY='OWNER/REPOSITORY'
+gh variable set AZURE_CUSTOM_DOMAIN --repo "$GITHUB_REPOSITORY" --env lab --body 'YOUR_CUSTOM_HOSTNAME'
+gh variable set AZURE_MANAGED_CERTIFICATE_NAME --repo "$GITHUB_REPOSITORY" --env lab --body 'YOUR_EXISTING_MANAGED_CERTIFICATE_NAME'
+```
+
+The helper rejects an incomplete pair before making any Azure changes. Leave both variables unset or empty for a deployment without a custom domain. Doing so deploys an empty binding list, so it also removes an existing custom domain binding from an app being redeployed.
+
 ## GitHub Actions deployment
 
 The CI workflow deploys only after its validation job passes. Pushes to `main` and manual runs from `main` use the GitHub `lab` environment. This repository does not currently configure a required-reviewer gate; add one when the repository policy requires it. Pull requests and runs from other branches never deploy.
