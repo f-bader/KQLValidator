@@ -32,7 +32,7 @@ if (!arguments.ContainsKey("sentinel-only"))
 {
     var rawXdr = await http.GetStringAsync(xdrSchemaUrl);
     var rawActions = await http.GetStringAsync(actionTypesUrl);
-    xdr = NormalizeXdr(rawXdr);
+    xdr = XdrSchemaNormalizer.Normalize(rawXdr);
     actions = NormalizeActions(rawActions);
 
     EnforceDropGuard(Path.Combine(outputDirectory, "xdr.json"), xdr, "tables", 0.8);
@@ -147,29 +147,6 @@ static async Task<string> GetAzureCliAccessToken()
         throw new InvalidOperationException("Azure CLI could not acquire a Log Analytics token. Run 'az login' and verify workspace access." +
             (string.IsNullOrWhiteSpace(error) ? string.Empty : " Azure CLI reported an error."));
     return output.Trim();
-}
-
-static JsonObject NormalizeXdr(string json)
-{
-    using var document = JsonDocument.Parse(json);
-    var tables = document.RootElement.EnumerateArray()
-        .Select(table => new JsonObject
-        {
-            ["name"] = table.GetProperty("Name").GetString(),
-            ["columns"] = new JsonArray(table.GetProperty("Schema").EnumerateArray()
-                .Select(column => (JsonNode)new JsonObject
-                {
-                    ["name"] = column.GetProperty("Name").GetString(),
-                    ["type"] = NormalizeType(column.GetProperty("Type").GetString()!),
-                })
-                .OrderBy(column => column!["name"]!.GetValue<string>(), StringComparer.OrdinalIgnoreCase)
-                .ToArray()),
-        })
-        .OrderBy(table => table["name"]!.GetValue<string>(), StringComparer.OrdinalIgnoreCase)
-        .Cast<JsonNode>()
-        .ToArray();
-    ValidateTables(tables);
-    return new JsonObject { ["source"] = xdrSchemaUrl, ["tables"] = new JsonArray(tables) };
 }
 
 static JsonObject NormalizeActions(string json)
