@@ -17,12 +17,11 @@ param registryName string
 @description('Managed environment provisioned by foundation.bicep.')
 param managedEnvironmentName string = '${appName}-env'
 
-@description('Custom HTTPS hostname. The lab uses mcp.xdrinternals.com; use an empty string to deploy without a custom domain.')
-param customDomainName string = appName == 'kql-validator-lab' ? 'mcp.xdrinternals.com' : ''
+@description('Optional custom HTTPS hostname. Leave empty to deploy without a custom domain.')
+param customDomainName string = ''
 
-@description('Existing Azure-managed certificate in the selected Container Apps environment. Override when using another hostname or a replacement certificate.')
-@minLength(1)
-param managedCertificateName string = 'mcp.xdrinternals.com-kql-vali-261008094056'
+@description('Existing Azure-managed certificate in the selected Container Apps environment. Required when customDomainName is set.')
+param managedCertificateName string = ''
 
 @description('Whether to mount an Azure Files custom schema catalog.')
 param customSchemaEnabled bool = false

@@ -49,18 +49,24 @@ export CUSTOM_SCHEMA_PATH="$PWD/examples/custom-schema.json"
 
 ### Custom domain and certificate binding
 
-For `kql-validator-lab`, the app template explicitly binds `mcp.xdrinternals.com` using `SniEnabled` and the existing Azure-managed certificate `mcp.xdrinternals.com-kql-vali-261008094056` in the selected Container Apps environment. Local and GitHub Actions deployments use these defaults, so redeploying the app retains the binding. The deployment URL and smoke checks use the custom HTTPS hostname.
+Custom domains are optional. With no domain configuration, the deployment URL and smoke checks use the Container App's generated HTTPS hostname. To enable a custom domain, supply both the hostname and the name of an existing Azure-managed certificate in the selected Container Apps environment. The app template declares the `SniEnabled` binding, and the deployment URL and smoke checks use the custom HTTPS hostname.
 
-The certificate and DNS records must already exist; this template references the certificate rather than issuing a new one. To use another domain or a replacement certificate, override both values when running the helper:
+The certificate and DNS records must already exist; this template references the certificate rather than issuing a new one. For a local deployment, set both variables before running the helper:
 
 ```bash
 export AZURE_CUSTOM_DOMAIN='YOUR_CUSTOM_HOSTNAME'
 export AZURE_MANAGED_CERTIFICATE_NAME='YOUR_EXISTING_MANAGED_CERTIFICATE_NAME'
 ```
 
-These map to the Bicep parameters `customDomainName` and `managedCertificateName`. For GitHub Actions, set the corresponding parameters in the workflow's deployment step if replacing the lab binding.
+These map to the Bicep parameters `customDomainName` and `managedCertificateName`. For GitHub Actions, configure the same names as variables in the `lab` environment. The workflow passes them to the helper without storing deployment-specific hostnames or certificate names in the repository:
 
-For a fresh installation without this certificate, set `AZURE_CUSTOM_DOMAIN=''`. App names other than `kql-validator-lab` default to no custom domain. An empty hostname deploys an empty binding list, so it also removes an existing custom domain binding from an app being redeployed.
+```bash
+export GITHUB_REPOSITORY='OWNER/REPOSITORY'
+gh variable set AZURE_CUSTOM_DOMAIN --repo "$GITHUB_REPOSITORY" --env lab --body 'YOUR_CUSTOM_HOSTNAME'
+gh variable set AZURE_MANAGED_CERTIFICATE_NAME --repo "$GITHUB_REPOSITORY" --env lab --body 'YOUR_EXISTING_MANAGED_CERTIFICATE_NAME'
+```
+
+The helper rejects an incomplete pair before making any Azure changes. Leave both variables unset or empty for a deployment without a custom domain. Doing so deploys an empty binding list, so it also removes an existing custom domain binding from an app being redeployed.
 
 ## GitHub Actions deployment
 

@@ -102,4 +102,6 @@ jobs:
           CUSTOM_SCHEMA_PATH: ${{ vars.CUSTOM_SCHEMA_PATH }}
           AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
           AZURE_APP_NAME: ${{ vars.AZURE_APP_NAME }}
+          AZURE_CUSTOM_DOMAIN: ${{ vars.AZURE_CUSTOM_DOMAIN }}
+          AZURE_MANAGED_CERTIFICATE_NAME: ${{ vars.AZURE_MANAGED_CERTIFICATE_NAME }}
         run: ./scripts/deploy-lab.sh
