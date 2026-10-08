@@ -41,6 +41,15 @@ main_parameters=(
 )
 smoke_test_parameters=()
 
+# Leave omitted values to the Bicep lab defaults; an explicitly empty hostname
+# disables the custom binding for a fresh self-hosted deployment.
+if [[ -n "${AZURE_CUSTOM_DOMAIN+x}" ]]; then
+  main_parameters+=(customDomainName="$AZURE_CUSTOM_DOMAIN")
+fi
+if [[ -n "${AZURE_MANAGED_CERTIFICATE_NAME+x}" ]]; then
+  main_parameters+=(managedCertificateName="$AZURE_MANAGED_CERTIFICATE_NAME")
+fi
+
 if [[ "$custom_schema_enabled" == true ]]; then
   foundation_parameters+=(
     customSchemaEnabled=true

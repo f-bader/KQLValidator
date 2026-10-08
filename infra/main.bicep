@@ -17,6 +17,13 @@ param registryName string
 @description('Managed environment provisioned by foundation.bicep.')
 param managedEnvironmentName string = '${appName}-env'
 
+@description('Custom HTTPS hostname. The lab uses mcp.xdrinternals.com; use an empty string to deploy without a custom domain.')
+param customDomainName string = appName == 'kql-validator-lab' ? 'mcp.xdrinternals.com' : ''
+
+@description('Existing Azure-managed certificate in the selected Container Apps environment. Override when using another hostname or a replacement certificate.')
+@minLength(1)
+param managedCertificateName string = 'mcp.xdrinternals.com-kql-vali-261008094056'
+
 @description('Whether to mount an Azure Files custom schema catalog.')
 param customSchemaEnabled bool = false
 
@@ -32,6 +39,11 @@ resource registry 'Microsoft.ContainerRegistry/registries@2023-07-01' existing =
 
 resource environment 'Microsoft.App/managedEnvironments@2025-01-01' existing = {
   name: managedEnvironmentName
+}
+
+resource managedCertificate 'Microsoft.App/managedEnvironments/managedCertificates@2025-01-01' existing = if (!empty(customDomainName)) {
+  parent: environment
+  name: managedCertificateName
 }
 
 resource storage 'Microsoft.Storage/storageAccounts@2023-05-01' existing = if (customSchemaEnabled) {
@@ -103,6 +115,13 @@ resource app 'Microsoft.App/containerApps@2025-01-01' = {
         targetPort: 8080
         transport: 'auto'
         allowInsecure: false
+        customDomains: !empty(customDomainName) ? [
+          {
+            name: customDomainName
+            certificateId: managedCertificate!.id
+            bindingType: 'SniEnabled'
+          }
+        ] : []
       }
       registries: [
         {
@@ -184,6 +203,6 @@ resource app 'Microsoft.App/containerApps@2025-01-01' = {
 
 output appId string = app.id
 output fqdn string = app.properties.configuration.ingress.fqdn
-output url string = 'https://${app.properties.configuration.ingress.fqdn}'
+output url string = !empty(customDomainName) ? 'https://${customDomainName}' : 'https://${app.properties.configuration.ingress.fqdn}'
 output principalId string = pullIdentity.properties.principalId
 output registryServer string = registry.properties.loginServer

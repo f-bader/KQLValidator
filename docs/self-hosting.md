@@ -29,6 +29,7 @@ export AZURE_SUBSCRIPTION_ID='YOUR_SUBSCRIPTION_ID'
 export AZURE_RESOURCE_GROUP='YOUR_RESOURCE_GROUP'
 export AZURE_LOCATION='westeurope'
 export AZURE_APP_NAME='kql-validator-lab'
+export AZURE_CUSTOM_DOMAIN='' # Fresh installation without the lab's existing certificate.
 export AZURE_ACR_NAME='YOUR_UNIQUE_ACR_NAME'
 az group create --name "$AZURE_RESOURCE_GROUP" --location "$AZURE_LOCATION"
 ./scripts/deploy-lab.sh
