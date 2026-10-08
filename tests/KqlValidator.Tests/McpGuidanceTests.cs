@@ -57,7 +57,7 @@ public sealed class McpGuidanceTests(WebApplicationFactory<Program> factory) : I
             Assert.Equal(required.Order(), actualRequired.Order());
             foreach (var property in schema.GetProperty("properties").EnumerateObject())
             {
-                Assert.DoesNotContain(property.Name, new[] { "executor", "schemas", "rules", "cancellationToken" });
+                Assert.DoesNotContain(property.Name, new[] { "services", "executor", "schemas", "rules", "cancellationToken" });
                 Assert.False(string.IsNullOrWhiteSpace(property.Value.GetProperty("description").GetString()), $"{name}.{property.Name} needs guidance.");
             }
             var annotations = tool.GetProperty("annotations");
@@ -158,6 +158,16 @@ public sealed class McpGuidanceTests(WebApplicationFactory<Program> factory) : I
         Assert.False(result.TryGetProperty("isError", out var error) && error.GetBoolean());
         Assert.Empty(result.GetProperty("content").EnumerateArray());
         Assert.False(result.TryGetProperty("structuredContent", out var content) && content.ValueKind != JsonValueKind.Null);
+    }
+
+    [Fact]
+    public async Task Lint_rule_discovery_without_inputs_returns_the_full_catalog()
+    {
+        var result = await Call("list_kql_lint_rules", new { });
+        var rules = result.Deserialize<LintRuleListResponse>(JsonOptions)!.Items;
+        var expected = new KqlValidator.Validation.LintRuleCatalog().List();
+
+        Assert.Equal(expected.Select(rule => rule.RuleId), rules.Select(rule => rule.RuleId));
     }
 
     [Fact]
