@@ -26,6 +26,7 @@ http.DefaultRequestHeaders.UserAgent.ParseAdd("kql-validator-schema-sync/1.0");
 
 JsonObject? xdr = null;
 JsonObject? actions = null;
+JsonObject? relations = null;
 JsonObject? officialXdrTables = null;
 IReadOnlyList<OfficialXdrTableSource> officialXdrSources = [];
 if (!arguments.ContainsKey("sentinel-only"))
@@ -34,10 +35,13 @@ if (!arguments.ContainsKey("sentinel-only"))
     var rawActions = await http.GetStringAsync(actionTypesUrl);
     xdr = XdrSchemaNormalizer.Normalize(rawXdr);
     actions = NormalizeActions(rawActions);
+    relations = ColumnRelationNormalizer.Normalize(await http.GetStringAsync(ColumnRelationNormalizer.SourceUrl));
+    EnforceDropGuard(Path.Combine(outputDirectory, "column-relations.json"), relations, "relations", 0.8);
 
     EnforceDropGuard(Path.Combine(outputDirectory, "xdr.json"), xdr, "tables", 0.8);
     await WriteIfChanged(Path.Combine(outputDirectory, "xdr.json"), xdr);
     await WriteIfChanged(Path.Combine(outputDirectory, "action-types.json"), actions);
+    await WriteIfChanged(Path.Combine(outputDirectory, "column-relations.json"), relations);
 
     (officialXdrTables, officialXdrSources, var officialXdrCatalog) = await RefreshOfficialXdrTables(
         outputDirectory, http, arguments.ContainsKey("prune-official-xdr-tables"));
@@ -89,7 +93,7 @@ if (arguments.TryGetValue("asim-dir", out var asimDirectory))
 
 if (xdr is not null && actions is not null)
 {
-    var sources = new JsonArray(Source(xdrSchemaUrl, xdr), Source(actionTypesUrl, actions));
+    var sources = new JsonArray(Source(xdrSchemaUrl, xdr), Source(actionTypesUrl, actions), Source(ColumnRelationNormalizer.SourceUrl, relations!));
     if (officialXdrTables is not null)
         foreach (var source in officialXdrSources)
             if (officialXdrTables["tables"]!.AsArray().FirstOrDefault(table => table!["name"]!.GetValue<string>().Equals(source.TableName, StringComparison.OrdinalIgnoreCase)) is JsonObject table)

@@ -16,6 +16,9 @@ public sealed class SchemaQueryService
             .ToFrozenDictionary(environment => environment, environment => BuildIndex(catalog.Get(environment)));
     }
 
+    public ColumnRelationResponse GetRelations(KqlEnvironment environment, string table, string? column = null) =>
+        catalog.Relations.Get(catalog.Get(environment), table, column);
+
     public IReadOnlyList<EnvironmentSummary> ListEnvironments() => catalog.List();
 
     public SchemaTable? GetTable(KqlEnvironment environment, string table) =>

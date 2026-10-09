@@ -40,7 +40,7 @@ Use an explicit target for NRT validation. Defender and Sentinel NRT have differ
 - `minimumSeverity: warning` suppresses informational lint diagnostics. It never suppresses parser or semantic diagnostics.
 - `enabled: false` disables every custom lint rule while preserving parser and semantic validation.
 - Unknown rule IDs and rule-set names are rejected with HTTP 400.
-- The `community-detection` rule set is not selected by any default profile.
+- The `community-detection` and `community-correlations` rule sets are not selected by any default profile.
 
 The transformation endpoint always applies the `azure-monitor-transformation` platform rules. It does not accept ordinary lint-selection options. A `parse` statement extracting 6–10 columns also receives the shared `KQLP007` performance warning; more than 10 is invalid for transformations.
 
@@ -139,6 +139,29 @@ Categories are `correctness`, `performance`, `reliability`, `detection`, `detect
 ## Scope and deliberate exclusions
 
 Static lint cannot reliably determine input cardinality, ingestion delay, expected alert volume, SOC classification quality, or whether a detection still catches its intended behavior. Consequently, the validator does not automatically prescribe join-side ordering, broadcast/shuffle strategy, tuning thresholds, retirement decisions, or detection maintenance intervals.
+
+## Column correlations
+
+The opt-in `community-correlations` set uses the bundled [XDRInternals column relations](https://xdrinternals.com/data/column-relations.json). All three rules emit warnings and apply to general, hunting, and detection queries. They do not change syntax or schema validity. Discover relevant relationships using `get_kql_column_relations` or `GET /api/v1/environments/{environment}/tables/{table}/relations`, optionally filtered by `column`.
+
+| Rule | Trigger and guidance |
+| --- | --- |
+| `KQLR001` | Resolved join keys belong to different known identifier families, such as token versus session, Defender versus Entra device, or SHA-1 versus SHA-256. Choose identifiers with compatible meanings. |
+| `KQLR002` | A join key derived from a token, AWS resource, or GCP resource identifier uses `tolower` or `toupper`. Preserve case and compare exactly. Azure ARM resource and file-hash case normalization is not flagged. |
+| `KQLR003` | A known process-start-key relationship omits a matching DeviceId key and both inputs are not demonstrably restricted to the same non-empty device ID. Match DeviceId alongside the process key; retain tenant context and account for process creation time. |
+
+```json
+{
+  "query": "DeviceProcessEvents | join kind=inner DeviceNetworkEvents on $left.ProcessUniqueId == $right.InitiatingProcessUniqueId",
+  "environment": "xdr",
+  "profile": "general",
+  "lint": { "ruleSets": ["baseline", "defender-xdr", "community-correlations"] }
+}
+```
+
+Analysis uses bound Kusto column symbols and supports direct aliases, projections, `let` inputs, static nested dot/bracket paths, string conversion/JSON parsing, case transforms, and trailing Base64-padding removal using `trim_end(@"=+", key)`. Checks cover exact-equality join conditions, including shorthand keys and conjunctions. Unknown functions, ambiguous union lineage, dynamic paths, and unresolved columns are skipped. A missing catalog relationship never makes a join invalid. Nested JSON property names remain case-sensitive.
+
+Timing windows, empty keys, inventory snapshots, event-specific applicability, AAD Graph token padding, and identity-versus-workspace tenant distinctions are available as guidance rather than automated warnings. Examples are upstream community examples and may need adaptation to the selected environment and actual data. Correlation does not establish causation, and missing matches may reflect retention or collection gaps.
 
 ## References
 

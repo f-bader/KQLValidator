@@ -48,9 +48,14 @@ The MCP initialization instructions and tool/parameter descriptions guide agents
 | Find an unknown table, column, or catalog function name | `search_kql_schema` |
 | Inspect columns/types for a known table | `get_kql_table` |
 | Inspect a known catalog function's signature and return schema | `get_kql_function` |
+| Choose correlation keys and inspect relation caveats for a known table | `get_kql_column_relations` |
 | Discover lint controls or explain a lint rule and its source | `list_kql_lint_rules` |
 
 Choose `xdr` for Defender XDR, `sentinel` for Sentinel, or `unified` for their combined catalog. Choose `general` for general-purpose queries, `hunting` for investigations, or `detection` for alert rules. Use the intended platform; resolve ambiguity instead of using `unified` to hide schema errors. Catalogs include mounted custom declarations, but do not inspect a live workspace. Missing custom schemas must be supplied from known declarations, not invented.
+
+Column relations from [XDRInternals](https://xdrinternals.com/data/column-relations.json) are bundled for offline discovery through `get_kql_column_relations` and `GET /api/v1/environments/{environment}/tables/{table}/relations?column=...`. Both endpoints must exist in the effective schema. Results include a catalog version and SHA-256 digest, identifier families, nested paths, guidance, notes, and available query examples. These relationships are community guidance, not an exhaustive list of valid joins or a guarantee of live matches. SchemaSync refreshes the snapshot and records its digest in the manifest.
+
+The opt-in `community-correlations` lint set checks incompatible identifier families, case folding of token/AWS/GCP resource keys, and process-key joins missing device scope. It follows resolved columns through aliases and supported expressions; unfamiliar or ambiguous lineage remains unchecked. Select it alongside your desired existing sets, or enable individual `KQLR001`–`KQLR003` rules. See [lint rules](docs/lint-rules.md#column-correlations) for details.
 
 Example `tools/call` parameters for hunting:
 

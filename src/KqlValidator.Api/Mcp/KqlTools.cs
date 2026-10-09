@@ -66,6 +66,15 @@ public sealed class KqlTools
         [Description("Exact table name, matched case-insensitively, for example DeviceProcessEvents. Use search_kql_schema if unknown.")] string table) =>
         services.GetRequiredService<SchemaQueryService>().GetTable(environment, table);
 
+    [McpServerTool(Name = "get_kql_column_relations", Title = "Get KQL column relations", ReadOnly = true, Destructive = false, Idempotent = true, OpenWorld = false, UseStructuredContent = true)]
+    [Description("Use when choosing join keys or reviewing correlations for a known table. Returns bundled community column relations, identifier families, nested paths, timing guidance, caveats, source notes, and query examples. Filters both endpoints against the effective schema; an empty result does not mean a join is invalid. Does not execute queries or guarantee matches in live data. Enable community-correlations via validate_kql lint controls for related checks.")]
+    public static ColumnRelationResponse GetKqlColumnRelations(
+        IServiceProvider services,
+        [Description("Effective schema catalog: xdr, sentinel, or unified. Both relation endpoints must exist in the selected catalog.")] KqlEnvironment environment,
+        [Description("Exact known table name, matched case-insensitively. Returns relations in either direction; unknown tables return an empty items list.")] string table,
+        [Description("Optional exact source column name, matched case-insensitively, for example RawEventData. Nested paths are included in results.")] string? column = null) =>
+        services.GetRequiredService<SchemaQueryService>().GetRelations(environment, table, column);
+
     [McpServerTool(Name = "get_kql_function", Title = "Get KQL function", ReadOnly = true, Destructive = false, Idempotent = true, OpenWorld = false, UseStructuredContent = true)]
     [Description("Use when a catalog function name is known and you need its typed parameters, optional arguments, return schema, or tabular input requirements to author or repair a call. Includes mounted custom functions; returns no result (null, represented as empty MCP content) if absent from the selected environment. Use search_kql_schema to discover names. This is catalog lookup, not an exhaustive reference for KQL built-in scalar functions.")]
     public static SchemaFunction? GetKqlFunction(
