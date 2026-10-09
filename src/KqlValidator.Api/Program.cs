@@ -127,7 +127,9 @@ builder.Services.AddMcpServer(options =>
             Route ordinary queries and hunting/detection rules to validate_kql; route DCR transformKql
             or transform.KQL expressions to validate_azure_monitor_transformation with actual source
             columns. Extract the expression from a full DCR document. NRT detection needs an explicit
-            platform-specific target. Use list_kql_lint_rules to discover lint controls or explain rules.
+            platform-specific target. Use get_kql_column_relations when choosing correlation keys;
+            these community relationships are guidance, not an exhaustive join allowlist.
+            Use list_kql_lint_rules to discover lint controls or explain rules.
             Inspect valid and diagnostics even when the tool call succeeds: valid=false means validation
             failed; warnings can remain when valid=true. Report remaining diagnostics and the limits of
             static validation; it does not prove runtime success or detection effectiveness.
@@ -240,6 +242,15 @@ api.MapGet("/environments/{environment}/tables/{table}", (
     .Produces<SchemaTable>()
     .ProducesProblem(StatusCodes.Status400BadRequest)
     .ProducesProblem(StatusCodes.Status404NotFound)
+    .ProducesProblem(StatusCodes.Status429TooManyRequests);
+
+api.MapGet("/environments/{environment}/tables/{table}/relations", (
+    string environment, string table, string? column, SchemaQueryService schemas) =>
+    TryEnvironment(environment, out var parsed)
+        ? Results.Ok(schemas.GetRelations(parsed, table, column))
+        : UnknownEnvironment())
+    .Produces<ColumnRelationResponse>()
+    .ProducesProblem(StatusCodes.Status400BadRequest)
     .ProducesProblem(StatusCodes.Status429TooManyRequests);
 
 api.MapGet("/environments/{environment}/functions/{function}", (

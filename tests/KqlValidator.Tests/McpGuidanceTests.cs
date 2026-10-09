@@ -41,6 +41,7 @@ public sealed class McpGuidanceTests(WebApplicationFactory<Program> factory) : I
             ["list_kql_environments"] = ([], ["versions", "counts", "effective catalog", "search_kql_schema"]),
             ["search_kql_schema"] = (["environment"], ["unknown", "nextCursor", "get_kql_table", "get_kql_function"]),
             ["get_kql_table"] = (["environment", "table"], ["known", "columns", "types", "null", "search_kql_schema"]),
+            ["get_kql_column_relations"] = (["environment", "table"], ["join keys", "families", "empty", "community-correlations", "effective schema"]),
             ["get_kql_function"] = (["environment", "function"], ["known", "parameters", "return schema", "tabular input", "null", "search_kql_schema"]),
             ["list_kql_lint_rules"] = ([], ["IDs", "applicability", "severities", "source", "does not validate"]),
         };
@@ -143,6 +144,20 @@ public sealed class McpGuidanceTests(WebApplicationFactory<Program> factory) : I
         Assert.Equal("FileProfile", signature.GetProperty("name").GetString());
         Assert.True(signature.GetProperty("requiresTabularInput").GetBoolean());
         Assert.NotEmpty(signature.GetProperty("parameters").EnumerateArray());
+    }
+
+    [Fact]
+    public async Task Relation_discovery_returns_guidance_without_executing_queries()
+    {
+        var result = await Call("get_kql_column_relations", new { environment = "xdr", table = "EntraIdSignInEvents", column = "UniqueTokenId" });
+        var relations = result.Deserialize<KqlValidator.Validation.ColumnRelationResponse>(JsonOptions)!;
+        Assert.NotEmpty(relations.Items);
+        Assert.Equal(1, relations.Version);
+        Assert.Equal(64, relations.Sha256.Length);
+        Assert.All(relations.Items, relation => Assert.Equal("entra-token", relation.Family));
+        Assert.Contains(relations.Items, relation => relation.To.Path == "AppAccessContext.UniqueTokenId");
+        var missing = await Call("get_kql_column_relations", new { environment = "xdr", table = "MissingCatalogTable" });
+        Assert.Empty(missing.GetProperty("items").EnumerateArray());
     }
 
     [Theory]

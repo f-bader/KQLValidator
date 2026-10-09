@@ -267,6 +267,10 @@
     {
       "url": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-urlclickevents-table",
       "sha256": "1975f592705fa11b5e827e895c13802368515c0f09db1b7e4ca29422f41aec04"
+    },
+    {
+      "url": "https://xdrinternals.com/data/column-relations.json",
+      "sha256": "797e8407a147a2b4040ab9e46ccda91ad21b17b269261323f6c8b157b7b80191"
     }
   ]
 }
