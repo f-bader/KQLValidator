@@ -1,7 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <DefineConstants>$(DefineConstants);SCHEMA_SYNC</DefineConstants>
     <OutputType>Exe</OutputType>
     <AssemblyName>KqlValidator.SchemaSync</AssemblyName>
     <RootNamespace>KqlValidator.SchemaSync</RootNamespace>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../src/KqlValidator.Api/Validation/StructuredSnapshot.cs" Link="StructuredSnapshot.cs" />
+  </ItemGroup>
 </Project>

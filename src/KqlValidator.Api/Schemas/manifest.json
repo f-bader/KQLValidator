@@ -271,6 +271,10 @@
     {
       "url": "https://xdrinternals.com/data/column-relations.json",
       "sha256": "797e8407a147a2b4040ab9e46ccda91ad21b17b269261323f6c8b157b7b80191"
+    },
+    {
+      "url": "https://xdrinternals.com/data/structured-columns/index.json",
+      "sha256": "6ac31818e291529bf2007306255c2969b1cf6c90bc34ae4accc59e944184b2ff"
     }
   ]
 }

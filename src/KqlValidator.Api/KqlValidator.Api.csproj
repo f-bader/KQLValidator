@@ -11,7 +11,7 @@
     <PackageReference Include="ModelContextProtocol.AspNetCore" />
   </ItemGroup>
   <ItemGroup>
-    <Content Update="Schemas/*.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Update="Schemas/*.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup Condition="'$(EnableStatusSite)' != 'true'">
     <Content Remove="wwwroot/status/**" />

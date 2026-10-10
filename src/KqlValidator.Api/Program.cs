@@ -129,6 +129,9 @@ builder.Services.AddMcpServer(options =>
             columns. Extract the expression from a full DCR document. NRT detection needs an explicit
             platform-specific target. Use get_kql_column_relations when choosing correlation keys;
             these community relationships are guidance, not an exhaustive join allowlist.
+            Before accessing nested fields, use list_kql_structured_columns and get_kql_structured_column.
+            Captured and illustrative shapes are incomplete, not vendor contracts. Missing fields or variants
+            never imply invalid KQL; handle absent values and explain these limits to the user.
             Use list_kql_lint_rules to discover lint controls or explain rules.
             Inspect valid and diagnostics even when the tool call succeeds: valid=false means validation
             failed; warnings can remain when valid=true. Report remaining diagnostics and the limits of
@@ -250,6 +253,28 @@ api.MapGet("/environments/{environment}/tables/{table}/relations", (
         ? Results.Ok(schemas.GetRelations(parsed, table, column))
         : UnknownEnvironment())
     .Produces<ColumnRelationResponse>()
+    .ProducesProblem(StatusCodes.Status400BadRequest)
+    .ProducesProblem(StatusCodes.Status429TooManyRequests);
+
+api.MapGet("/environments/{environment}/structured-columns", (
+    string environment, string? table, string? column, int? limit, string? cursor, SchemaQueryService schemas) =>
+    TryEnvironment(environment, out var parsed)
+        ? Results.Ok(schemas.ListStructures(parsed, table, column, limit ?? 50, cursor))
+        : UnknownEnvironment())
+    .Produces<StructuredListResponse>()
+    .ProducesProblem(StatusCodes.Status400BadRequest)
+    .ProducesProblem(StatusCodes.Status429TooManyRequests);
+
+api.MapGet("/environments/{environment}/tables/{table}/columns/{column}/structures", (
+    string environment, string table, string column, string? discriminators, bool? includeExamples,
+    int? limit, string? cursor, SchemaQueryService schemas) =>
+    TryEnvironment(environment, out var parsed)
+        ? Results.Ok(schemas.GetStructure(parsed, table, column,
+            discriminators is null ? null : StructuredColumnCatalog.ParseDiscriminators(discriminators)
+                ?? throw new ArgumentException("discriminators must be a JSON object."),
+            includeExamples ?? false, limit ?? 10, cursor))
+        : UnknownEnvironment())
+    .Produces<StructuredDetailResponse>()
     .ProducesProblem(StatusCodes.Status400BadRequest)
     .ProducesProblem(StatusCodes.Status429TooManyRequests);
 

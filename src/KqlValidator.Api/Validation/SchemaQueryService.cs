@@ -19,6 +19,13 @@ public sealed class SchemaQueryService
     public ColumnRelationResponse GetRelations(KqlEnvironment environment, string table, string? column = null) =>
         catalog.Relations.Get(catalog.Get(environment), table, column);
 
+    public StructuredListResponse ListStructures(KqlEnvironment environment, string? table, string? column, int limit, string? cursor) =>
+        catalog.Structures.List(catalog.Get(environment), table, column, limit, cursor);
+
+    public StructuredDetailResponse GetStructure(KqlEnvironment environment, string table, string column,
+        IReadOnlyDictionary<string, string>? discriminators, bool includeExamples, int limit, string? cursor) =>
+        catalog.Structures.Get(catalog.Get(environment), table, column, discriminators, includeExamples, limit, cursor);
+
     public IReadOnlyList<EnvironmentSummary> ListEnvironments() => catalog.List();
 
     public SchemaTable? GetTable(KqlEnvironment environment, string table) =>
