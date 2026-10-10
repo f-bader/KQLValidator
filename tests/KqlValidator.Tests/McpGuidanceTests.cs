@@ -42,6 +42,8 @@ public sealed class McpGuidanceTests(WebApplicationFactory<Program> factory) : I
             ["search_kql_schema"] = (["environment"], ["unknown", "nextCursor", "get_kql_table", "get_kql_function"]),
             ["get_kql_table"] = (["environment", "table"], ["known", "columns", "types", "null", "search_kql_schema"]),
             ["get_kql_column_relations"] = (["environment", "table"], ["join keys", "families", "empty", "community-correlations", "effective schema"]),
+            ["list_kql_structured_columns"] = (["environment"], ["incomplete", "effective schema", "get_kql_structured_column"]),
+            ["get_kql_structured_column"] = (["environment", "table", "column"], ["not exhaustive", "illustrative", "missing", "parsing"]),
             ["get_kql_function"] = (["environment", "function"], ["known", "parameters", "return schema", "tabular input", "null", "search_kql_schema"]),
             ["list_kql_lint_rules"] = ([], ["IDs", "applicability", "severities", "source", "does not validate"]),
         };

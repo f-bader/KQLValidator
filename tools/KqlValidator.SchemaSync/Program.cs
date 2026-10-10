@@ -26,6 +26,11 @@ http.DefaultRequestHeaders.UserAgent.ParseAdd("kql-validator-schema-sync/1.0");
 
 JsonObject? xdr = null;
 JsonObject? actions = null;
+// Cross-platform enrichment refreshes even with --sentinel-only.
+var structures = StructuredColumnNormalizer.Normalize(await http.GetStringAsync(StructuredColumnNormalizer.SourceUrl));
+foreach (var property in new[] { "entries", "combinations", "knownActions" })
+    EnforceDropGuard(Path.Combine(outputDirectory, "structured-columns.json"), structures, property, 0.8);
+await WriteIfChanged(Path.Combine(outputDirectory, "structured-columns.json"), structures);
 JsonObject? relations = null;
 JsonObject? officialXdrTables = null;
 IReadOnlyList<OfficialXdrTableSource> officialXdrSources = [];
@@ -93,7 +98,7 @@ if (arguments.TryGetValue("asim-dir", out var asimDirectory))
 
 if (xdr is not null && actions is not null)
 {
-    var sources = new JsonArray(Source(xdrSchemaUrl, xdr), Source(actionTypesUrl, actions), Source(ColumnRelationNormalizer.SourceUrl, relations!));
+    var sources = new JsonArray(Source(xdrSchemaUrl, xdr), Source(actionTypesUrl, actions), Source(ColumnRelationNormalizer.SourceUrl, relations!), Source(StructuredColumnNormalizer.SourceUrl, structures));
     if (officialXdrTables is not null)
         foreach (var source in officialXdrSources)
             if (officialXdrTables["tables"]!.AsArray().FirstOrDefault(table => table!["name"]!.GetValue<string>().Equals(source.TableName, StringComparison.OrdinalIgnoreCase)) is JsonObject table)
@@ -102,6 +107,18 @@ if (xdr is not null && actions is not null)
         sources.Add(Source(sentinelManifestSource, sentinel));
     var manifest = new JsonObject { ["sources"] = sources };
     await WriteIfChanged(Path.Combine(outputDirectory, "manifest.json"), manifest);
+}
+
+else
+{
+    var manifestPath = Path.Combine(outputDirectory, "manifest.json");
+    var manifest = File.Exists(manifestPath) ? JsonNode.Parse(await File.ReadAllTextAsync(manifestPath))!.AsObject() : new JsonObject();
+    var sources = manifest["sources"] as JsonArray ?? new JsonArray();
+    foreach (var source in sources.Where(n => n?["url"]?.GetValue<string>() == StructuredColumnNormalizer.SourceUrl).ToArray())
+        sources.Remove(source);
+    sources.Add(Source(StructuredColumnNormalizer.SourceUrl, structures));
+    if (sources.Parent is null) manifest["sources"] = sources;
+    await WriteIfChanged(manifestPath, manifest);
 }
 
 static Dictionary<string, string> ParseArguments(string[] values)

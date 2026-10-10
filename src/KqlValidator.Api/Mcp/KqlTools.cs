@@ -59,7 +59,7 @@ public sealed class KqlTools
         [Description("Opaque nextCursor from the previous search response; reuse the same environment, query, kind, and limit. Omit for the first page; a null nextCursor means no more results.")] string? cursor = null) => services.GetRequiredService<SchemaQueryService>().Search(environment, query, kind, limit, cursor);
 
     [McpServerTool(Name = "get_kql_table", Title = "Get KQL table", ReadOnly = true, Destructive = false, Idempotent = true, OpenWorld = false, UseStructuredContent = true)]
-    [Description("Use when a table name is known and you need its columns and types to write, repair, or validate KQL. Looks up the effective catalog, including mounted custom declarations; returns no result (null, represented as empty MCP content) if absent. Use search_kql_schema when the name is uncertain. This returns schema, not table rows.")]
+    [Description("Use when a table name is known and you need its columns and types to write, repair, or validate KQL. Looks up the effective catalog, including mounted custom declarations; returns no result (null, represented as empty MCP content) if absent. Use search_kql_schema when the name is uncertain. For nested fields use list_kql_structured_columns and get_kql_structured_column. This returns schema, not table rows.")]
     public static SchemaTable? GetKqlTable(
         IServiceProvider services,
         [Description("Effective schema catalog: xdr for Defender XDR, sentinel for Sentinel, unified for their combined catalog.")] KqlEnvironment environment,
@@ -74,6 +74,30 @@ public sealed class KqlTools
         [Description("Exact known table name, matched case-insensitively. Returns relations in either direction; unknown tables return an empty items list.")] string table,
         [Description("Optional exact source column name, matched case-insensitively, for example RawEventData. Nested paths are included in results.")] string? column = null) =>
         services.GetRequiredService<SchemaQueryService>().GetRelations(environment, table, column);
+
+    [McpServerTool(Name = "list_kql_structured_columns", Title = "List KQL structured columns", ReadOnly = true, Destructive = false, Idempotent = true, OpenWorld = false, UseStructuredContent = true)]
+    [Description("Discover structured columns before accessing nested fields. Returns compact coverage summaries filtered against the effective schema, not live data. Captured and illustrative shapes are incomplete; missing evidence never means invalid KQL. Use get_kql_structured_column for variants and parsing guidance.")]
+    public static StructuredListResponse ListKqlStructuredColumns(
+        IServiceProvider services,
+        [Description("Effective schema environment: xdr, sentinel, or unified.")] KqlEnvironment environment,
+        [Description("Optional exact table name, matched case-insensitively.")] string? table = null,
+        [Description("Optional exact column name, matched case-insensitively.")] string? column = null,
+        [Description("Page size in columns, defaults to 50, clamped to 1 through 100.")] int limit = 50,
+        [Description("Opaque nextCursor; reuse the same filters, environment, and limit. Null means no further pages.")] string? cursor = null) =>
+        services.GetRequiredService<SchemaQueryService>().ListStructures(environment, table, column, limit, cursor);
+
+    [McpServerTool(Name = "get_kql_structured_column", Title = "Get KQL structured column", ReadOnly = true, Destructive = false, Idempotent = true, OpenWorld = false, UseStructuredContent = true)]
+    [Description("Inspect nested fields, types, discriminator-specific variants and format-aware parsing guidance for a known column. Captured shapes and illustrative examples are not exhaustive vendor contracts; fields may be absent or have other types. Missing evidence never invalidates KQL. Includes known combinations without shapes. Paths are descriptive notation, not executable KQL; queries are not executed.")]
+    public static StructuredDetailResponse GetKqlStructuredColumn(
+        IServiceProvider services,
+        [Description("Effective schema environment: xdr, sentinel, or unified.")] KqlEnvironment environment,
+        [Description("Exact table name, matched case-insensitively.")] string table,
+        [Description("Exact column name, matched case-insensitively.")] string column,
+        [Description("Optional discriminator key/value object. All filters must match; keys and values are case-sensitive and whitespace is significant. An absent key does not match.")] Dictionary<string, string>? discriminators = null,
+        [Description("Include upstream examples; defaults to false to bound response size. Examples are captured or illustrative, not guaranteed live shapes.")] bool includeExamples = false,
+        [Description("Page size in discriminator combinations, defaults to 10, clamped to 1 through 100. Status and totalCount cover the full filtered result.")] int limit = 10,
+        [Description("Opaque nextCursor; reuse all filters and options. Null means no further pages.")] string? cursor = null) =>
+        services.GetRequiredService<SchemaQueryService>().GetStructure(environment, table, column, discriminators, includeExamples, limit, cursor);
 
     [McpServerTool(Name = "get_kql_function", Title = "Get KQL function", ReadOnly = true, Destructive = false, Idempotent = true, OpenWorld = false, UseStructuredContent = true)]
     [Description("Use when a catalog function name is known and you need its typed parameters, optional arguments, return schema, or tabular input requirements to author or repair a call. Includes mounted custom functions; returns no result (null, represented as empty MCP content) if absent from the selected environment. Use search_kql_schema to discover names. This is catalog lookup, not an exhaustive reference for KQL built-in scalar functions.")]
