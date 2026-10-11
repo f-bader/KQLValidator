@@ -4804,7 +4804,7 @@
         "User enrichment",
         "Legacy schema"
       ],
-      "guidance": "This supports retained historical beta-table records. Use EntraIdSignInEvents for the current equivalent. Match the actual identity tenant and select the appropriate IdentityInfo snapshot; a shared account does not establish a shared token.",
+      "guidance": "AADSignInEventsBeta is deprecated. This supports retained historical beta-table records; use EntraIdSignInEvents for the current equivalent. Match the actual identity tenant and select the appropriate IdentityInfo snapshot; a shared account does not establish a shared token.",
       "kql": "let LeftEvents = IdentityInfo\n| where Timestamp \u003E ago(7d)\n| extend JoinKey = tostring(AccountObjectId)\n| where isnotempty(JoinKey);\nlet RightEvents = AADSignInEventsBeta\n| where Timestamp \u003E ago(7d)\n| extend JoinKey = tostring(AccountObjectId)\n| where isnotempty(JoinKey);\nLeftEvents\n| join kind=inner (RightEvents) on JoinKey",
       "otherNotes": [
         {
@@ -4837,7 +4837,7 @@
         "Identity",
         "Legacy schema"
       ],
-      "guidance": "This supports historical beta-table records. Use EntraIdSignInEvents.EntraIdDeviceId for the current equivalent. These are Entra device GUIDs, not Defender DeviceId values. The retained schema exposes two device field names; check which is populated in your records. Select the relevant DeviceInfo snapshot.",
+      "guidance": "AADSignInEventsBeta is deprecated. This supports historical beta-table records; use EntraIdSignInEvents.EntraIdDeviceId for the current equivalent. These are Entra device GUIDs, not Defender DeviceId values. The retained schema exposes two device field names; check which is populated in your records. Select the relevant DeviceInfo snapshot.",
       "kql": "let LeftEvents = DeviceInfo\n| where Timestamp \u003E ago(7d)\n| extend JoinKey = tostring(AadDeviceId)\n| where isnotempty(JoinKey);\nlet RightEvents = AADSignInEventsBeta\n| where Timestamp \u003E ago(7d)\n| extend JoinKey = tostring(AadDeviceId)\n| where isnotempty(JoinKey);\nLeftEvents\n| join kind=inner (RightEvents) on JoinKey",
       "otherNotes": [
         {
@@ -4870,7 +4870,7 @@
         "Identity",
         "Legacy schema"
       ],
-      "guidance": "This supports historical beta-table records. Use EntraIdSignInEvents.EntraIdDeviceId for the current equivalent. These are Entra device GUIDs, not Defender DeviceId values. The retained schema exposes two device field names; check which is populated in your records. Select the relevant DeviceInfo snapshot.",
+      "guidance": "AADSignInEventsBeta is deprecated. This supports historical beta-table records; use EntraIdSignInEvents.EntraIdDeviceId for the current equivalent. These are Entra device GUIDs, not Defender DeviceId values. The retained schema exposes two device field names; check which is populated in your records. Select the relevant DeviceInfo snapshot.",
       "kql": "let LeftEvents = DeviceInfo\n| where Timestamp \u003E ago(7d)\n| extend JoinKey = tostring(AadDeviceId)\n| where isnotempty(JoinKey);\nlet RightEvents = AADSignInEventsBeta\n| where Timestamp \u003E ago(7d)\n| extend JoinKey = tostring(EntraIdDeviceId)\n| where isnotempty(JoinKey);\nLeftEvents\n| join kind=inner (RightEvents) on JoinKey",
       "otherNotes": [
         {
@@ -5018,6 +5018,147 @@
         }
       ],
       "family": "entra-device"
+    },
+    {
+      "id": "entra-signin-events-beta-session",
+      "title": "Link Entra sign-ins to beta sign-in sessions",
+      "description": "Match the authentication session ID between EntraIdSignInEvents and AADSignInEventsBeta.",
+      "from": {
+        "table": "EntraIdSignInEvents",
+        "column": "SessionId",
+        "timeColumn": "Timestamp"
+      },
+      "to": {
+        "table": "AADSignInEventsBeta",
+        "column": "SessionId",
+        "timeColumn": "Timestamp"
+      },
+      "tags": [
+        "Identity",
+        "Entra ID",
+        "Session correlation",
+        "Beta schema"
+      ],
+      "guidance": "AADSignInEventsBeta is deprecated. The two tables can expose the same authentication session identifiers for retained records. Prefer EntraIdSignInEvents for current data; treat matches as one-to-many, exclude empty values, and retain AccountObjectId and time context when joining.",
+      "kql": "let EntraSessions = EntraIdSignInEvents\n| where Timestamp \u003E ago(1d)\n| where isnotempty(AccountObjectId) and isnotempty(SessionId)\n| summarize by AccountObjectId, SessionId;\nlet BetaSessions = AADSignInEventsBeta\n| where Timestamp \u003E ago(1d)\n| where isnotempty(AccountObjectId) and isnotempty(SessionId)\n| summarize by AccountObjectId, SessionId;\nEntraSessions\n| join kind=inner BetaSessions on AccountObjectId, SessionId",
+      "family": "entra-session"
+    },
+    {
+      "id": "aad-signin-beta-device-id-alias",
+      "title": "Relate the two beta sign-in device ID fields",
+      "description": "Compare AadDeviceId and EntraIdDeviceId within AADSignInEventsBeta.",
+      "from": {
+        "table": "AADSignInEventsBeta",
+        "column": "AadDeviceId",
+        "timeColumn": "Timestamp"
+      },
+      "to": {
+        "table": "AADSignInEventsBeta",
+        "column": "EntraIdDeviceId",
+        "timeColumn": "Timestamp"
+      },
+      "tags": [
+        "Device",
+        "Entra ID",
+        "Field alias",
+        "Beta schema"
+      ],
+      "guidance": "AADSignInEventsBeta is deprecated. These fields may represent aliases for the same Entra device identifier in retained beta records. Prefer current Entra sign-in schemas when available, compare non-empty values before relying on the alias, and preserve both source field names because schema aliases can vary by table version.",
+      "kql": "AADSignInEventsBeta\n| where Timestamp \u003E ago(1d)\n| where isnotempty(AadDeviceId) and isnotempty(EntraIdDeviceId)\n| extend AadHash = hash_sha256(tostring(AadDeviceId)), EntraHash = hash_sha256(tostring(EntraIdDeviceId))\n| summarize Rows = count(), Different = countif(AadHash != EntraHash)",
+      "family": "entra-device"
+    },
+    {
+      "id": "graph-audit-to-graph-activity-request-uri",
+      "title": "Correlate Microsoft Graph requests across audit sources",
+      "description": "Match the same Microsoft Graph RequestUri between GraphAPIAuditEvents and MicrosoftGraphActivityLogs.",
+      "from": {
+        "table": "GraphAPIAuditEvents",
+        "column": "RequestUri",
+        "timeColumn": "Timestamp"
+      },
+      "to": {
+        "table": "MicrosoftGraphActivityLogs",
+        "column": "RequestUri",
+        "timeColumn": "TimeGenerated"
+      },
+      "tags": [
+        "Microsoft Graph",
+        "Audit",
+        "Request correlation"
+      ],
+      "guidance": "The same Microsoft Graph request may be represented in both sources. RequestUri is not globally unique, so retain request method, actor, application, and a narrow time window; normalize object IDs only for endpoint-pattern analysis, not exact event correlation.",
+      "kql": "let GraphAudit = GraphAPIAuditEvents\n| where Timestamp \u003E ago(1d)\n| where isnotempty(RequestUri)\n| project RequestUri, AccountObjectId, RequestMethod, AuditTime = Timestamp;\nlet GraphActivity = MicrosoftGraphActivityLogs\n| where TimeGenerated \u003E ago(1d)\n| where isnotempty(RequestUri)\n| project RequestUri, UserId, RequestMethod, ActivityTime = TimeGenerated;\nGraphAudit\n| join kind=inner GraphActivity on RequestUri, RequestMethod\n| project RequestUri, RequestMethod, AccountObjectId, UserId, AuditTime, ActivityTime",
+      "family": "entra-token"
+    },
+    {
+      "id": "audit-target-resource-id-account-object-id",
+      "title": "Enrich audit target resources with identity information",
+      "description": "Match AuditLogs.TargetResources[].id to IdentityInfo.AccountObjectId when the target resource is a user object.",
+      "from": {
+        "table": "AuditLogs",
+        "column": "TargetResources",
+        "path": "[].id",
+        "timeColumn": "ActivityDateTime"
+      },
+      "to": {
+        "table": "IdentityInfo",
+        "column": "AccountObjectId",
+        "timeColumn": "Timestamp"
+      },
+      "tags": [
+        "Identity",
+        "Audit",
+        "User enrichment",
+        "Nested JSON"
+      ],
+      "guidance": "TargetResources can contain users, groups, devices, applications, service principals, and other resource types. Use this mapping only when the target type is known to be a user and preserve tenant and target-type context. Expand the array before joining; an ID match alone does not prove the audit actor or the operation\u0027s target semantics.",
+      "kql": "let LeftEvents = AuditLogs\n| where ActivityDateTime \u003E ago(7d)\n| mv-expand TargetResource = TargetResources\n| extend JoinKey = tostring(TargetResource.id)\n| where isnotempty(JoinKey);\nlet RightEvents = IdentityInfo\n| where Timestamp \u003E ago(7d)\n| extend JoinKey = tostring(AccountObjectId)\n| where isnotempty(JoinKey);\nLeftEvents\n| join kind=inner (RightEvents) on JoinKey",
+      "otherNotes": [
+        {
+          "title": "Identifier reference",
+          "text": "Expand AuditLogs.TargetResources and inspect each resource object\u0027s id before matching it to a known user object identifier.",
+          "sourceLabel": "Microsoft Learn: AuditLogs",
+          "sourceUrl": "https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/auditlogs",
+          "query": "AuditLogs\n| where ActivityDateTime \u003E ago(7d)\n| mv-expand TargetResource = TargetResources\n| extend TargetResourceId = tostring(TargetResource.id)\n| where isnotempty(TargetResourceId)\n| project ActivityDateTime, OperationName, TargetResource, TargetResourceId",
+          "queryLanguage": "kusto"
+        }
+      ],
+      "family": "entra-user"
+    },
+    {
+      "id": "cloudapp-raw-event-target-account-object-id",
+      "title": "Enrich CloudAppEvents target data with identity information",
+      "description": "Match CloudAppEvents.RawEventData.Target to IdentityInfo.AccountObjectId when the target value contains a user object ID.",
+      "from": {
+        "table": "CloudAppEvents",
+        "column": "RawEventData",
+        "path": "Target",
+        "timeColumn": "Timestamp"
+      },
+      "to": {
+        "table": "IdentityInfo",
+        "column": "AccountObjectId",
+        "timeColumn": "Timestamp"
+      },
+      "tags": [
+        "Identity",
+        "CloudAppEvents",
+        "User enrichment",
+        "Nested JSON"
+      ],
+      "guidance": "RawEventData.Target is workload- and payload-specific and may identify a user, device, application, or other resource. Use this mapping only when the event schema confirms that Target contains a user object ID. Compare non-empty identifiers exactly, and retain workload, tenant, target-type, account, and time context.",
+      "kql": "let LeftEvents = CloudAppEvents\n| where Timestamp \u003E ago(7d)\n| extend JoinKey = tostring(RawEventData.Target)\n| where isnotempty(JoinKey);\nlet RightEvents = IdentityInfo\n| where Timestamp \u003E ago(7d)\n| extend JoinKey = tostring(AccountObjectId)\n| where isnotempty(JoinKey);\nLeftEvents\n| join kind=inner (RightEvents) on JoinKey",
+      "otherNotes": [
+        {
+          "title": "Nested target value",
+          "text": "Extract the workload-specific Target property from CloudAppEvents.RawEventData and verify its meaning before using it as an identity join key.",
+          "sourceLabel": "Microsoft Learn: CloudAppEvents",
+          "sourceUrl": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-cloudappevents-table",
+          "query": "CloudAppEvents\n| where Timestamp \u003E ago(7d)\n| extend TargetValue = tostring(RawEventData.Target)\n| where isnotempty(TargetValue)\n| project Timestamp, AccountObjectId, ActionType, Application, TargetValue",
+          "queryLanguage": "kusto"
+        }
+      ],
+      "family": "entra-user"
     }
   ],
   "families": [

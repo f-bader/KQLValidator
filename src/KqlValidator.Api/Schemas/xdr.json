@@ -332,7 +332,7 @@
         },
         {
           "name": "InstanceCount",
-          "type": "long"
+          "type": "int"
         },
         {
           "name": "Instructions",
@@ -368,7 +368,7 @@
         },
         {
           "name": "ObservabilityID",
-          "type": "string"
+          "type": "dynamic"
         },
         {
           "name": "Owners",
@@ -403,19 +403,43 @@
           "type": "string"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "TimeGenerated",
+          "type": "datetime"
+        },
+        {
           "name": "Timestamp",
           "type": "datetime"
         },
         {
           "name": "ToolsAuthenticationType",
-          "type": "string"
+          "type": "dynamic"
         },
         {
           "name": "Triggers",
           "type": "dynamic"
         },
         {
+          "name": "Type",
+          "type": "string"
+        },
+        {
           "name": "Version",
+          "type": "string"
+        },
+        {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
           "type": "string"
         }
       ]
@@ -669,6 +693,10 @@
           "type": "string"
         },
         {
+          "name": "MachineGroup",
+          "type": "string"
+        },
+        {
           "name": "NetworkMessageId",
           "type": "string"
         },
@@ -729,7 +757,15 @@
           "type": "string"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
           "name": "SubscriptionId",
+          "type": "string"
+        },
+        {
+          "name": "TenantId",
           "type": "string"
         },
         {
@@ -737,11 +773,19 @@
           "type": "string"
         },
         {
+          "name": "TimeGenerated",
+          "type": "datetime"
+        },
+        {
           "name": "Timestamp",
           "type": "datetime"
         },
         {
           "name": "Title",
+          "type": "string"
+        },
+        {
+          "name": "Type",
           "type": "string"
         }
       ]
@@ -766,6 +810,10 @@
           "type": "string"
         },
         {
+          "name": "MachineGroup",
+          "type": "string"
+        },
+        {
           "name": "SentinelWorkspaceIds",
           "type": "string"
         },
@@ -778,11 +826,27 @@
           "type": "string"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "TimeGenerated",
+          "type": "datetime"
+        },
+        {
           "name": "Timestamp",
           "type": "datetime"
         },
         {
           "name": "Title",
+          "type": "string"
+        },
+        {
+          "name": "Type",
           "type": "string"
         }
       ]
@@ -832,6 +896,26 @@
         },
         {
           "name": "Categories",
+          "type": "string"
+        },
+        {
+          "name": "CloudPlatform",
+          "type": "string"
+        },
+        {
+          "name": "CloudResource",
+          "type": "string"
+        },
+        {
+          "name": "CloudResourceId",
+          "type": "string"
+        },
+        {
+          "name": "CloudResourceType",
+          "type": "string"
+        },
+        {
+          "name": "CloudSubscriptionId",
           "type": "string"
         },
         {
@@ -887,6 +971,10 @@
           "type": "string"
         },
         {
+          "name": "MachineGroup",
+          "type": "string"
+        },
+        {
           "name": "NetworkMessageId",
           "type": "string"
         },
@@ -931,12 +1019,44 @@
           "type": "string"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
           "name": "ThreatFamily",
           "type": "string"
         },
         {
+          "name": "TimeGenerated",
+          "type": "datetime"
+        },
+        {
           "name": "Timestamp",
           "type": "datetime"
+        },
+        {
+          "name": "Type",
+          "type": "string"
+        },
+        {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
+          "name": "_ResourceId",
+          "type": "string"
+        },
+        {
+          "name": "_SubscriptionId",
+          "type": "string"
         }
       ]
     },
@@ -992,7 +1112,19 @@
           "type": "datetime"
         },
         {
+          "name": "Insights",
+          "type": "string"
+        },
+        {
+          "name": "MachineGroup",
+          "type": "string"
+        },
+        {
           "name": "ServiceSource",
+          "type": "string"
+        },
+        {
+          "name": "SourceSystem",
           "type": "string"
         },
         {
@@ -1000,8 +1132,40 @@
           "type": "datetime"
         },
         {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "TimeGenerated",
+          "type": "datetime"
+        },
+        {
           "name": "Timestamp",
           "type": "datetime"
+        },
+        {
+          "name": "Title",
+          "type": "string"
+        },
+        {
+          "name": "Type",
+          "type": "string"
+        },
+        {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
+          "name": "_ResourceId",
+          "type": "string"
+        },
+        {
+          "name": "_SubscriptionId",
+          "type": "string"
         }
       ]
     },
@@ -1053,7 +1217,23 @@
           "type": "string"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
           "name": "ThreadId",
+          "type": "string"
+        },
+        {
+          "name": "TimeGenerated",
+          "type": "datetime"
+        },
+        {
+          "name": "Type",
           "type": "string"
         }
       ]
@@ -1090,8 +1270,24 @@
           "type": "string"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "TimeGenerated",
+          "type": "datetime"
+        },
+        {
           "name": "Timestamp",
           "type": "datetime"
+        },
+        {
+          "name": "Type",
+          "type": "string"
         }
       ]
     },
@@ -1227,8 +1423,24 @@
           "type": "dynamic"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "TimeGenerated",
+          "type": "datetime"
+        },
+        {
           "name": "Timestamp",
           "type": "datetime"
+        },
+        {
+          "name": "Type",
+          "type": "string"
         },
         {
           "name": "UncommonForUser",
@@ -1304,6 +1516,10 @@
           "type": "string"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
           "name": "TenantId",
           "type": "string"
         },
@@ -1314,6 +1530,10 @@
         {
           "name": "Timestamp",
           "type": "datetime"
+        },
+        {
+          "name": "Type",
+          "type": "string"
         }
       ]
     },
@@ -1509,6 +1729,10 @@
           "type": "long"
         },
         {
+          "name": "MachineGroup",
+          "type": "string"
+        },
+        {
           "name": "MD5",
           "type": "string"
         },
@@ -1577,8 +1801,24 @@
           "type": "string"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "TimeGenerated",
+          "type": "datetime"
+        },
+        {
           "name": "Timestamp",
           "type": "datetime"
+        },
+        {
+          "name": "Type",
+          "type": "string"
         }
       ]
     },
@@ -1634,6 +1874,10 @@
           "type": "bool"
         },
         {
+          "name": "MachineGroup",
+          "type": "string"
+        },
+        {
           "name": "ReportId",
           "type": "long"
         },
@@ -1654,8 +1898,24 @@
           "type": "string"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "TimeGenerated",
+          "type": "datetime"
+        },
+        {
           "name": "Timestamp",
           "type": "datetime"
+        },
+        {
+          "name": "Type",
+          "type": "string"
         }
       ]
     },
@@ -1831,6 +2091,10 @@
           "type": "bool"
         },
         {
+          "name": "MachineGroup",
+          "type": "string"
+        },
+        {
           "name": "MD5",
           "type": "string"
         },
@@ -1891,8 +2155,24 @@
           "type": "string"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "TimeGenerated",
+          "type": "datetime"
+        },
+        {
           "name": "Timestamp",
           "type": "datetime"
+        },
+        {
+          "name": "Type",
+          "type": "string"
         }
       ]
     },
@@ -2048,6 +2328,10 @@
           "type": "bool"
         },
         {
+          "name": "MachineGroup",
+          "type": "string"
+        },
+        {
           "name": "MD5",
           "type": "string"
         },
@@ -2064,8 +2348,24 @@
           "type": "string"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "TimeGenerated",
+          "type": "datetime"
+        },
+        {
           "name": "Timestamp",
           "type": "datetime"
+        },
+        {
+          "name": "Type",
+          "type": "string"
         }
       ]
     },
@@ -2273,8 +2573,24 @@
           "type": "string"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "TimeGenerated",
+          "type": "datetime"
+        },
+        {
           "name": "Timestamp",
           "type": "datetime"
+        },
+        {
+          "name": "Type",
+          "type": "string"
         },
         {
           "name": "Vendor",
@@ -2454,6 +2770,10 @@
           "type": "string"
         },
         {
+          "name": "MachineGroup",
+          "type": "string"
+        },
+        {
           "name": "Protocol",
           "type": "string"
         },
@@ -2478,8 +2798,24 @@
           "type": "long"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "TimeGenerated",
+          "type": "datetime"
+        },
+        {
           "name": "Timestamp",
           "type": "datetime"
+        },
+        {
+          "name": "Type",
+          "type": "string"
         }
       ]
     },
@@ -2639,6 +2975,10 @@
           "type": "int"
         },
         {
+          "name": "MachineGroup",
+          "type": "string"
+        },
+        {
           "name": "Protocol",
           "type": "string"
         },
@@ -2663,8 +3003,24 @@
           "type": "long"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "TimeGenerated",
+          "type": "datetime"
+        },
+        {
           "name": "Timestamp",
           "type": "datetime"
+        },
+        {
+          "name": "Type",
+          "type": "string"
         }
       ]
     },
@@ -2708,6 +3064,10 @@
           "type": "string"
         },
         {
+          "name": "MachineGroup",
+          "type": "string"
+        },
+        {
           "name": "NetworkAdapterName",
           "type": "string"
         },
@@ -2728,11 +3088,27 @@
           "type": "long"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "TimeGenerated",
+          "type": "datetime"
+        },
+        {
           "name": "Timestamp",
           "type": "datetime"
         },
         {
           "name": "TunnelType",
+          "type": "string"
+        },
+        {
+          "name": "Type",
           "type": "string"
         }
       ]
@@ -2937,6 +3313,10 @@
           "type": "long"
         },
         {
+          "name": "MachineGroup",
+          "type": "string"
+        },
+        {
           "name": "MD5",
           "type": "string"
         },
@@ -3009,8 +3389,24 @@
           "type": "string"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "TimeGenerated",
+          "type": "datetime"
+        },
+        {
           "name": "Timestamp",
           "type": "datetime"
+        },
+        {
+          "name": "Type",
+          "type": "string"
         }
       ]
     },
@@ -3154,6 +3550,10 @@
           "type": "bool"
         },
         {
+          "name": "MachineGroup",
+          "type": "string"
+        },
+        {
           "name": "PreviousRegistryKey",
           "type": "string"
         },
@@ -3186,8 +3586,24 @@
           "type": "long"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "TimeGenerated",
+          "type": "datetime"
+        },
+        {
           "name": "Timestamp",
           "type": "datetime"
+        },
+        {
+          "name": "Type",
+          "type": "string"
         }
       ]
     },
@@ -3211,12 +3627,28 @@
           "type": "datetime"
         },
         {
+          "name": "MachineGroup",
+          "type": "string"
+        },
+        {
           "name": "OSPlatform",
+          "type": "string"
+        },
+        {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
+          "name": "TenantId",
           "type": "string"
         },
         {
           "name": "Timestamp",
           "type": "datetime"
+        },
+        {
+          "name": "Type",
+          "type": "string"
         }
       ]
     },
@@ -3242,6 +3674,18 @@
         {
           "name": "IgId",
           "type": "datetime"
+        },
+        {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "Type",
+          "type": "string"
         }
       ]
     },
@@ -3289,12 +3733,32 @@
           "type": "bool"
         },
         {
+          "name": "MachineGroup",
+          "type": "string"
+        },
+        {
           "name": "OSPlatform",
           "type": "string"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "TimeGenerated",
+          "type": "datetime"
+        },
+        {
           "name": "Timestamp",
           "type": "datetime"
+        },
+        {
+          "name": "Type",
+          "type": "string"
         }
       ]
     },
@@ -3338,8 +3802,20 @@
           "type": "string"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
           "name": "Tags",
           "type": "dynamic"
+        },
+        {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "Type",
+          "type": "string"
         }
       ]
     },
@@ -3359,6 +3835,10 @@
           "type": "datetime"
         },
         {
+          "name": "MachineGroup",
+          "type": "string"
+        },
+        {
           "name": "RegistryPaths",
           "type": "dynamic"
         },
@@ -3372,6 +3852,18 @@
         },
         {
           "name": "SoftwareVersion",
+          "type": "string"
+        },
+        {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "Type",
           "type": "string"
         }
       ]
@@ -3396,6 +3888,10 @@
           "type": "string"
         },
         {
+          "name": "MachineGroup",
+          "type": "string"
+        },
+        {
           "name": "OSArchitecture",
           "type": "string"
         },
@@ -3408,6 +3904,10 @@
           "type": "string"
         },
         {
+          "name": "ProductCategory",
+          "type": "string"
+        },
+        {
           "name": "ProductCodeCpe",
           "type": "string"
         },
@@ -3416,11 +3916,27 @@
           "type": "string"
         },
         {
+          "name": "SoftwareTags",
+          "type": "dynamic"
+        },
+        {
           "name": "SoftwareVendor",
           "type": "string"
         },
         {
           "name": "SoftwareVersion",
+          "type": "string"
+        },
+        {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "Type",
           "type": "string"
         }
       ]
@@ -3453,6 +3969,10 @@
           "type": "string"
         },
         {
+          "name": "MachineGroup",
+          "type": "string"
+        },
+        {
           "name": "OSArchitecture",
           "type": "string"
         },
@@ -3462,6 +3982,10 @@
         },
         {
           "name": "OSVersion",
+          "type": "string"
+        },
+        {
+          "name": "ProductCategory",
           "type": "string"
         },
         {
@@ -3482,6 +4006,18 @@
         },
         {
           "name": "SoftwareVersion",
+          "type": "string"
+        },
+        {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "Type",
           "type": "string"
         },
         {
@@ -3528,6 +4064,18 @@
         {
           "name": "PublishedDate",
           "type": "datetime"
+        },
+        {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "Type",
+          "type": "string"
         },
         {
           "name": "VulnerabilityDescription",
@@ -3607,6 +4155,10 @@
           "type": "string"
         },
         {
+          "name": "MachineGroup",
+          "type": "string"
+        },
+        {
           "name": "PolicyHash",
           "type": "string"
         },
@@ -3667,6 +4219,10 @@
           "type": "int"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
           "name": "SourceUserDomainName",
           "type": "string"
         },
@@ -3691,8 +4247,20 @@
           "type": "string"
         },
         {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "TimeGenerated",
+          "type": "datetime"
+        },
+        {
           "name": "Timestamp",
           "type": "datetime"
+        },
+        {
+          "name": "Type",
+          "type": "string"
         }
       ]
     },
@@ -3756,6 +4324,14 @@
           "type": "string"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
           "name": "ThreatNames",
           "type": "string"
         },
@@ -3764,8 +4340,16 @@
           "type": "string"
         },
         {
+          "name": "TimeGenerated",
+          "type": "datetime"
+        },
+        {
           "name": "Timestamp",
           "type": "datetime"
+        },
+        {
+          "name": "Type",
+          "type": "string"
         }
       ]
     },
@@ -3945,7 +4529,15 @@
           "type": "string"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
           "name": "Subject",
+          "type": "string"
+        },
+        {
+          "name": "TenantId",
           "type": "string"
         },
         {
@@ -3961,12 +4553,20 @@
           "type": "string"
         },
         {
+          "name": "TimeGenerated",
+          "type": "datetime"
+        },
+        {
           "name": "Timestamp",
           "type": "datetime"
         },
         {
           "name": "To",
           "type": "dynamic"
+        },
+        {
+          "name": "Type",
+          "type": "string"
         },
         {
           "name": "UrlCount",
@@ -4038,12 +4638,28 @@
           "type": "string"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
           "name": "ThreatTypes",
           "type": "string"
         },
         {
+          "name": "TimeGenerated",
+          "type": "datetime"
+        },
+        {
           "name": "Timestamp",
           "type": "datetime"
+        },
+        {
+          "name": "Type",
+          "type": "string"
         }
       ]
     },
@@ -4059,8 +4675,24 @@
           "type": "string"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "TimeGenerated",
+          "type": "datetime"
+        },
+        {
           "name": "Timestamp",
           "type": "datetime"
+        },
+        {
+          "name": "Type",
+          "type": "string"
         },
         {
           "name": "Url",
@@ -4260,8 +4892,20 @@
           "type": "string"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
           "name": "State",
           "type": "string"
+        },
+        {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "TimeGenerated",
+          "type": "datetime"
         },
         {
           "name": "Timestamp",
@@ -4269,6 +4913,10 @@
         },
         {
           "name": "TokenIssuerType",
+          "type": "string"
+        },
+        {
+          "name": "Type",
           "type": "string"
         },
         {
@@ -4365,12 +5013,28 @@
           "type": "string"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
           "name": "State",
           "type": "string"
         },
         {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "TimeGenerated",
+          "type": "datetime"
+        },
+        {
           "name": "Timestamp",
           "type": "datetime"
+        },
+        {
+          "name": "Type",
+          "type": "string"
         },
         {
           "name": "UniqueTokenId",
@@ -4414,6 +5078,10 @@
           "type": "string"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
           "name": "TargetNodeCategories",
           "type": "dynamic"
         },
@@ -4427,6 +5095,14 @@
         },
         {
           "name": "TargetNodeName",
+          "type": "string"
+        },
+        {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "Type",
           "type": "string"
         }
       ]
@@ -4457,6 +5133,18 @@
         {
           "name": "NodeProperties",
           "type": "dynamic"
+        },
+        {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "Type",
+          "type": "string"
         }
       ]
     },
@@ -4512,6 +5200,14 @@
           "type": "string"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
           "name": "ThreatNames",
           "type": "string"
         },
@@ -4520,8 +5216,16 @@
           "type": "string"
         },
         {
+          "name": "TimeGenerated",
+          "type": "datetime"
+        },
+        {
           "name": "Timestamp",
           "type": "datetime"
+        },
+        {
+          "name": "Type",
+          "type": "string"
         },
         {
           "name": "Workload",
@@ -4605,12 +5309,28 @@
           "type": "string"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
           "name": "TargetWorkload",
           "type": "string"
         },
         {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "TimeGenerated",
+          "type": "datetime"
+        },
+        {
           "name": "Timestamp",
           "type": "datetime"
+        },
+        {
+          "name": "Type",
+          "type": "string"
         },
         {
           "name": "UniqueTokenIdentifier",
@@ -4778,6 +5498,10 @@
           "type": "string"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
           "name": "Surname",
           "type": "string"
         },
@@ -4786,8 +5510,16 @@
           "type": "dynamic"
         },
         {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
           "name": "TenantMembershipType",
           "type": "string"
+        },
+        {
+          "name": "TimeGenerated",
+          "type": "datetime"
         },
         {
           "name": "Timestamp",
@@ -4879,6 +5611,10 @@
           "type": "string"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
           "name": "TargetAccountDisplayName",
           "type": "string"
         },
@@ -4891,8 +5627,20 @@
           "type": "string"
         },
         {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "TimeGenerated",
+          "type": "datetime"
+        },
+        {
           "name": "Timestamp",
           "type": "datetime"
+        },
+        {
+          "name": "Type",
+          "type": "string"
         }
       ]
     },
@@ -4960,12 +5708,28 @@
           "type": "string"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
           "name": "TargetObjects",
           "type": "dynamic"
         },
         {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "TimeGenerated",
+          "type": "datetime"
+        },
+        {
           "name": "Timestamp",
           "type": "datetime"
+        },
+        {
+          "name": "Type",
+          "type": "string"
         },
         {
           "name": "UserAgent",
@@ -5125,6 +5889,10 @@
           "type": "datetime"
         },
         {
+          "name": "RiskStatus",
+          "type": "string"
+        },
+        {
           "name": "SipProxyAddress",
           "type": "string"
         },
@@ -5137,6 +5905,10 @@
           "type": "dynamic"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
           "name": "State",
           "type": "string"
         },
@@ -5147,6 +5919,18 @@
         {
           "name": "Tags",
           "type": "dynamic"
+        },
+        {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "TenantMembershipType",
+          "type": "string"
+        },
+        {
+          "name": "TimeGenerated",
+          "type": "datetime"
         },
         {
           "name": "Timestamp",
@@ -5262,6 +6046,10 @@
           "type": "string"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
           "name": "TargetAccountDisplayName",
           "type": "string"
         },
@@ -5270,8 +6058,20 @@
           "type": "string"
         },
         {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "TimeGenerated",
+          "type": "datetime"
+        },
+        {
           "name": "Timestamp",
           "type": "datetime"
+        },
+        {
+          "name": "Type",
+          "type": "string"
         },
         {
           "name": "UncommonForUser",
@@ -5367,6 +6167,10 @@
           "type": "string"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
           "name": "TargetAccountDisplayName",
           "type": "string"
         },
@@ -5379,8 +6183,20 @@
           "type": "string"
         },
         {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "TimeGenerated",
+          "type": "datetime"
+        },
+        {
           "name": "Timestamp",
           "type": "datetime"
+        },
+        {
+          "name": "Type",
+          "type": "string"
         }
       ]
     },
@@ -5472,11 +6288,19 @@
           "type": "string"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
           "name": "Subject",
           "type": "string"
         },
         {
           "name": "TeamsMessageId",
+          "type": "string"
+        },
+        {
+          "name": "TenantId",
           "type": "string"
         },
         {
@@ -5500,8 +6324,16 @@
           "type": "string"
         },
         {
+          "name": "TimeGenerated",
+          "type": "datetime"
+        },
+        {
           "name": "Timestamp",
           "type": "datetime"
+        },
+        {
+          "name": "Type",
+          "type": "string"
         }
       ]
     },
@@ -5557,7 +6389,15 @@
           "type": "string"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
           "name": "TeamsMessageId",
+          "type": "string"
+        },
+        {
+          "name": "TenantId",
           "type": "string"
         },
         {
@@ -5565,8 +6405,16 @@
           "type": "string"
         },
         {
+          "name": "TimeGenerated",
+          "type": "datetime"
+        },
+        {
           "name": "Timestamp",
           "type": "datetime"
+        },
+        {
+          "name": "Type",
+          "type": "string"
         }
       ]
     },
@@ -5578,12 +6426,28 @@
           "type": "string"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
           "name": "TeamsMessageId",
           "type": "string"
         },
         {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "TimeGenerated",
+          "type": "datetime"
+        },
+        {
           "name": "Timestamp",
           "type": "datetime"
+        },
+        {
+          "name": "Type",
+          "type": "string"
         },
         {
           "name": "Url",
@@ -5619,10 +6483,6 @@
           "type": "string"
         },
         {
-          "name": "AssignedRoles",
-          "type": "dynamic"
-        },
-        {
           "name": "ConsentedUsersCount",
           "type": "int"
         },
@@ -5655,20 +6515,40 @@
           "type": "string"
         },
         {
-          "name": "RiskScore",
-          "type": "int"
-        },
-        {
           "name": "ServicePrincipalId",
           "type": "string"
+        },
+        {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
+          "name": "TimeGenerated",
+          "type": "datetime"
         },
         {
           "name": "Timestamp",
           "type": "datetime"
         },
         {
+          "name": "Type",
+          "type": "string"
+        },
+        {
           "name": "VerifiedPublisher",
           "type": "dynamic"
+        },
+        {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
         }
       ]
     },
@@ -5716,12 +6596,28 @@
           "type": "string"
         },
         {
+          "name": "SourceSystem",
+          "type": "string"
+        },
+        {
+          "name": "TenantId",
+          "type": "string"
+        },
+        {
           "name": "ThreatTypes",
           "type": "string"
         },
         {
+          "name": "TimeGenerated",
+          "type": "datetime"
+        },
+        {
           "name": "Timestamp",
           "type": "datetime"
+        },
+        {
+          "name": "Type",
+          "type": "string"
         },
         {
           "name": "Url",
