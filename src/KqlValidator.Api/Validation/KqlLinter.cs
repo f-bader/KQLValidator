@@ -44,7 +44,7 @@ public sealed partial class KqlLinter
         Match(diagnostics, policy, searchable, UnscopedSearch(), "KQLH001",
             "Scope search to explicit tables with 'search in (...)'.", cancellationToken);
         Match(diagnostics, policy, searchable, WildcardSearch(), "KQLH002",
-            "Search specific columns instead of using a wildcard column search.", cancellationToken);
+            "Search specific columns to reduce query work.", cancellationToken);
         Match(diagnostics, policy, searchable, UnscopedUnion(), "KQLH003",
             "Avoid broad union queries; enumerate only the required tables and time-bound each branch.", cancellationToken);
         Match(diagnostics, policy, searchable, RegexUsage(), "KQLH005",
@@ -254,13 +254,13 @@ public sealed partial class KqlLinter
     private void AddMicrosoftKustoDiagnostics(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string query, CancellationToken cancellationToken)
     {
         Match(diagnostics, policy, query, ContainsTerm(), "KQLP001",
-            "If full-term matching is intended, use has instead of contains so Kusto can use the term index.", cancellationToken);
+            "Use has when full-term matching is intended so Kusto can use the term index.", cancellationToken);
         Match(diagnostics, policy, query, RepeatedEquality(), "KQLP002",
             "Replace repeated equality comparisons on this column with in() or in~().", cancellationToken);
         Match(diagnostics, policy, query, BagUnpackWithoutSchema(), "KQLP003",
             "Declare an OutputSchema after bag_unpack() to avoid schema inference during query execution.", cancellationToken);
         Match(diagnostics, policy, query, FormatDateTimePredicate(), "KQLP004",
-            "Compare datetime values directly instead of applying format_datetime() in a where predicate.", cancellationToken);
+            "Compare datetime values or ranges directly in the where predicate.", cancellationToken);
         Match(diagnostics, policy, query, HasIpv4Literal(), "KQLP006",
             "Use has_ipv4() or has_any_ipv4() for an IPv4 literal.", cancellationToken);
     }

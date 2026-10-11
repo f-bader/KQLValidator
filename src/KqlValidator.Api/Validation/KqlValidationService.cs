@@ -121,7 +121,7 @@ public sealed partial class KqlValidationService(
         if (!names.Contains("Timestamp") && names.Contains("TimeGenerated") && Enabled(policy, "KQLX003"))
             yield return lintRules.CreateDiagnostic(
                 request.Query, "KQLX003",
-                "TimeGenerated is accepted, but prefer Timestamp for native Defender XDR table output.",
+                "Prefer Timestamp for native Defender XDR table output. TimeGenerated is also supported.",
                 Math.Max(0, request.Query.Length - 1));
 
         var eventTables = ActiveOutputTables(code).Where(table => schema.Tables.TryGetValue(table, out var definition) &&
@@ -141,7 +141,7 @@ public sealed partial class KqlValidationService(
             yield return lintRules.CreateDiagnostic(
                 request.Query, "KQLD004",
                 "Defender detection output has no supported automatic impacted-asset identifier. Retain a device, mailbox, or account field such as " +
-                "DeviceId, RecipientEmailAddress, or AccountObjectId. IP addresses and hashes can provide evidence but do not satisfy this automatic mapping check.",
+                "DeviceId, RecipientEmailAddress, or AccountObjectId.",
                 Math.Max(0, request.Query.Length - 1));
 
     }
@@ -154,7 +154,7 @@ public sealed partial class KqlValidationService(
             Collect(statement.Expression, 0, new Dictionary<string, SourceArgument>());
         return tables;
 
-        // Follow row-producing inputs, not scalar or membership subqueries in predicates.
+        // Follow the inputs that produce output rows.
         void Collect(Expression expression, int depth, IReadOnlyDictionary<string, SourceArgument> arguments)
         {
             if (depth > 64) return;

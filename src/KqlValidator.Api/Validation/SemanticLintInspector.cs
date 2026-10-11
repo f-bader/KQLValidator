@@ -9,7 +9,7 @@ using DiagnosticSeverity = KqlValidator.Contracts.DiagnosticSeverity;
 
 namespace KqlValidator.Validation;
 
-/// <summary>Advisory checks over bound KQL. Unknown types and lineage are not evidence of a problem.</summary>
+/// <summary>Advisory checks over bound KQL. Checks skip unknown types and lineage.</summary>
 internal sealed class SemanticLintInspector
 {
     private readonly LintRuleCatalog rules;
@@ -84,7 +84,7 @@ internal sealed class SemanticLintInspector
             foreach (var (operand, literal) in new[] { (binary.Left, binary.Right), (binary.Right, binary.Left) })
             {
                 if (operand.ResultType == ScalarTypes.String && literal.ResultType == ScalarTypes.String && literal.ConstantValue is string { Length: 0 })
-                    Add("KQLP005", "Consider isempty() or isnotempty() for clarity. Comparing a string with an empty string is also valid KQL.", binary);
+                    Add("KQLP005", "Consider isempty() or isnotempty() for clarity when checking for an empty string.", binary);
                 if (op == "==" && KnownScalar(operand.ResultType) && operand.ResultType != ScalarTypes.String &&
                     literal.IsConstant && literal.ConstantValue is null && KnownScalar(literal.ResultType))
                     Add("KQLP011", "Equality with a typed null does not identify null rows. Use isnull() to test for null.", binary);
@@ -164,7 +164,7 @@ internal sealed class SemanticLintInspector
                 request.Environment is KqlEnvironment.Sentinel or KqlEnvironment.Unified ?
                     "Consider a managed watchlist or current ThreatIntelIndicators data where appropriate for this target." :
                     "Consider a managed indicator source supported by the query environment and target.";
-            Add("KQLD008", "This query embeds more than ten static indicators (a project maintainability heuristic, not a platform limit). " + suggestion, syntax);
+            Add("KQLD008", "This query embeds more than ten static indicators, exceeding the project maintainability threshold. " + suggestion, syntax);
         }
     }
 
