@@ -69,7 +69,7 @@ public sealed partial class KqlValidationService(
             .Concat(ValidateFileProfileLimits(request.Query, code, cancellationToken))
             .Concat(linter.Analyze(request, lintPolicy, code, cancellationToken))
             .Concat(defenderNrtValidator.Analyze(request, lintPolicy, references.Tables, references.Columns, cancellationToken))
-            .Concat(DetectionOutputDiagnostics(request, outputColumns, references.Tables, schema, lintPolicy))
+            .Concat(DetectionOutputDiagnostics(request, outputColumns, code, schema, lintPolicy))
             .ToArray();
         var truncated = candidates.Length > MaxDiagnostics;
         var diagnostics = candidates
@@ -101,7 +101,7 @@ public sealed partial class KqlValidationService(
     private IEnumerable<ValidationDiagnostic> DetectionOutputDiagnostics(
         ValidateRequest request,
         IReadOnlyList<ColumnDeclaration> outputColumns,
-        IReadOnlyList<string> referencedTables,
+        KustoCode code,
         EnvironmentSchema schema,
         LintPolicy policy)
     {
@@ -109,13 +109,13 @@ public sealed partial class KqlValidationService(
         if (!names.Contains("TimeGenerated") && Enabled(policy, "KQLD001"))
             yield return lintRules.CreateDiagnostic(
                 request.Query, "KQLD001",
-                "Sentinel scheduled and NRT detections must retain TimeGenerated in the final output; filtering on it alone is insufficient. Add it to the final projection, for example: | project TimeGenerated, AlertName, AccountCustomEntity.",
+                "Sentinel scheduled and NRT detections must retain TimeGenerated in the final output; filtering on it alone is insufficient. Add it to the final projection, for example: | project TimeGenerated, AlertName, AccountUpn.",
                 Math.Max(0, request.Query.Length - 1));
 
         if (!names.Contains("Timestamp") && !names.Contains("TimeGenerated") && Enabled(policy, "KQLD002"))
             yield return lintRules.CreateDiagnostic(
                 request.Query, "KQLD002",
-                "Defender detections must retain Timestamp or TimeGenerated in the final output so each result has an event time. Add one to the final projection, for example: | project Timestamp, DeviceId, ReportId.",
+                "Prefer Timestamp or TimeGenerated in the final output so each result identifies its event time; otherwise alert time is derived from the lookback period. Add one to the final projection, for example: | project Timestamp, DeviceId, ReportId.",
                 Math.Max(0, request.Query.Length - 1));
 
         if (!names.Contains("Timestamp") && names.Contains("TimeGenerated") && Enabled(policy, "KQLX003"))
@@ -124,23 +124,95 @@ public sealed partial class KqlValidationService(
                 "TimeGenerated is accepted, but prefer Timestamp for native Defender XDR table output.",
                 Math.Max(0, request.Query.Length - 1));
 
-        var reportIdAvailable = referencedTables.Any(table =>
-            schema.Tables.TryGetValue(table, out var definition) &&
-            definition.Columns.Any(column => column.Name.Equals("ReportId", StringComparison.OrdinalIgnoreCase)) &&
-            !table.StartsWith("Device", StringComparison.OrdinalIgnoreCase));
-        if (reportIdAvailable && !names.Contains("ReportId") && Enabled(policy, "KQLD003"))
+        var eventTables = ActiveOutputTables(code).Where(table => schema.Tables.TryGetValue(table, out var definition) &&
+            definition.Columns.Any(column => column.Name == "ReportId")).ToArray();
+        var endpointEvents = eventTables.Where(table => table.StartsWith("Device", StringComparison.Ordinal) &&
+            schema.Tables[table].Columns.Any(column => column.Name == "DeviceId")).ToArray();
+        if (eventTables.Length > 0 && (!names.Contains("ReportId") || endpointEvents.Length > 0 && !names.Contains("DeviceId")) &&
+            Enabled(policy, "KQLD003"))
             yield return lintRules.CreateDiagnostic(
                 request.Query, "KQLD003",
-                "This non-endpoint Defender event exposes ReportId, but the final output drops it. Retain it so the source event can be identified, for example: | project Timestamp, ReportId, DeviceId.",
+                "The final output drops recommended event identifiers. Retain ReportId for applicable Defender events and DeviceId for endpoint events, " +
+                "for example: | project Timestamp, ReportId, DeviceId. These fields preserve event identity, device scope, and process-tree context.",
                 Math.Max(0, request.Query.Length - 1));
 
-        if (!names.Overlaps(["DeviceId", "DeviceName", "AccountObjectId", "AccountSid", "AccountUpn", "RemoteIP", "IPAddress", "SHA256"]) &&
+        if (!names.Overlaps(["DeviceId", "DeviceName", "RemoteDeviceName", "RecipientEmailAddress", "AccountObjectId", "AccountSid", "AccountUpn", "InitiatingProcessAccountObjectId", "InitiatingProcessAccountSid", "InitiatingProcessAccountUpn"]) &&
             Enabled(policy, "KQLD004"))
             yield return lintRules.CreateDiagnostic(
                 request.Query, "KQLD004",
-                "Defender detection output has no strong entity column. Retain at least one useful identifier such as DeviceId, AccountObjectId, IPAddress, or SHA256 in the final projection.",
+                "Defender detection output has no supported automatic impacted-asset identifier. Retain a device, mailbox, or account field such as " +
+                "DeviceId, RecipientEmailAddress, or AccountObjectId. IP addresses and hashes can provide evidence but do not satisfy this automatic mapping check.",
                 Math.Max(0, request.Query.Length - 1));
+
     }
+
+    private static IReadOnlySet<string> ActiveOutputTables(KustoCode code)
+    {
+        var tables = new HashSet<string>(StringComparer.Ordinal);
+        var visiting = new HashSet<Symbol>();
+        if (code.Syntax is QueryBlock block && block.Statements.LastOrDefault()?.Element is ExpressionStatement statement)
+            Collect(statement.Expression, 0, new Dictionary<string, SourceArgument>());
+        return tables;
+
+        // Follow row-producing inputs, not scalar or membership subqueries in predicates.
+        void Collect(Expression expression, int depth, IReadOnlyDictionary<string, SourceArgument> arguments)
+        {
+            if (depth > 64) return;
+            switch (expression)
+            {
+                case ParenthesizedExpression parenthesized:
+                    Collect(parenthesized.Expression, depth + 1, arguments); break;
+                case SimpleNamedExpression named:
+                    Collect(named.Expression, depth + 1, arguments); break;
+                case MaterializeExpression materialized:
+                    Collect(materialized.Expression, depth + 1, arguments); break;
+                case NameReference { ReferencedSymbol: ParameterSymbol parameter } when arguments.TryGetValue(parameter.Name, out var argument):
+                    Collect(argument.Expression, depth + 1, argument.Context); break;
+                case NameReference { ReferencedSymbol: TableSymbol table }:
+                    tables.Add(table.Name); break;
+                case NameReference { ReferencedSymbol: VariableSymbol { Source: { } source } variable } when visiting.Add(variable):
+                    Collect(source, depth + 1, arguments);
+                    visiting.Remove(variable); break;
+                case PipeExpression { Operator: InvokeOperator { Function: FunctionCallExpression { ReferencedSignature.Declaration: { } } call } } pipe:
+                    CollectCall(call, depth, arguments, pipe.Expression); break;
+                case PipeExpression { Operator: JoinOperator join } pipe:
+                    var kind = join.Parameters.FirstOrDefault(p => p.Name.SimpleName == "kind")?.Expression.ToString().Trim();
+                    if (kind is not ("rightsemi" or "rightanti" or "rightantisemi")) Collect(pipe.Expression, depth + 1, arguments);
+                    if (kind is not ("leftsemi" or "leftanti" or "leftantisemi" or "anti")) Collect(join.Expression, depth + 1, arguments);
+                    break;
+                case PipeExpression { Operator: LookupOperator lookup } pipe:
+                    Collect(pipe.Expression, depth + 1, arguments);
+                    Collect(lookup.Expression, depth + 1, arguments); break;
+                case PipeExpression { Operator: UnionOperator union } pipe:
+                    Collect(pipe.Expression, depth + 1, arguments);
+                    Collect(union, depth + 1, arguments); break;
+                case PipeExpression pipe:
+                    Collect(pipe.Expression, depth + 1, arguments); break;
+                case UnionOperator union:
+                    foreach (var input in union.Expressions) Collect(input.Element, depth + 1, arguments);
+                    break;
+                case FunctionCallExpression { ReferencedSignature.Declaration: { } } call:
+                    CollectCall(call, depth, arguments); break;
+            }
+        }
+
+        void CollectCall(FunctionCallExpression call, int depth, IReadOnlyDictionary<string, SourceArgument> arguments, Expression? implicitInput = null)
+        {
+            if (call.ResultType is not TableSymbol || call.ReferencedSignature?.Declaration?.Expression is not { } body ||
+                call.ReferencedSymbol is not { } function || !visiting.Add(function)) return;
+            var bindings = new Dictionary<string, SourceArgument>();
+            var offset = implicitInput is null ? 0 : 1;
+            if (implicitInput is not null && call.ReferencedSignature.Parameters.Count > 0)
+                bindings[call.ReferencedSignature.Parameters[0].Name] = new(implicitInput, arguments);
+            for (var i = 0; i < Math.Min(call.ReferencedSignature.Parameters.Count - offset, call.ArgumentList.Expressions.Count); i++)
+                bindings[call.ReferencedSignature.Parameters[i + offset].Name] = new(call.ArgumentList.Expressions[i].Element, arguments);
+            Collect(body, depth + 1, bindings);
+            visiting.Remove(function);
+        }
+
+    }
+
+    private sealed record SourceArgument(Expression Expression, IReadOnlyDictionary<string, SourceArgument> Context);
 
     private bool Enabled(LintPolicy policy, string ruleId) =>
         policy.IsEnabled(ruleId, lintRules.Get(ruleId).DefaultSeverity);

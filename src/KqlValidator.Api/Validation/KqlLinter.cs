@@ -47,12 +47,8 @@ public sealed partial class KqlLinter
             "Search specific columns instead of using a wildcard column search.", cancellationToken);
         Match(diagnostics, policy, searchable, UnscopedUnion(), "KQLH003",
             "Avoid broad union queries; enumerate only the required tables and time-bound each branch.", cancellationToken);
-        Match(diagnostics, policy, searchable, CaseTransformComparison(), "KQLH004",
-            "Avoid transforming every row with tolower()/toupper(); use an appropriate string operator when its matching semantics are acceptable.", cancellationToken);
         Match(diagnostics, policy, searchable, RegexUsage(), "KQLH005",
             "Prefer parse or parse_json for structured values; reserve regular expressions for cases that require them.", cancellationToken);
-        Match(diagnostics, policy, searchable, ShortTerm(), "KQLH006",
-            "Terms of three characters or fewer are not indexed and can consume more resources.", cancellationToken);
         Match(diagnostics, policy, searchable, CalculatedFilter(), "KQLH007",
             "Filter source columns before calculating derived values when the query can preserve the same semantics.", cancellationToken);
         Match(diagnostics, policy, searchable, ExactCommandLine(), "KQLH008",
@@ -71,6 +67,7 @@ public sealed partial class KqlLinter
         AddWatchlistColumnDiagnostics(diagnostics, policy, searchable, cancellationToken);
         AddMicrosoftKustoDiagnostics(diagnostics, policy, searchable, cancellationToken);
         AddLargeParseDiagnostics(diagnostics, policy, request.Query, code, cancellationToken);
+        diagnostics.AddRange(new SemanticLintInspector(rules, request, policy, code, cancellationToken).Analyze());
         if (new[] { "KQLR001", "KQLR002", "KQLR003" }.Any(id => policy.IsEnabled(id, rules.Get(id).DefaultSeverity)))
             diagnostics.AddRange(new ColumnRelationInspector(relations, rules, code, cancellationToken).Analyze(query, code, policy));
         cancellationToken.ThrowIfCancellationRequested();
@@ -264,8 +261,6 @@ public sealed partial class KqlLinter
             "Declare an OutputSchema after bag_unpack() to avoid schema inference during query execution.", cancellationToken);
         Match(diagnostics, policy, query, FormatDateTimePredicate(), "KQLP004",
             "Compare datetime values directly instead of applying format_datetime() in a where predicate.", cancellationToken);
-        Match(diagnostics, policy, query, EmptyStringComparison(), "KQLP005",
-            "Use isempty() or isnotempty() instead of comparing a string with an empty literal.", cancellationToken);
         Match(diagnostics, policy, query, HasIpv4Literal(), "KQLP006",
             "Use has_ipv4() or has_any_ipv4() for an IPv4 literal.", cancellationToken);
     }
@@ -345,12 +340,8 @@ public sealed partial class KqlLinter
     private static partial Regex WildcardSearch();
     [GeneratedRegex(@"(?im)(?:^|\|)\s*union\s+(?:\*|withsource\s*=)", RegexOptions.None, RegexTimeoutMilliseconds)]
     private static partial Regex UnscopedUnion();
-    [GeneratedRegex(@"(?i)\b(?:tolower|toupper)\s*\([^)]*\)\s*(?:==|=~|in~?)", RegexOptions.None, RegexTimeoutMilliseconds)]
-    private static partial Regex CaseTransformComparison();
     [GeneratedRegex(@"(?i)\b(?:matches\s+regex|extract(?:_all)?\s*\()", RegexOptions.None, RegexTimeoutMilliseconds)]
     private static partial Regex RegexUsage();
-    [GeneratedRegex("""(?i)\b(?:has|contains|==|=~)\s*["']\w{1,3}["']""", RegexOptions.None, RegexTimeoutMilliseconds)]
-    private static partial Regex ShortTerm();
     [GeneratedRegex(@"(?is)\|\s*extend\s+(?<name>[A-Za-z_]\w*)\s*=.*?\|\s*where\s+\k<name>\b", RegexOptions.None, RegexTimeoutMilliseconds)]
     private static partial Regex CalculatedFilter();
     [GeneratedRegex("""(?i)\b(?:ProcessCommandLine|InitiatingProcessCommandLine)\s*==\s*["']""", RegexOptions.None, RegexTimeoutMilliseconds)]
@@ -375,8 +366,6 @@ public sealed partial class KqlLinter
     private static partial Regex BagUnpackWithoutSchema();
     [GeneratedRegex(@"(?i)\|\s*where\b[^\r\n|;]*\bformat_datetime\s*\(", RegexOptions.None, RegexTimeoutMilliseconds)]
     private static partial Regex FormatDateTimePredicate();
-    [GeneratedRegex("""(?i)(?:==|!=|<>)\s*["']\s*["']""", RegexOptions.None, RegexTimeoutMilliseconds)]
-    private static partial Regex EmptyStringComparison();
     [GeneratedRegex("""(?i)\bhas(?:_cs)?\s*["'](?:\d{1,3}\.){3}\d{1,3}["']""", RegexOptions.None, RegexTimeoutMilliseconds)]
     private static partial Regex HasIpv4Literal();
     [GeneratedRegex("""(?i)\b(?:AccountName|AccountDisplayName|DeviceName|ApplicationName|AppDisplayName)\s*(?:==|=~|in~?)\s*["']""", RegexOptions.None, RegexTimeoutMilliseconds)]

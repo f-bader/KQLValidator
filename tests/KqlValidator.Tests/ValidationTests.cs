@@ -337,7 +337,7 @@ public sealed class ValidationTests
     [Theory]
     [InlineData("DeviceEvents | where ActionType contains 'ProcessCreated' | take 1", "KQLP001")]
     [InlineData("DeviceEvents | where ActionType =~ 'A' or ActionType =~ 'B' | take 1", "KQLP002")]
-    [InlineData("DeviceEvents | where AdditionalFields != '' | take 1", "KQLP005")]
+    [InlineData("DeviceEvents | where ActionType != '' | take 1", "KQLP005")]
     public void Microsoft_kusto_pack_reports_high_confidence_patterns(string query, string ruleId)
     {
         var result = Validate(query, profile: LintProfile.Hunting);
@@ -565,7 +565,7 @@ public sealed class ValidationTests
         Assert.Contains("final output", reportId.Message, StringComparison.Ordinal);
         Assert.Contains("DeviceId", reportId.Message, StringComparison.Ordinal);
         Assert.Contains("AccountObjectId", entity.Message, StringComparison.Ordinal);
-        Assert.Contains("IPAddress", entity.Message, StringComparison.Ordinal);
+        Assert.Contains("RecipientEmailAddress", entity.Message, StringComparison.Ordinal);
     }
 
     [Fact]
