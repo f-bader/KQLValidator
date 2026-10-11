@@ -24,7 +24,7 @@ public sealed class ValidationCoverageTests
     [InlineData("""union withsource=Source DeviceEvents, DeviceInfo | take 1""", "KQLH003")]
     [InlineData("""DeviceProcessEvents | where tolower(FileName) == "cmd.exe" | take 1""", "KQLH004")]
     [InlineData("""DeviceProcessEvents | where FileName matches regex "cmd.*" | take 1""", "KQLH005")]
-    [InlineData("""DeviceProcessEvents | where ProcessCommandLine has "cmd" | take 1""", "KQLH006")]
+    [InlineData("""DeviceProcessEvents | where ProcessCommandLine has "cm" | take 1""", "KQLH006")]
     [InlineData("""DeviceProcessEvents | extend Lowered = tolower(FileName) | where Lowered == "cmd.exe" | take 1""", "KQLH007")]
     [InlineData("""DeviceProcessEvents | where ProcessCommandLine == "evil.exe -x" | take 1""", "KQLH008")]
     [InlineData("""DeviceProcessEvents | where Timestamp > ago(1h) | join kind=inner (DeviceInfo) on DeviceId | take 1""", "KQLH011")]

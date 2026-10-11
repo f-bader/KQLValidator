@@ -390,6 +390,8 @@ public sealed class ApiTests : IClassFixture<WebApplicationFactory<Program>>
         Assert.NotEmpty(result.Items);
         Assert.All(result.Items, rule => Assert.Equal("community-detection", rule.RuleSet));
         Assert.All(result.Items, rule => Assert.False(rule.DefaultEnabled));
+        foreach (var id in new[] { "KQLH015", "KQLD007", "KQLD008", "KQLQ005" })
+            Assert.Contains(result.Items, rule => rule.RuleId == id && rule.SourceKind == "community");
     }
 
     [Fact]
