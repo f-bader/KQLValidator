@@ -2,7 +2,7 @@
   "sources": [
     {
       "url": "https://xdrinternals.com/FullSchema-latest.json",
-      "sha256": "504bea6aeb93e2bc09876a3d3a3e26d52b479338a1330adafa19ff07844c7354"
+      "sha256": "a303d946a950ba124a5b9f01697894c8292bd7fa7067f8813074c42b4a4cfd30"
     },
     {
       "url": "https://xdrinternals.com/ActionTypeSchema-latest.json",
@@ -14,7 +14,7 @@
     },
     {
       "url": "https://xdrinternals.com/data/structured-columns/index.json",
-      "sha256": "973953f3f25bc19588699122cad380391d39adbd2ae17da51db8acc0975a98c9"
+      "sha256": "18e3dbb99018bf47accce19bdae651e601826fbeb1c721d5df8b33be1a6bec12"
     },
     {
       "url": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-aadsignineventsbeta-table",
