@@ -1,5 +1,7 @@
 using System.Text.RegularExpressions;
 using KqlValidator.Contracts;
+using Kusto.Language;
+using Kusto.Language.Syntax;
 
 namespace KqlValidator.Validation;
 
@@ -27,37 +29,33 @@ public sealed class DefenderNrtValidator
         "SecurityEvent", "SigninLogs",
     };
 
-    private static readonly IReadOnlySet<string> AllowedPipeOperators = AzureMonitorTransformationFeatures.AllowedPipeOperators;
-
-    // This mirrors the feature families enumerated by the Microsoft page linked from the NRT documentation.
-    private static readonly IReadOnlySet<string> AllowedFunctions = AzureMonitorTransformationFeatures.AllowedFunctions;
+    private static readonly IReadOnlySet<string> AllowedTabularOperators = AzureMonitorTransformationFeatures.AllowedPipeOperators;
 
     private static readonly IReadOnlySet<string> ScalarTypes = AzureMonitorTransformationFeatures.ScalarTypes;
-
-    // These operators use parentheses around their operands, so the simple function-call
-    // matcher below would otherwise misidentify them as unsupported scalar functions.
-    private static readonly IReadOnlySet<string> ParenthesizedOperators = AzureMonitorTransformationFeatures.ParenthesizedOperators;
 
     private static readonly Regex Comment = new(@"(?m)//[^\r\n]*|/\*[\s\S]*?\*/", RegexOptions.CultureInvariant, RegexTimeout);
     private static readonly Regex StringLiteral = new("""@?(?:"(?:""|\\.|[^"])*"|'(?:''|\\.|[^'])*')""", RegexOptions.CultureInvariant, RegexTimeout);
     private static readonly Regex MultiInput = new(@"(?im)(?:^|[;|])\s*(?:join\b|union\b)|\bexternaldata\s*\(", RegexOptions.CultureInvariant, RegexTimeout);
-    private static readonly Regex PipeOperator = new(@"(?im)\|\s*(?<operator>[A-Za-z][A-Za-z-]*)\b", RegexOptions.CultureInvariant, RegexTimeout);
-    private static readonly Regex FunctionCall = new(@"\b(?<function>[A-Za-z_]\w*)\s*\(", RegexOptions.CultureInvariant, RegexTimeout);
     private static readonly Regex LocalFunction = new(@"(?im)(?:^|;)\s*let\s+(?<name>[A-Za-z_]\w*)\s*=\s*\((?<parameters>[^)]*)\)\s*\{", RegexOptions.CultureInvariant, RegexTimeout);
     private static readonly Regex RegexRhs = new("""(?is)\bmatches\s+regex\s+(?<value>@?(?:"(?:""|\\.|[^"])*"|'(?:''|\\.|[^'])*')|[A-Za-z_]\w*|[^\s|;]+)""", RegexOptions.CultureInvariant, RegexTimeout);
-    private static readonly Regex UnsupportedStringOperator = new(@"(?i)\b(?:contains_any|has_all|has_any|hasprefix|hassuffix|in~|matches\b(?!\s+regex)|search)\b", RegexOptions.CultureInvariant, RegexTimeout);
     private static readonly Regex Alias = new(@"(?im)\|\s*(?:extend|project)\s+(?<alias>[A-Za-z_]\w*)\s*=\s*(?<source>Timestamp|TimeGenerated)\b", RegexOptions.CultureInvariant, RegexTimeout);
     private static readonly Regex WhereClause = new(@"(?im)\|\s*where\b(?<predicate>[^|;]*)", RegexOptions.CultureInvariant, RegexTimeout);
 
     private readonly LintRuleCatalog rules;
+    private readonly DefenderNrtFeatures features;
 
-    public DefenderNrtValidator(LintRuleCatalog rules) => this.rules = rules;
+    public DefenderNrtValidator(LintRuleCatalog rules, DefenderNrtFeatures? features = null)
+    {
+        this.rules = rules;
+        this.features = features ?? new DefenderNrtFeatures();
+    }
 
     public IReadOnlyList<ValidationDiagnostic> Analyze(
         ValidateRequest request,
         LintPolicy policy,
         IReadOnlyList<string> referencedTables,
         IReadOnlyList<string> referencedColumns,
+        KustoCode code,
         CancellationToken cancellationToken = default)
     {
         var target = LintRuleCatalog.ResolveTarget(request);
@@ -78,8 +76,8 @@ public sealed class DefenderNrtValidator
 
         AddTableDiagnostics(diagnostics, policy, query, referencedTables, referencedColumns, request.Environment);
         AddStructuralDiagnostics(diagnostics, policy, query, searchable, cancellationToken);
-        AddFeatureDiagnostics(diagnostics, policy, query, searchable, cancellationToken);
-        AddRegexDiagnostics(diagnostics, policy, query, cancellationToken);
+        AddFeatureDiagnostics(diagnostics, policy, query, code, cancellationToken);
+        AddRegexDiagnostics(diagnostics, policy, query, code, cancellationToken);
         AddTimeFilterDiagnostics(diagnostics, policy, query, searchable, cancellationToken);
         return diagnostics;
     }
@@ -138,34 +136,23 @@ public sealed class DefenderNrtValidator
         }
     }
 
-    private void AddFeatureDiagnostics(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string query, string searchable, CancellationToken cancellationToken)
+    private void AddFeatureDiagnostics(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string query, KustoCode code, CancellationToken cancellationToken)
     {
-        foreach (Match match in PipeOperator.Matches(searchable))
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            var operation = match.Groups["operator"].Value;
-            if (!AllowedPipeOperators.Contains(operation))
-                Add(diagnostics, policy, query, "KQLN004",
-                    $"'{operation}' is not a supported KQL tabular operator for Defender continuous NRT rules.", match.Index, match.Length);
-        }
-
-        foreach (Match match in UnsupportedStringOperator.Matches(searchable))
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            Add(diagnostics, policy, query, "KQLN004",
-                $"'{match.Value}' is not a supported KQL string operator for Defender continuous NRT rules.", match.Index, match.Length);
-        }
-
         var localFunctions = CollectLocalScalarFunctions(diagnostics, policy, query, cancellationToken);
-        foreach (Match match in FunctionCall.Matches(searchable))
+        SyntaxElement.WalkNodes(code.Syntax, node =>
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var function = match.Groups["function"].Value;
-            if (AllowedFunctions.Contains(function) || localFunctions.Contains(function) || ParenthesizedOperators.Contains(function))
-                continue;
+            if (node is QueryOperator operation && operation.GetChild(0) is SyntaxToken token && !AllowedTabularOperators.Contains(token.Text))
+                Add(diagnostics, policy, query, "KQLN004",
+                    $"'{token.Text}' is outside the Defender NRT tabular operator catalog. Use a supported operator or a scheduled detection.", token.TextStart, token.Width);
+            var feature = DefenderNrtFeatures.GetUse(node);
+            if (feature is null || feature.Kind == "function" && localFunctions.Contains(feature.Name) || features.Supports(feature))
+                return;
+            var display = feature.Kind == "function" ? $"{feature.Name}()" : feature.Name;
             Add(diagnostics, policy, query, "KQLN004",
-                $"'{function}()' is not a supported KQL scalar function for Defender continuous NRT rules.", match.Index, match.Length);
-        }
+                $"'{display}' with {feature.Shape} operands ({string.Join(", ", feature.ArgumentTypes)}) is outside the Defender NRT support catalog. Check this query with the compatibility endpoint or use a scheduled detection.",
+                feature.Start, feature.Length);
+        });
     }
 
     private HashSet<string> CollectLocalScalarFunctions(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string query, CancellationToken cancellationToken)
@@ -186,13 +173,21 @@ public sealed class DefenderNrtValidator
         return functions;
     }
 
-    private void AddRegexDiagnostics(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string query, CancellationToken cancellationToken)
+    private void AddRegexDiagnostics(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string query, KustoCode code, CancellationToken cancellationToken)
     {
+        var verifiedOperands = new HashSet<int>();
+        SyntaxElement.WalkNodes(code.Syntax, node =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (node is BinaryExpression { Right: NameReference } binary &&
+                DefenderNrtFeatures.GetUse(binary) is { Name: "matches regex" } feature && features.ObservedSupport(feature) == true)
+                verifiedOperands.Add(binary.Right.TextStart);
+        });
         foreach (Match match in RegexRhs.Matches(MaskComments(query)))
         {
             cancellationToken.ThrowIfCancellationRequested();
             var value = match.Groups["value"];
-            if (IsNrtRegexLiteral(value.Value))
+            if (verifiedOperands.Contains(value.Index) || IsNrtRegexLiteral(value.Value))
                 continue;
             Add(diagnostics, policy, query, "KQLN005",
                 "The right side of matches regex must be a correctly escaped KQL string literal for Defender continuous NRT rules.", value.Index, value.Length);

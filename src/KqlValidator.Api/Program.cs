@@ -33,6 +33,7 @@ builder.Services.AddSingleton<GlobalStateFactory>();
 builder.Services.AddSingleton<RequestValidator>();
 builder.Services.AddSingleton<KqlLinter>();
 builder.Services.AddSingleton<DefenderNrtValidator>();
+builder.Services.AddSingleton<DefenderNrtFeatures>();
 builder.Services.AddSingleton<KqlValidationService>();
 builder.Services.AddSingleton<AzureMonitorTransformationValidationService>();
 builder.Services.AddSingleton<SchemaQueryService>();

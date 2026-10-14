@@ -2,4 +2,5 @@
   <Project Path="src/KqlValidator.Api/KqlValidator.Api.csproj" />
   <Project Path="tests/KqlValidator.Tests/KqlValidator.Tests.csproj" />
   <Project Path="tools/KqlValidator.SchemaSync/KqlValidator.SchemaSync.csproj" />
+  <Project Path="tools/KqlValidator.NrtProbe/KqlValidator.NrtProbe.csproj" />
 </Solution>

@@ -261,8 +261,11 @@ public sealed partial class KqlLinter
             "Declare an OutputSchema after bag_unpack() to avoid schema inference during query execution.", cancellationToken);
         Match(diagnostics, policy, query, FormatDateTimePredicate(), "KQLP004",
             "Compare datetime values or ranges directly in the where predicate.", cancellationToken);
-        Match(diagnostics, policy, query, HasIpv4Literal(), "KQLP006",
-            "Use has_ipv4() or has_any_ipv4() for an IPv4 literal.", cancellationToken);
+        // Defender NRT compatibility probes reject the IPv4 helper function forms
+        // suggested by this general query-performance hint.
+        if (policy.Target != KqlTarget.DefenderNrt)
+            Match(diagnostics, policy, query, HasIpv4Literal(), "KQLP006",
+                "Use has_ipv4() or has_any_ipv4() for an IPv4 literal.", cancellationToken);
     }
 
     private void AddTargetDiagnostics(List<ValidationDiagnostic> diagnostics, LintPolicy policy, string originalQuery)

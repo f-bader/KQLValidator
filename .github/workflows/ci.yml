@@ -35,6 +35,9 @@ jobs:
         run: dotnet build kql-validator.slnx --configuration Release --no-restore
       - name: Test
         run: dotnet test tests/KqlValidator.Tests/KqlValidator.Tests.csproj --configuration Release --no-build --no-restore
+      - name: Test mocked NRT response handling
+        shell: pwsh
+        run: ./scripts/Test-NrtProbe.ps1
       - name: Dependency audit
         run: |
           dotnet list kql-validator.slnx package --vulnerable --include-transitive --format json --output-version 1 --no-restore > vulnerabilities.json
