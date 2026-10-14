@@ -19,7 +19,7 @@ Start with [examples/custom-schema.json](../examples/custom-schema.json):
 
 Every property uses lower camel case and is checked strictly. Tables use `name` and a non-empty `columns` list; a column uses `name` and KQL scalar `type`. Functions use `name`, optional `parameters`, and `returns`. A return is either `{ "kind": "scalar", "type": "string" }` or `{ "kind": "tabular", "columns": [...] }`; tabular returns may set `preserveInput: true`. Optional function parameters must follow required parameters.
 
-`common` is applied to XDR and Sentinel. The service then makes Unified using its normal XDR-over-Sentinel conflict behavior, and finally applies the corresponding `xdr`, `sentinel`, and `unified` sections. Existing tables merge columns by name; a declared column replaces its type. New tables need their full column list. A declared function fully replaces its contract. The explicit Unified section wins over conflicts.
+`common` is applied to XDR and Sentinel, followed by their corresponding `xdr` and `sentinel` sections. The service then builds Unified from both catalogs. Shared tables use the complete effective XDR definition, with Sentinel's `TimeGenerated` column added when XDR lacks it. The `unified` section applies afterward. Within each custom section, existing tables merge columns by name; a declared column replaces its type. New tables need their full column list. A declared function fully replaces its contract. The explicit Unified section wins over conflicts.
 
 Unknown properties, duplicate declarations in a section, invalid identifiers/types, duplicate columns or parameters, malformed function signatures, and invalid return contracts cause startup failure. The process does not watch the file or read it per request.
 

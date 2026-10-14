@@ -66,8 +66,10 @@ public sealed class SchemaCatalog
     private static EnvironmentSchema BuildXdr(string schemaDirectory)
     {
         var tables = LoadSchemaSnapshot("xdr.json", schemaDirectory);
+        // XDRInternals supplies the complete schema for known tables.
+        // Documentation supplies tables absent from that snapshot.
         foreach (var table in LoadSchemaSnapshot("xdr-official-tables.json", schemaDirectory).Values)
-            tables[table.Name] = table;
+            tables.TryAdd(table.Name, table);
         foreach (var table in new[]
         {
             Table("DeviceEvents", CommonDevice("ActionType:string", "AdditionalFields:dynamic")),
@@ -136,16 +138,13 @@ public sealed class SchemaCatalog
         var tables = new Dictionary<string, SchemaTable>(sentinel.Tables, StringComparer.OrdinalIgnoreCase);
         foreach (var (name, table) in xdr.Tables)
         {
-            if (!tables.TryGetValue(name, out var existing))
+            if (tables.TryGetValue(name, out var existing) &&
+                !table.Columns.Any(column => column.Name.Equals("TimeGenerated", StringComparison.OrdinalIgnoreCase)) &&
+                existing.Columns.FirstOrDefault(column => column.Name.Equals("TimeGenerated", StringComparison.OrdinalIgnoreCase)) is { } timeGenerated)
             {
-                tables[name] = table;
-                continue;
+                tables[name] = new SchemaTable(table.Name, [.. table.Columns, timeGenerated]);
             }
-
-            var columns = existing.Columns.ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
-            foreach (var column in table.Columns)
-                columns[column.Name] = column;
-            tables[name] = new SchemaTable(name, columns.Values.ToArray());
+            else tables[name] = table;
         }
 
         var functions = new Dictionary<string, SchemaFunction>(sentinel.Functions, StringComparer.OrdinalIgnoreCase);

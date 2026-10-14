@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 using KqlValidator.Contracts;
+using KqlValidator.Validation;
 using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace KqlValidator.Tests;
@@ -94,6 +95,39 @@ public sealed class McpGuidanceTests(WebApplicationFactory<Program> factory) : I
         var validation = result.Deserialize<ValidationResponse>(JsonOptions)!;
         Assert.True(validation.Valid, result.ToString());
         Assert.NotEmpty(validation.OutputColumns);
+    }
+
+    [Theory]
+    [InlineData("xdr")]
+    [InlineData("unified")]
+    public async Task Message_events_discovery_and_validation_use_xdrinternals_schema(string environment)
+    {
+        var result = await Call("get_kql_table", new { environment, table = "MessageEvents" });
+        var table = result.Deserialize<SchemaTable>(JsonOptions)!;
+        Assert.Contains(table.Columns, column => column.Name == "Subject" && column.Type == "string");
+        Assert.Contains(table.Columns, column => column.Name == "LastEditedTime" && column.Type == "datetime");
+        Assert.DoesNotContain(table.Columns, column => column.Name == "MessageSubject");
+
+        var validationResult = await Call("validate_kql", new
+        {
+            query = "MessageEvents | project Subject, Edited = datetime_add('day', 1, LastEditedTime)",
+            environment,
+            profile = "general",
+        });
+        var validation = validationResult.Deserialize<ValidationResponse>(JsonOptions)!;
+        Assert.True(validation.Valid, validationResult.ToString());
+        Assert.Contains(validation.OutputColumns, column => column.Name == "Subject" && column.Type == "string");
+        Assert.Contains(validation.OutputColumns, column => column.Name == "Edited" && column.Type == "datetime");
+
+        var invalidResult = await Call("validate_kql", new
+        {
+            query = "MessageEvents | project MessageSubject",
+            environment,
+            profile = "general",
+        });
+        var invalid = invalidResult.Deserialize<ValidationResponse>(JsonOptions)!;
+        Assert.False(invalid.Valid);
+        Assert.Contains(invalid.Diagnostics, diagnostic => diagnostic.Severity == DiagnosticSeverity.Error);
     }
 
     [Fact]
