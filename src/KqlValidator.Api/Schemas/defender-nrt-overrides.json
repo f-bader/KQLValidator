@@ -1,0 +1,2085 @@
+{
+  "version": 1,
+  "endpoint": "https://security.microsoft.com/apiproxy/hunting/huntingService/rules/checkCompatibility",
+  "overrides": [
+    {
+      "kind": "function",
+      "name": "has_any_ipv4",
+      "shape": "column-dynamic-array",
+      "argumentTypes": [
+        "string",
+        "dynamic"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "has_any_ipv4",
+      "shape": "column-scalar-variable",
+      "argumentTypes": [
+        "string",
+        "dynamic"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "has_any_ipv4_prefix",
+      "shape": "column-dynamic-array",
+      "argumentTypes": [
+        "string",
+        "dynamic"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "has_any_ipv4_prefix",
+      "shape": "column-scalar-variable",
+      "argumentTypes": [
+        "string",
+        "dynamic"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "has_ipv4",
+      "shape": "column-column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "has_ipv4",
+      "shape": "column-literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "has_ipv4",
+      "shape": "column-scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "has_ipv4_prefix",
+      "shape": "column-column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "has_ipv4_prefix",
+      "shape": "column-literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "has_ipv4_prefix",
+      "shape": "column-scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "ipv4_compare",
+      "shape": "column-column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "ipv4_compare",
+      "shape": "column-literal-literal",
+      "argumentTypes": [
+        "string",
+        "string",
+        "long"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "ipv4_compare",
+      "shape": "column-literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "ipv4_compare",
+      "shape": "column-scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "ipv4_is_in_any_range",
+      "shape": "column-dynamic-array",
+      "argumentTypes": [
+        "string",
+        "dynamic"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "ipv4_is_in_any_range",
+      "shape": "column-scalar-variable",
+      "argumentTypes": [
+        "string",
+        "dynamic"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "ipv4_is_in_range",
+      "shape": "column-column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "ipv4_is_in_range",
+      "shape": "column-literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "ipv4_is_in_range",
+      "shape": "column-scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "ipv4_is_match",
+      "shape": "column-column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "ipv4_is_match",
+      "shape": "column-literal-literal",
+      "argumentTypes": [
+        "string",
+        "string",
+        "long"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "ipv4_is_match",
+      "shape": "column-literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "ipv4_is_match",
+      "shape": "column-scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "ipv4_is_private",
+      "shape": "column",
+      "argumentTypes": [
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "ipv6_compare",
+      "shape": "column-column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "ipv6_compare",
+      "shape": "column-literal-literal",
+      "argumentTypes": [
+        "string",
+        "string",
+        "long"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "ipv6_compare",
+      "shape": "column-literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "ipv6_compare",
+      "shape": "column-scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "ipv6_is_in_any_range",
+      "shape": "column-dynamic-array",
+      "argumentTypes": [
+        "string",
+        "dynamic"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "ipv6_is_in_any_range",
+      "shape": "column-scalar-variable",
+      "argumentTypes": [
+        "string",
+        "dynamic"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "ipv6_is_in_range",
+      "shape": "column-column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "ipv6_is_in_range",
+      "shape": "column-literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "ipv6_is_in_range",
+      "shape": "column-scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "ipv6_is_match",
+      "shape": "column-column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "ipv6_is_match",
+      "shape": "column-literal-literal",
+      "argumentTypes": [
+        "string",
+        "string",
+        "long"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "ipv6_is_match",
+      "shape": "column-literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "ipv6_is_match",
+      "shape": "column-scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "series_equals",
+      "shape": "column-dynamic-array",
+      "argumentTypes": [
+        "dynamic",
+        "dynamic"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "series_equals",
+      "shape": "column-scalar-variable",
+      "argumentTypes": [
+        "dynamic",
+        "dynamic"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "series_greater",
+      "shape": "column-dynamic-array",
+      "argumentTypes": [
+        "dynamic",
+        "dynamic"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "series_greater",
+      "shape": "column-scalar-variable",
+      "argumentTypes": [
+        "dynamic",
+        "dynamic"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "series_greater_equals",
+      "shape": "column-dynamic-array",
+      "argumentTypes": [
+        "dynamic",
+        "dynamic"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "series_greater_equals",
+      "shape": "column-scalar-variable",
+      "argumentTypes": [
+        "dynamic",
+        "dynamic"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "series_less",
+      "shape": "column-dynamic-array",
+      "argumentTypes": [
+        "dynamic",
+        "dynamic"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "series_less",
+      "shape": "column-scalar-variable",
+      "argumentTypes": [
+        "dynamic",
+        "dynamic"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "series_less_equals",
+      "shape": "column-dynamic-array",
+      "argumentTypes": [
+        "dynamic",
+        "dynamic"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "series_less_equals",
+      "shape": "column-scalar-variable",
+      "argumentTypes": [
+        "dynamic",
+        "dynamic"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "series_not_equals",
+      "shape": "column-dynamic-array",
+      "argumentTypes": [
+        "dynamic",
+        "dynamic"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "series_not_equals",
+      "shape": "column-scalar-variable",
+      "argumentTypes": [
+        "dynamic",
+        "dynamic"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "set_equals",
+      "shape": "column-dynamic-array",
+      "argumentTypes": [
+        "dynamic",
+        "dynamic"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "set_equals",
+      "shape": "column-scalar-variable",
+      "argumentTypes": [
+        "dynamic",
+        "dynamic"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "set_has_element",
+      "shape": "column-literal",
+      "argumentTypes": [
+        "dynamic",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "set_has_element",
+      "shape": "column-scalar-variable",
+      "argumentTypes": [
+        "dynamic",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "strcmp",
+      "shape": "column-column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "strcmp",
+      "shape": "column-literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "function",
+      "name": "strcmp",
+      "shape": "column-scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "!=",
+      "shape": "column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "!=",
+      "shape": "literal",
+      "argumentTypes": [
+        "datetime",
+        "datetime"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "!=",
+      "shape": "literal",
+      "argumentTypes": [
+        "long",
+        "long"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "!=",
+      "shape": "literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "!=",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "!between",
+      "shape": "range-literal-literal",
+      "argumentTypes": [
+        "datetime",
+        "datetime",
+        "datetime"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "!between",
+      "shape": "range-literal-literal",
+      "argumentTypes": [
+        "long",
+        "long",
+        "long"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "!between",
+      "shape": "range-scalar-variable-scalar-variable",
+      "argumentTypes": [
+        "long",
+        "long",
+        "long"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "!contains",
+      "shape": "column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "!contains",
+      "shape": "literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "!contains",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "!contains_cs",
+      "shape": "column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "!contains_cs",
+      "shape": "literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "!contains_cs",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "!endswith",
+      "shape": "column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "!endswith",
+      "shape": "literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "!endswith",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "!endswith_cs",
+      "shape": "column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "!endswith_cs",
+      "shape": "literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "!endswith_cs",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "!has",
+      "shape": "column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "!has",
+      "shape": "literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "!has",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "!has_cs",
+      "shape": "column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "!has_cs",
+      "shape": "literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "!has_cs",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "!hasprefix",
+      "shape": "column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "!hasprefix",
+      "shape": "literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "!hasprefix",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "!hasprefix_cs",
+      "shape": "column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "!hasprefix_cs",
+      "shape": "literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "!hasprefix_cs",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "!hassuffix",
+      "shape": "column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "!hassuffix",
+      "shape": "literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "!hassuffix",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "!hassuffix_cs",
+      "shape": "column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "!hassuffix_cs",
+      "shape": "literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "!hassuffix_cs",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "!in",
+      "shape": "column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "!in",
+      "shape": "dynamic-array",
+      "argumentTypes": [
+        "string",
+        "dynamic"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "!in",
+      "shape": "literal-list",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "!in",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "string",
+        "dynamic"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "!in~",
+      "shape": "column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "!in~",
+      "shape": "dynamic-array",
+      "argumentTypes": [
+        "string",
+        "dynamic"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "!in~",
+      "shape": "literal-list",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "!in~",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "string",
+        "dynamic"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "!like",
+      "shape": "column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "!like",
+      "shape": "literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "!like",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "!like_cs",
+      "shape": "column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "!like_cs",
+      "shape": "literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "!like_cs",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "!startswith",
+      "shape": "column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "!startswith",
+      "shape": "literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "!startswith",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "!startswith_cs",
+      "shape": "column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "!startswith_cs",
+      "shape": "literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "!startswith_cs",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "!~",
+      "shape": "column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "!~",
+      "shape": "literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "!~",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "<",
+      "shape": "column",
+      "argumentTypes": [
+        "long",
+        "long"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "<",
+      "shape": "literal",
+      "argumentTypes": [
+        "datetime",
+        "datetime"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "<",
+      "shape": "literal",
+      "argumentTypes": [
+        "long",
+        "long"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "<",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "long",
+        "long"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "<=",
+      "shape": "column",
+      "argumentTypes": [
+        "long",
+        "long"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "<=",
+      "shape": "literal",
+      "argumentTypes": [
+        "datetime",
+        "datetime"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "<=",
+      "shape": "literal",
+      "argumentTypes": [
+        "long",
+        "long"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "<=",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "long",
+        "long"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "==",
+      "shape": "column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "==",
+      "shape": "literal",
+      "argumentTypes": [
+        "datetime",
+        "datetime"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "==",
+      "shape": "literal",
+      "argumentTypes": [
+        "long",
+        "long"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "==",
+      "shape": "literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "==",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "=~",
+      "shape": "column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "=~",
+      "shape": "literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "=~",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": ">",
+      "shape": "column",
+      "argumentTypes": [
+        "long",
+        "long"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": ">",
+      "shape": "literal",
+      "argumentTypes": [
+        "datetime",
+        "datetime"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": ">",
+      "shape": "literal",
+      "argumentTypes": [
+        "long",
+        "long"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": ">",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "long",
+        "long"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": ">=",
+      "shape": "column",
+      "argumentTypes": [
+        "long",
+        "long"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": ">=",
+      "shape": "literal",
+      "argumentTypes": [
+        "datetime",
+        "datetime"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": ">=",
+      "shape": "literal",
+      "argumentTypes": [
+        "long",
+        "long"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": ">=",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "long",
+        "long"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "between",
+      "shape": "range-literal-literal",
+      "argumentTypes": [
+        "datetime",
+        "datetime",
+        "datetime"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "between",
+      "shape": "range-literal-literal",
+      "argumentTypes": [
+        "long",
+        "long",
+        "long"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "between",
+      "shape": "range-scalar-variable-scalar-variable",
+      "argumentTypes": [
+        "long",
+        "long",
+        "long"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "contains",
+      "shape": "column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "contains",
+      "shape": "literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "contains",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "contains_cs",
+      "shape": "column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "contains_cs",
+      "shape": "literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "contains_cs",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "endswith",
+      "shape": "column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "endswith",
+      "shape": "literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "endswith",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "endswith_cs",
+      "shape": "column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "endswith_cs",
+      "shape": "literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "endswith_cs",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "has",
+      "shape": "column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "has",
+      "shape": "literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "has",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "has_all",
+      "shape": "column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "has_all",
+      "shape": "dynamic-array",
+      "argumentTypes": [
+        "string",
+        "dynamic"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "has_all",
+      "shape": "literal-list",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "has_all",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "string",
+        "dynamic"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "has_any",
+      "shape": "column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "has_any",
+      "shape": "dynamic-array",
+      "argumentTypes": [
+        "string",
+        "dynamic"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "has_any",
+      "shape": "literal-list",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "has_any",
+      "shape": "literal-variable-list",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "has_any",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "string",
+        "dynamic"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "has_any",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "has_cs",
+      "shape": "column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "has_cs",
+      "shape": "literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "has_cs",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "hasprefix",
+      "shape": "column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "hasprefix",
+      "shape": "literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "hasprefix",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "hasprefix_cs",
+      "shape": "column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "hasprefix_cs",
+      "shape": "literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "hasprefix_cs",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "hassuffix",
+      "shape": "column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "hassuffix",
+      "shape": "literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "hassuffix",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "hassuffix_cs",
+      "shape": "column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "hassuffix_cs",
+      "shape": "literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "hassuffix_cs",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "in",
+      "shape": "column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "in",
+      "shape": "dynamic-array",
+      "argumentTypes": [
+        "string",
+        "dynamic"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "in",
+      "shape": "literal-list",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "in",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "string",
+        "dynamic"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "in~",
+      "shape": "column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "in~",
+      "shape": "dynamic-array",
+      "argumentTypes": [
+        "string",
+        "dynamic"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "in~",
+      "shape": "literal-list",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "in~",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "string",
+        "dynamic"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "like",
+      "shape": "column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "like",
+      "shape": "literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "like",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "like_cs",
+      "shape": "column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "like_cs",
+      "shape": "literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "like_cs",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "matches regex",
+      "shape": "column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": false
+    },
+    {
+      "kind": "operator",
+      "name": "matches regex",
+      "shape": "literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "matches regex",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "startswith",
+      "shape": "column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "startswith",
+      "shape": "literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "startswith",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "startswith_cs",
+      "shape": "column",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "startswith_cs",
+      "shape": "literal",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    },
+    {
+      "kind": "operator",
+      "name": "startswith_cs",
+      "shape": "scalar-variable",
+      "argumentTypes": [
+        "string",
+        "string"
+      ],
+      "supported": true
+    }
+  ]
+}

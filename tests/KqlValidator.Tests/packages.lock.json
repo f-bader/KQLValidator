@@ -513,6 +513,12 @@
           "ModelContextProtocol.AspNetCore": "[2.2.0, )"
         }
       },
+      "kqlvalidator.nrtprobe": {
+        "type": "Project",
+        "dependencies": {
+          "KqlValidator.Api": "[1.0.0, )"
+        }
+      },
       "kqlvalidator.schemasync": {
         "type": "Project"
       },

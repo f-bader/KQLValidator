@@ -68,7 +68,7 @@ public sealed partial class KqlValidationService(
             .Concat(fileProfileDiagnostics)
             .Concat(ValidateFileProfileLimits(request.Query, code, cancellationToken))
             .Concat(linter.Analyze(request, lintPolicy, code, cancellationToken))
-            .Concat(defenderNrtValidator.Analyze(request, lintPolicy, references.Tables, references.Columns, cancellationToken))
+            .Concat(defenderNrtValidator.Analyze(request, lintPolicy, references.Tables, references.Columns, code, cancellationToken))
             .Concat(DetectionOutputDiagnostics(request, outputColumns, code, schema, lintPolicy))
             .ToArray();
         var truncated = candidates.Length > MaxDiagnostics;

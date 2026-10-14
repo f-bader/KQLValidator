@@ -6,6 +6,7 @@
 .vs/
 TestResults/
 artifacts/
+docs/nrt-evidence/
 .azure/
 *.user
 *.rsuser
