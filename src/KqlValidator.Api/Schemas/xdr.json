@@ -6456,6 +6456,10 @@
         {
           "name": "UrlDomain",
           "type": "string"
+        },
+        {
+          "name": "UrlLocation",
+          "type": "string"
         }
       ]
     },
