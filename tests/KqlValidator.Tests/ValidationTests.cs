@@ -33,7 +33,7 @@ public sealed class ValidationTests
     }
 
     [Fact]
-    public void Official_license_gated_xdr_tables_are_available_offline()
+    public void License_gated_xdr_tables_are_available_offline_with_preferred_source_types()
     {
         var expected = new Dictionary<string, (string Column, string Type)>
         {
@@ -42,7 +42,7 @@ public sealed class ValidationTests
             ["DeviceTvmCertificateInfo"] = ("IssuedTo", "dynamic"),
             ["DeviceTvmHardwareFirmware"] = ("AdditionalFields", "dynamic"),
             ["DeviceTvmInfoGathering"] = ("LastSeenTime", "datetime"),
-            ["DeviceTvmInfoGatheringKB"] = ("Categories", "dynamic"),
+            ["DeviceTvmInfoGatheringKB"] = ("Categories", "string"),
             ["DeviceTvmSecureConfigurationAssessment"] = ("Context", "dynamic"),
             ["DeviceTvmSecureConfigurationAssessmentKB"] = ("ConfigurationBenchmarks", "dynamic"),
             ["DeviceTvmSoftwareEvidenceBeta"] = ("DiskPaths", "dynamic"),
@@ -895,23 +895,75 @@ public sealed class ValidationTests
         }
     }
 
-    [Fact]
-    public void Official_xdr_snapshot_overrides_primary_feed_for_licensed_table()
+    [Theory]
+    [InlineData(KqlEnvironment.Xdr)]
+    [InlineData(KqlEnvironment.Unified)]
+    public void Xdrinternals_snapshot_is_authoritative_over_documentation(KqlEnvironment environment)
     {
         var directory = Path.Combine(Path.GetTempPath(), $"kql-validator-schema-{Guid.NewGuid():N}");
         Directory.CreateDirectory(directory);
         try
         {
             File.WriteAllText(Path.Combine(directory, "xdr.json"), """
-                { "tables": [{ "name": "DeviceTvmBrowserExtensions", "columns": [{ "name": "OldColumn", "type": "string" }] }] }
+                { "tables": [{ "name": "MessageEvents", "columns": [{ "name": "Subject", "type": "string" }, { "name": "LastEditedTime", "type": "datetime" }] }] }
                 """);
             File.WriteAllText(Path.Combine(directory, "xdr-official-tables.json"), """
-                { "tables": [{ "name": "DeviceTvmBrowserExtensions", "columns": [{ "name": "ExtensionName", "type": "string" }] }] }
+                { "tables": [
+                  { "name": "messageevents", "columns": [{ "name": "MessageSubject", "type": "string" }, { "name": "LastEditedTime", "type": "string" }] },
+                  { "name": "DocumentationOnlyEvents", "columns": [{ "name": "Value", "type": "long" }] }
+                ] }
                 """);
 
-            var table = new SchemaCatalog(directory).Get(KqlEnvironment.Xdr).Tables["DeviceTvmBrowserExtensions"];
+            var schema = new SchemaCatalog(directory).Get(environment);
+            var table = schema.Tables["MessageEvents"];
 
-            Assert.Equal(["ExtensionName"], table.Columns.Select(column => column.Name));
+            Assert.Equal(["Subject", "LastEditedTime"], table.Columns.Select(column => column.Name));
+            Assert.Equal("datetime", table.Columns.Single(column => column.Name == "LastEditedTime").Type);
+            var fallback = Assert.Single(schema.Tables["DocumentationOnlyEvents"].Columns);
+            Assert.Equal("Value", fallback.Name);
+            Assert.Equal("long", fallback.Type);
+        }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void Unified_catalog_replaces_shared_tables_and_preserves_missing_time_generated()
+    {
+        var directory = Path.Combine(Path.GetTempPath(), $"kql-validator-schema-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(directory);
+        try
+        {
+            File.WriteAllText(Path.Combine(directory, "xdr.json"), """
+                { "tables": [
+                  { "name": "SharedEvents", "columns": [{ "name": "Subject", "type": "string" }] },
+                  { "name": "TimedEvents", "columns": [{ "name": "TimeGenerated", "type": "datetime" }] }
+                ] }
+                """);
+            File.WriteAllText(Path.Combine(directory, "sentinel.json"), """
+                { "tables": [
+                  { "name": "sharedevents", "columns": [{ "name": "MessageSubject", "type": "string" }, { "name": "timegenerated", "type": "datetime" }] },
+                  { "name": "TimedEvents", "columns": [{ "name": "TimeGenerated", "type": "string" }, { "name": "Extra", "type": "long" }] },
+                  { "name": "SentinelOnlyEvents", "columns": [{ "name": "Value", "type": "long" }] }
+                ] }
+                """);
+
+            var catalog = new SchemaCatalog(directory);
+            var unified = catalog.Get(KqlEnvironment.Unified);
+
+            Assert.Equal(["Subject", "timegenerated"], unified.Tables["SharedEvents"].Columns.Select(column => column.Name));
+            Assert.Equal("datetime", unified.Tables["SharedEvents"].Columns.Single(column => column.Name == "timegenerated").Type);
+            var timed = Assert.Single(unified.Tables["TimedEvents"].Columns);
+            Assert.Equal("TimeGenerated", timed.Name);
+            Assert.Equal("datetime", timed.Type);
+            Assert.Equal(catalog.Get(KqlEnvironment.Sentinel).Tables["SentinelOnlyEvents"].Columns,
+                unified.Tables["SentinelOnlyEvents"].Columns);
+            Assert.DoesNotContain(catalog.Get(KqlEnvironment.Xdr).Tables["SharedEvents"].Columns,
+                column => column.Name.Equals("TimeGenerated", StringComparison.OrdinalIgnoreCase));
+            Assert.Contains(catalog.Get(KqlEnvironment.Sentinel).Tables["SharedEvents"].Columns,
+                column => column.Name == "MessageSubject");
         }
         finally
         {
