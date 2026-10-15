@@ -1,8 +1,10 @@
 # Persistent custom schema catalogs
 
-`SchemaOverlay__Path` is an optional startup-only setting pointing to a strict JSON catalog. The file is loaded once before readiness; a missing, malformed, or invalid file prevents the process from starting. Restart the container (or create a new Container Apps revision) after every catalog update.
+Set optional `SchemaOverlay__Path` to a strict JSON catalog. It loads once before readiness; a missing or invalid file prevents startup. Restart the container or create a new Container Apps revision after updates.
 
-The catalog describes only table and function contracts. It never stores or executes KQL function bodies.
+Catalogs declare table and function contracts. Function bodies are never stored or executed.
+
+## Format and precedence
 
 Start with [examples/custom-schema.json](../examples/custom-schema.json):
 
@@ -17,30 +19,34 @@ Start with [examples/custom-schema.json](../examples/custom-schema.json):
 }
 ```
 
-Every property uses lower camel case and is checked strictly. Tables use `name` and a non-empty `columns` list; a column uses `name` and KQL scalar `type`. Functions use `name`, optional `parameters`, and `returns`. A return is either `{ "kind": "scalar", "type": "string" }` or `{ "kind": "tabular", "columns": [...] }`; tabular returns may set `preserveInput: true`. Optional function parameters must follow required parameters.
+Properties use lower camel case. Tables require `name` and non-empty `columns`; columns require `name` and a KQL scalar `type`. Functions use `name`, optional `parameters`, and `returns`: `{"kind":"scalar","type":"string"}` or `{"kind":"tabular","columns":[...]}`. Tabular returns may set `preserveInput: true`. Required parameters precede optional parameters.
 
-`common` is applied to XDR and Sentinel, followed by their corresponding `xdr` and `sentinel` sections. The service then builds Unified from both catalogs. Shared tables use the complete effective XDR definition, with Sentinel's `TimeGenerated` column added when XDR lacks it. The `unified` section applies afterward. Within each custom section, existing tables merge columns by name; a declared column replaces its type. New tables need their full column list. A declared function fully replaces its contract. The explicit Unified section wins over conflicts.
+Apply order: `common` to XDR/Sentinel, then their environment sections, then the [Unified merge](schema-catalog.md#sources-and-precedence), then the `unified` section. Existing tables merge columns by name; declared types replace existing types. New tables require all columns. Function declarations replace the full contract. The `unified` section wins final conflicts.
 
-Unknown properties, duplicate declarations in a section, invalid identifiers/types, duplicate columns or parameters, malformed function signatures, and invalid return contracts cause startup failure. The process does not watch the file or read it per request.
+Unknown properties, duplicate declarations/columns/parameters, invalid identifiers/types, and malformed signatures or returns cause startup failure.
 
 ## Docker
 
-Build the image and bind-mount a catalog read-only:
+Build the image as described in [self-hosting](self-hosting.md#local-docker), then bind-mount the catalog read-only. Remove an existing container with the same name before running:
 
 ```bash
-docker build --tag kql-validator:local .
-docker run --rm --publish 8080:8080 \
+docker run --detach --name kql-validator --publish 8080:8080 \
   --mount type=bind,src="$PWD/examples/custom-schema.json",dst=/catalog/custom-schema.json,readonly \
   --env SchemaOverlay__Path=/catalog/custom-schema.json \
   kql-validator:local
-curl --fail http://127.0.0.1:8080/health/ready
 ```
 
-After editing the file, stop and start the container again. Diagnose a failed startup with `docker logs`: the error identifies the catalog path and the strict-format problem.
+Once `/health/ready` succeeds, verify the example catalog:
+
+```bash
+./scripts/smoke-test.sh http://127.0.0.1:8080 SharedAudit NormalizeActor
+```
+
+After editing, restart with `docker restart kql-validator`. Inspect `docker logs kql-validator` for catalog errors.
 
 ## REST and MCP discovery
 
-Persistent entries behave like ordinary environment schema entries and appear in validation, schema search, lookup, environment counts, and the content-derived schema version:
+Persistent entries appear in validation, discovery, environment counts, and the content-derived schema version. With the example catalog mounted:
 
 ```bash
 curl --fail http://127.0.0.1:8080/api/v1/environments/xdr/tables/SharedAudit
@@ -50,10 +56,10 @@ curl --fail-with-body http://127.0.0.1:8080/api/v1/validate \
   --data '{"query":"SharedAudit | project TimeGenerated, Actor","environment":"xdr","profile":"general"}'
 ```
 
-For MCP, call `get_kql_table` with `{ "environment": "xdr", "table": "SharedAudit" }`, `get_kql_function` with `{ "environment": "xdr", "function": "NormalizeActor" }`, or `search_kql_schema`. These calls return the same effective catalog as REST.
+MCP uses the same catalog. Call `get_kql_table` with `{"environment":"xdr","table":"SharedAudit"}` or `get_kql_function` with `{"environment":"xdr","function":"NormalizeActor"}`.
 
 ## Persistent versus request-scoped
 
-Use the mounted catalog for stable, server-wide workspace metadata shared by many callers. Its tables and functions are public to every client and request-scoped `extensions.tables` or `extensions.functions` cannot shadow them. Use request extensions for one-off validation, tenant-specific temporary schemas, and watchlist fields. Watchlists remain request-scoped because their fields are selected from a request's `_GetWatchlist` call.
+Mounted catalogs provide stable, server-wide declarations visible to every client. Request `extensions.tables` and `extensions.functions` cannot shadow them. Use request extensions for temporary schemas and `extensions.watchlists` for typed `_GetWatchlist` fields.
 
-The REST and MCP schema APIs are public on a public deployment. Table/function names, parameters, and columns are discoverable, so never place sensitive metadata in this catalog.
+Apply the [public-schema disclosure guidance](self-hosting.md#public-schema-disclosure) to mounted catalogs.

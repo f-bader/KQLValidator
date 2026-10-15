@@ -1,33 +1,27 @@
 # Contributing
 
-Thanks for considering a contribution! This document covers the mechanics that the CI
-gate enforces so your pull request passes on the first try.
-
 ## Prerequisites
 
-- .NET SDK 10.0.4xx (see `global.json`).
-- Bash for the scripts in `scripts/` — on Windows use Git Bash or WSL. Under Git Bash,
-  set `MSYS2_ARG_CONV_EXCL="/p"` first so MSBuild `/p:` switches are not mangled into
-  Windows paths.
-- Docker (only needed for the container build step of the local gate).
-- Azure CLI with Bicep (only needed for the infrastructure validation step).
+- .NET SDK pinned in [global.json](global.json).
+- Bash; on Windows, use Git Bash or WSL. Under Git Bash, set
+  `MSYS2_ARG_CONV_EXCL="/p"` to preserve MSBuild `/p:` switches.
+- `jq` for the dependency audit.
+- Docker for container builds; Azure CLI with Bicep for infrastructure checks.
 
 ## Local quality gate
 
-Run the same gate as CI before opening a pull request:
+Run before opening a pull request:
 
 ```bash
 bash scripts/validate-local.sh
 ```
 
-It performs: locked restore → `dotnet format` verification → build → tests → publish →
-vulnerability audit → Bicep build → container build.
+The gate runs locked restore, format verification, Release build, tests, publish,
+dependency checks, and shell syntax checks. Bicep and container builds run when
+Azure CLI and Docker are available. CI also checks security and the status-site build switch.
 
-The two checks that most often surprise contributors:
-
-- **Formatting**: CI runs `dotnet format kql-validator.slnx --verify-no-changes`.
-  Run `dotnet format kql-validator.slnx` to fix violations; `.editorconfig` pins the
-  conventions.
+- **Formatting**: run `dotnet format kql-validator.slnx` to fix violations.
+  `.editorconfig` defines the conventions.
 - **Locked restore**: CI restores with `--locked-mode`. If you add or bump a package,
   regenerate the lock files and commit them:
 
@@ -41,17 +35,18 @@ The two checks that most often surprise contributors:
 dotnet test tests/KqlValidator.Tests/KqlValidator.Tests.csproj
 ```
 
-New behavior needs a test. Lint rules must also be documented in
-`docs/lint-rules.md` — a test cross-checks the rule catalog against that file.
+Test new behavior. Document lint rules in [docs/lint-rules.md](docs/lint-rules.md);
+a test checks rule coverage.
 
 ## Pull requests
 
 - Keep changes focused; separate refactoring from behavior changes.
 - Update `README.md` / `docs/` when you change endpoints, limits, or rules.
+- Follow [AGENTS.md](AGENTS.md) for documentation, diagnostics, and rule descriptions.
+  Give each topic a primary page and link to it from other guides.
 - The service must stay stateless and unauthenticated: no query logging, no query
   execution, no outbound calls from the API, no persistence of submitted KQL.
 
 ## Reporting security issues
 
-See [SECURITY.md](SECURITY.md) — please do not open public issues for
-vulnerabilities.
+Use the private reporting process in [SECURITY.md](SECURITY.md).
