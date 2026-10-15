@@ -22,7 +22,7 @@ builder.Services.AddOpenApi("v1", options => options.AddDocumentTransformer((doc
     {
         Title = "KQL Validator",
         Version = ThisAssembly.Version,
-        Description = "Unauthenticated, stateless static analysis for Microsoft Defender XDR, Microsoft Sentinel, and Azure Monitor transformation KQL. Queries are never executed, logged, or persisted.",
+        Description = "Stateless KQL validation for Microsoft Defender XDR, Microsoft Sentinel, and Azure Monitor transformations. Endpoints are unauthenticated. Queries are never executed, logged, or persisted.",
         License = new() { Name = "MIT", Url = new Uri("https://github.com/f-bader/KQLValidator/blob/main/LICENSE") },
     };
     return Task.CompletedTask;
@@ -116,27 +116,24 @@ builder.Services.AddMcpServer(options =>
     {
         options.ServerInfo = new() { Name = "kql-validator", Version = ThisAssembly.Version };
         options.ServerInstructions = """
-            Use this server while writing, editing, debugging, or reviewing Microsoft Defender XDR,
-            Microsoft Sentinel, and Azure Monitor transformation KQL. Validate new or changed supported
-            KQL before presenting it as checked, and revalidate after repairs. Analysis is static:
-            queries are never executed, stored, or logged, and catalogs do not inspect a live workspace.
-            Choose the intended platform and purpose from the user's context; ask when ambiguous rather
-            than using unified to hide schema errors. Discover environments when needed. Search for
-            uncertain schema identifiers, then fetch known table/function definitions as needed;
-            skip discovery calls when the required schema is already known. Catalogs include mounted
-            custom declarations. Request missing custom schemas rather than inventing them.
-            Route ordinary queries and hunting/detection rules to validate_kql; route DCR transformKql
-            or transform.KQL expressions to validate_azure_monitor_transformation with actual source
-            columns. Extract the expression from a full DCR document. NRT detection needs an explicit
-            platform-specific target. Use get_kql_column_relations when choosing correlation keys;
-            these community relationships are guidance, not an exhaustive join allowlist.
-            Before accessing nested fields, use list_kql_structured_columns and get_kql_structured_column.
-            Captured and illustrative shapes are incomplete, not vendor contracts. Missing fields or variants
-            never imply invalid KQL; handle absent values and explain these limits to the user.
-            Use list_kql_lint_rules to discover lint controls or explain rules.
-            Inspect valid and diagnostics even when the tool call succeeds: valid=false means validation
-            failed; warnings can remain when valid=true. Report remaining diagnostics and the limits of
-            static validation; it does not prove runtime success or detection effectiveness.
+            Validate supported KQL while writing, editing, debugging, or reviewing it, and revalidate
+            after repairs. Analysis is static: queries are never executed, stored, or logged. Catalogs
+            include mounted custom declarations and provide no live workspace data.
+            Choose the platform and purpose from the user's context; clarify ambiguity. Discover
+            environments and schema identifiers when uncertain, then fetch table/function definitions.
+            Skip discovery when the schema is known. Obtain actual declarations for missing custom schemas.
+            Use validate_kql for Defender XDR and Sentinel queries and hunting/detection rules. Use
+            validate_azure_monitor_transformation for DCR transformKql or transform.KQL: extract the
+            expression and supply actual source columns. NRT requires an explicit platform target.
+            Use get_kql_column_relations to inspect correlation keys. Community relationships have
+            incomplete coverage; verify matches against actual data. For nested fields in a known table
+            and column, call get_kql_structured_column directly. Use list_kql_structured_columns to
+            discover available columns or discriminator keys. Captured and illustrative
+            shapes are incomplete; handle absent values and explain coverage limits. Missing shapes
+            leave KQL validity unchanged. Use list_kql_lint_rules for lint controls and rule sources.
+            Inspect valid, diagnostics, and output columns even after a successful call: valid=false
+            means validation failed; warnings can remain with valid=true. Report remaining diagnostics.
+            Runtime success and detection effectiveness require checks against actual data.
             """;
     })
     .WithHttpTransport(options => options.Stateless = true)

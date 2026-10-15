@@ -1,10 +1,10 @@
-## What does this change?
+## Change
 
-<!-- A short description of the change and why it is needed. -->
+<!-- Describe the problem, resulting behavior, and validation. -->
 
 ## Checklist
 
-- [ ] `bash scripts/validate-local.sh` passes (or at least restore, format, build, test).
-- [ ] Lock files are regenerated if package references changed (`dotnet restore --force-evaluate`).
-- [ ] New behavior is covered by a test.
-- [ ] `README.md` / `docs/` updated if endpoints, limits, or lint rules changed.
+- [ ] Run `bash scripts/validate-local.sh`; list skipped checks and reasons.
+- [ ] Regenerate lock files for package changes (`dotnet restore kql-validator.slnx --force-evaluate`).
+- [ ] Test new behavior.
+- [ ] Update documentation for endpoint, limit, or lint-rule changes.

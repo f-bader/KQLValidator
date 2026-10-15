@@ -1,27 +1,29 @@
 # Self-hosting
 
-KQL Validator is deliberately unauthenticated and public when external ingress is enabled. It statically analyzes KQL only: it never executes submitted KQL, persists requests, or makes runtime Azure API calls. Mounted schema catalogs are static configuration files, not a runtime data integration.
+KQL Validator runs without authentication. External ingress exposes its REST, MCP, and schema endpoints publicly. Submitted KQL is never executed, stored, or logged.
 
 ## Local Docker
 
-Build, run, verify, and update a read-only catalog:
+Build and start the container:
 
 ```bash
 docker build --tag kql-validator:local .
-docker run --rm --publish 8080:8080 \
-  --mount type=bind,src="$PWD/examples/custom-schema.json",dst=/catalog/custom-schema.json,readonly \
-  --env SchemaOverlay__Path=/catalog/custom-schema.json \
-  kql-validator:local
-./scripts/smoke-test.sh http://127.0.0.1:8080 SharedAudit NormalizeActor
+docker run --detach --name kql-validator --publish 8080:8080 kql-validator:local
 ```
 
-Update the host file and restart the container. An invalid file is intentional fail-fast behavior; inspect `docker logs` for the catalog error. See [custom-schema-catalog.md](custom-schema-catalog.md) for the format.
+Once `/health/ready` succeeds, run the smoke checks:
+
+```bash
+./scripts/smoke-test.sh http://127.0.0.1:8080
+```
+
+Inspect startup failures with `docker logs kql-validator`. See [custom catalogs](custom-schema-catalog.md#docker) to mount a schema file.
 
 ## Azure Container Apps
 
-Prerequisites: Azure CLI plus the Container Apps extension, a signed-in identity with `Contributor` on the target resource group, and either `Owner` or scoped `Role Based Access Control Administrator` permission to create the app identity's `AcrPull` role assignment. The foundation stage creates the `${AZURE_APP_NAME}-pull` identity; the latter permission can use the existing conditional-assignment approach in [lab-deployment.md](lab-deployment.md), restricted to the `AcrPull` role and that identity.
+Requires Azure CLI, the Container Apps extension, and a signed-in identity with `Contributor` on the target resource group. Creating the app identity's `AcrPull` assignment also requires `Owner` or scoped `Role Based Access Control Administrator`. See [Azure access setup](lab-deployment.md#one-time-oidc-and-azure-access-setup) for a conditional assignment restricted to `AcrPull` and the `${AZURE_APP_NAME}-pull` identity.
 
-Choose a globally unique registry name, create the resource group, then use the fixed deployment helper:
+Choose a dedicated resource group and globally unique registry name:
 
 ```bash
 az extension add --name containerapp --upgrade
@@ -34,19 +36,27 @@ az group create --name "$AZURE_RESOURCE_GROUP" --location "$AZURE_LOCATION"
 ./scripts/deploy-lab.sh
 ```
 
-The helper provisions a [Basic ACR](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-skus) and Container Apps environment, builds the image in ACR, deploys the immutable image digest, and runs readiness checks. A custom catalog is optional. To enable one, set both variables before deployment:
+The helper creates a Basic ACR, Consumption Container Apps environment, scale-to-zero app, and pull identity. It builds in ACR, deploys the immutable image digest, and runs REST/MCP smoke checks.
+
+To mount a custom catalog, set both variables before running the helper:
 
 ```bash
 export AZURE_STORAGE_ACCOUNT_NAME='YOUR_UNIQUE_STORAGE_NAME'
 export CUSTOM_SCHEMA_PATH="$PWD/examples/custom-schema.json"
 ```
 
-With a catalog enabled, the helper also provisions a Standard_LRS storage account and classic Azure Files share, uploads `custom-schema.json`, and checks the catalog's known table and function. The app uses the [Container Apps Azure Files mount](https://learn.microsoft.com/en-us/azure/container-apps/storage-mounts) in `ReadOnly` mode at `/mnt/custom-schema` and sets `SchemaOverlay__Path=/mnt/custom-schema/custom-schema.json`.
+This creates a Standard_LRS storage account and classic Azure Files share, uploads `custom-schema.json`, and mounts it read-only at `/mnt/custom-schema`. `SchemaOverlay__Path` points to `/mnt/custom-schema/custom-schema.json`. Smoke checks include the catalog's known table and function.
 
-To update the catalog, set `CUSTOM_SCHEMA_PATH` to the replacement file and rerun the helper; it uploads the file and creates a fresh app revision. To tear down a dedicated installation, run `az group delete --name "$AZURE_RESOURCE_GROUP"` after confirming the exact resource group.
+To update the catalog, set `CUSTOM_SCHEMA_PATH` to the replacement file and rerun the helper. It uploads the file and creates a fresh revision. See [lab deployment](lab-deployment.md) for CI setup, custom domains, budget alerts, and teardown.
 
-Basic ACR is appropriate for low-usage installations, but has a fixed monthly charge. Container Apps Consumption can scale to zero and may fit within its free grant at light use. Azure Files storage and requests also cost money; check current regional pricing and set a budget alert with `infra/budget.bicep`. Budget alerts notify only—they do not stop charges.
+ACR has a fixed charge; Container Apps usage and optional Azure Files storage/transactions can add costs. Check regional pricing before deployment.
+
+## Limits and health
+
+By default, production REST and MCP requests share a per-IP token bucket with capacity 10 and one token replenished per second. A global bucket has capacity 100 and replenishes 25 tokens per second. Excess requests receive HTTP 429 with `Retry-After: 1`.
+
+Analysis has a five-second deadline and can return HTTP 504. `/health/ready` fails when an active analysis exceeds 10 seconds; `/health/live` fails after 30 seconds. Health probes are exempt from rate limits. Container Apps uses these probes for routing and restarts.
 
 ## Public-schema disclosure
 
-REST and MCP expose table/function lookup and schema search without authentication. A mounted catalog's names, parameters, and columns are therefore publicly discoverable. Keep sensitive names, business labels, and metadata out of it. This applies equally to checked-in Sentinel snapshots and persistent custom declarations.
+External ingress makes catalog names, function parameters, and columns publicly discoverable. Keep sensitive metadata out of bundled snapshots and mounted catalogs.

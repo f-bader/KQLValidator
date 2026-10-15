@@ -1,64 +1,32 @@
 # Azure lab deployment
 
-This runbook keeps the lab isolated and builds the Linux image inside its dedicated Basic Azure Container Registry. It deploys a public, unauthenticated Container App and does not publish images anywhere else. For the shorter self-hosting path, see [self-hosting.md](self-hosting.md).
+Maintainer setup for CI deployment, custom domains, Azure access, and teardown. Start with [self-hosting](self-hosting.md) to create the dedicated lab resources and configure optional custom catalogs.
 
 ## One-time resources
 
-Choose a globally unique registry and dedicated resource-group names. The deployment helper creates the Basic ACR and Container Apps environment on its first run:
-
-```bash
-export AZURE_RESOURCE_GROUP='YOUR_RESOURCE_GROUP'
-export AZURE_ACR_NAME='YOUR_UNIQUE_ACR_NAME'
-export AZURE_LOCATION='YOUR_AZURE_REGION'
-
-az group create \
-  --name "$AZURE_RESOURCE_GROUP" \
-  --location "$AZURE_LOCATION" \
-  --tags application=kql-validator environment=lab
-
-```
-
-A Basic registry is the lab's fixed-cost floor; check current Azure Container Registry pricing for your region. Container Apps is configured for Consumption scale-to-zero and normally remains inside its monthly free grant at low traffic. When enabled, Azure Files capacity and transactions are charged separately.
+Complete one [local Azure deployment](self-hosting.md#azure-container-apps) before configuring CI. It creates the `${AZURE_APP_NAME}-pull` identity needed for the scoped role assignment below. Use a dedicated resource group and globally unique ACR name.
 
 ## Build, deploy, and validate
 
-Run the complete local gate first:
+With the [deployment variables](self-hosting.md#azure-container-apps) set, validate and deploy:
 
 ```bash
 ./scripts/validate-local.sh
-```
-
-The helper provisions foundation resources, builds in ACR, deploys the immutable digest, and runs REST/MCP smoke checks.
-
-```bash
-export AZURE_SUBSCRIPTION_ID='YOUR_SUBSCRIPTION_ID'
-export AZURE_RESOURCE_GROUP='YOUR_RESOURCE_GROUP'
-export AZURE_ACR_NAME='YOUR_UNIQUE_ACR_NAME'
-export AZURE_LOCATION='YOUR_AZURE_REGION'
-export AZURE_APP_NAME='YOUR_APP_NAME'
-
 ./scripts/deploy-lab.sh
 ```
 
-To mount a persistent custom catalog, set both optional variables before running the helper. It then creates a standard storage account and classic Azure Files share, uploads the file as `custom-schema.json`, mounts it read-only, and includes catalog checks in the smoke suite:
-
-```bash
-export AZURE_STORAGE_ACCOUNT_NAME='YOUR_UNIQUE_STORAGE_ACCOUNT_NAME'
-export CUSTOM_SCHEMA_PATH="$PWD/examples/custom-schema.json"
-```
+The helper builds the Linux image in the lab's Basic ACR, deploys its immutable digest, and runs REST/MCP smoke checks. It passes the full Git revision into the image; discovery and validation responses report it alongside the content-derived schema version.
 
 ### Custom domain and certificate binding
 
-Custom domains are optional. With no domain configuration, the deployment URL and smoke checks use the Container App's generated HTTPS hostname. To enable a custom domain, supply both the hostname and the name of an existing Azure-managed certificate in the selected Container Apps environment. The app template declares the `SniEnabled` binding, and the deployment URL and smoke checks use the custom HTTPS hostname.
-
-The certificate and DNS records must already exist; this template references the certificate rather than issuing a new one. For a local deployment, set both variables before running the helper:
+The default URL uses the generated Container Apps HTTPS hostname. For a custom domain, create the DNS records and Azure-managed certificate in the selected environment first, then set both variables:
 
 ```bash
 export AZURE_CUSTOM_DOMAIN='YOUR_CUSTOM_HOSTNAME'
 export AZURE_MANAGED_CERTIFICATE_NAME='YOUR_EXISTING_MANAGED_CERTIFICATE_NAME'
 ```
 
-These map to the Bicep parameters `customDomainName` and `managedCertificateName`. For GitHub Actions, configure the same names as variables in the `lab` environment. The workflow passes them to the helper without storing deployment-specific hostnames or certificate names in the repository:
+These map to Bicep `customDomainName` and `managedCertificateName` and create an `SniEnabled` binding. Deployment and smoke checks use the custom hostname. For GitHub Actions, set the same variables in the `lab` environment:
 
 ```bash
 export GITHUB_REPOSITORY='OWNER/REPOSITORY'
@@ -66,13 +34,13 @@ gh variable set AZURE_CUSTOM_DOMAIN --repo "$GITHUB_REPOSITORY" --env lab --body
 gh variable set AZURE_MANAGED_CERTIFICATE_NAME --repo "$GITHUB_REPOSITORY" --env lab --body 'YOUR_EXISTING_MANAGED_CERTIFICATE_NAME'
 ```
 
-The helper rejects an incomplete pair before making any Azure changes. Leave both variables unset or empty for a deployment without a custom domain. Doing so deploys an empty binding list, so it also removes an existing custom domain binding from an app being redeployed.
+An incomplete pair is rejected before Azure changes. Leaving both unset or empty deploys an empty binding list and removes any existing custom-domain binding on redeployment.
 
 ## GitHub Actions deployment
 
-The CI workflow deploys only after its validation job passes. Pushes to `main` and manual runs from `main` use the GitHub `lab` environment. This repository does not currently configure a required-reviewer gate; add one when the repository policy requires it. Pull requests and runs from other branches never deploy.
+CI deploys after validation passes for pushes and manual runs from `main`, using the GitHub `lab` environment. Pull requests and other branches skip deployment. Configure required reviewers if repository policy requires approval.
 
-The workflow uses GitHub OIDC and an existing user-assigned managed identity; no Azure client secret is stored in GitHub. The tenant, subscription, and client IDs are stored as repository **secrets** so public workflow logs mask them; the remaining values are ordinary variables. Add them, then configure any optional environment protection rules:
+The workflow uses GitHub OIDC with an existing user-assigned managed identity. Store tenant, subscription, and client IDs as repository secrets to mask them in public logs; use variables for the remaining settings:
 
 ```bash
 export GITHUB_REPOSITORY='OWNER/REPOSITORY'
@@ -86,14 +54,14 @@ gh variable set AZURE_ACR_NAME --repo "$GITHUB_REPOSITORY" --body 'YOUR_ACR_NAME
 gh variable set AZURE_MANAGED_IDENTITY_NAME --repo "$GITHUB_REPOSITORY" --body 'YOUR_DEPLOYMENT_IDENTITY_NAME'
 ```
 
-To enable the optional catalog in CI, configure both variables. `CUSTOM_SCHEMA_PATH` is relative to the repository root, for example `examples/custom-schema.json`:
+For a custom catalog, set both variables. `CUSTOM_SCHEMA_PATH` is relative to the repository root:
 
 ```bash
 gh variable set AZURE_STORAGE_ACCOUNT_NAME --repo "$GITHUB_REPOSITORY" --body 'YOUR_STORAGE_ACCOUNT_NAME'
 gh variable set CUSTOM_SCHEMA_PATH --repo "$GITHUB_REPOSITORY" --body 'examples/custom-schema.json'
 ```
 
-To add an approval gate, open **Settings → Environments → lab**, add a user or team under **Required reviewers**, and save the protection rule. The deployment job already targets this environment, so no workflow change is needed. Environment protection rules are available on public repositories on every GitHub plan.
+To require deployment approval, add **Required reviewers** under **Settings → Environments → lab**. The deployment job already targets this environment.
 
 ### One-time OIDC and Azure access setup
 
@@ -105,7 +73,7 @@ gh api --method PUT "repos/$GITHUB_REPOSITORY/actions/oidc/customization/sub" \
   -F use_immutable_subject=true
 ```
 
-The federated credential on the deployment identity must use the immutable subject for the protected environment. The owner and repository IDs are available from the GitHub API; they are intentionally represented as placeholders here:
+The deployment identity's federated credential must match the environment's immutable subject. Obtain owner and repository IDs from the GitHub API and replace the placeholders:
 
 ```bash
 export AZURE_SUBSCRIPTION_ID='YOUR_SUBSCRIPTION_ID'
@@ -117,7 +85,7 @@ export GITHUB_OWNER='YOUR_GITHUB_OWNER'
 export GITHUB_REPOSITORY_NAME='YOUR_GITHUB_REPOSITORY'
 export GITHUB_OWNER_ID='YOUR_GITHUB_OWNER_ID'
 export GITHUB_REPOSITORY_ID='YOUR_GITHUB_REPOSITORY_ID'
-export GITHUB_ENVIRONMENT='YOUR_GITHUB_ENVIRONMENT'
+export GITHUB_ENVIRONMENT='lab'
 github_subject="repo:${GITHUB_OWNER}@${GITHUB_OWNER_ID}/${GITHUB_REPOSITORY_NAME}@${GITHUB_REPOSITORY_ID}:environment:${GITHUB_ENVIRONMENT}"
 
 az identity federated-credential create \
@@ -130,7 +98,7 @@ az identity federated-credential create \
   --subscription "$AZURE_SUBSCRIPTION_ID"
 ```
 
-Grant the deployment identity `Contributor` on the target resource group. Because the Bicep deployment maintains the Container App's `AcrPull` role assignment, also grant `Role Based Access Control Administrator` with a condition that permits only that role and the app's pull identity:
+Grant `Contributor` on the resource group and `Role Based Access Control Administrator` restricted to the `AcrPull` role and app pull identity:
 
 ```bash
 subscription_id="$AZURE_SUBSCRIPTION_ID"
@@ -172,19 +140,17 @@ az role assignment list \
   --query '[].{role:roleDefinitionName,scope:scope,condition:condition}'
 ```
 
-For another repository or environment, use its owner/repository names and immutable IDs in the subject, create a matching federated credential, and update the repository variables. Never reuse a subject from another repository.
+For another repository or environment, create a matching subject and federated credential using its names and immutable IDs, then update repository settings.
 
-The deployment creates a Consumption Container Apps environment, one scale-to-zero app, a user-assigned identity with only `AcrPull` on the selected registry, and a Basic ACR. When `CUSTOM_SCHEMA_PATH` is set, it also creates a standard storage account with a classic Azure Files share. It does not create Log Analytics, Application Insights, a VNet, Dapr, or a database.
+## Operations
 
-The app has external HTTPS ingress and no authentication. REST, MCP, schema, and lint-rule endpoints are public; do not deploy a Sentinel snapshot or custom catalog whose table, function, parameter, or column names are not approved for public disclosure. When configured, the deployment mounts the catalog read-only and passes the full Git revision into the image, so the discovery endpoint and validation responses can report the immutable source revision alongside the content-derived schema version.
+See [hosting limits and health](self-hosting.md#limits-and-health) and [public-schema disclosure](self-hosting.md#public-schema-disclosure). The lab provisions no Log Analytics, Application Insights, VNet, Dapr, database, or telemetry exporter. Analysis meters exclude query text.
 
-REST and MCP requests share a production token bucket of 10 requests with one replenished token per second per client IP. Excess requests receive HTTP 429 and `Retry-After: 1`; health probes are exempt. Analysis is bounded to five seconds and can return HTTP 504. Readiness fails for an active analysis older than 10 seconds, while liveness fails after 30 seconds. Container Apps uses `/health/ready` and `/health/live` for deployment routing and restart decisions.
-
-The local gate covers restore, formatting, build, tests, dependency auditing, publishing, and Bicep compilation. GitHub Actions additionally runs CodeQL, dependency review, high-severity container scanning, and weekly zizmor analysis. The app exposes privacy-safe analysis meters, but this lab deployment does not provision an exporter or telemetry backend.
+The [local gate](../CONTRIBUTING.md#local-quality-gate) covers build checks. GitHub Actions adds CodeQL, dependency review, container scanning, and weekly zizmor analysis.
 
 ## Optional budget alert
 
-Budgets notify but do not cap or stop spending:
+Budget alerts send notifications; charges continue after the threshold is reached:
 
 ```bash
 az deployment sub create \
@@ -203,7 +169,7 @@ az resource list --resource-group "$AZURE_RESOURCE_GROUP" --output table
 az containerapp show --resource-group "$AZURE_RESOURCE_GROUP" --name "$AZURE_APP_NAME"
 ```
 
-Deleting the dedicated resource group removes the app, environment, identity, registry, and stored images. Do this only when the lab is no longer needed:
+Confirm the resource-group name before deletion. This removes all resources in the group, including the app, environment, identities, registry, images, and any catalog storage:
 
 ```bash
 az group delete --name "$AZURE_RESOURCE_GROUP"
