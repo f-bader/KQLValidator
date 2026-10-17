@@ -37,7 +37,7 @@ public sealed partial class KqlValidationService(
         var schema = catalog.Get(request.Environment);
         var globals = globalStateFactory.Create(schema, request.Extensions);
         Kusto.Language.Utils.CancellationToken kustoCancellation = cancellationToken;
-        var code = KustoCode.ParseAndAnalyze(request.Query, globals, kustoCancellation);
+        var code = ColumnWildcardAnalysis.ParseAndAnalyze(request.Query, globals, cancellationToken);
         var fileProfileColumns = CollectFileProfileColumns(code, cancellationToken);
 
         var outputColumns = code.ResultType?.Members.OfType<ColumnSymbol>()
@@ -65,6 +65,7 @@ public sealed partial class KqlValidationService(
                 KqlLinter.Span(request.Query, diagnostic.Start, diagnostic.Length),
                 "https://learn.microsoft.com/en-us/kusto/query/",
                 diagnostic.Code.StartsWith("KS", StringComparison.Ordinal) ? "syntax" : "semantic"))
+            .Concat(ColumnWildcardAnalysis.EmptyProjectionDiagnostics(request.Query, code, cancellationToken))
             .Concat(fileProfileDiagnostics)
             .Concat(ValidateFileProfileLimits(request.Query, code, cancellationToken))
             .Concat(linter.Analyze(request, lintPolicy, code, cancellationToken))
