@@ -4602,6 +4602,10 @@
           "type": "string"
         },
         {
+          "name": "ApproverUpn",
+          "type": "string"
+        },
+        {
           "name": "DeliveryLocation",
           "type": "string"
         },
