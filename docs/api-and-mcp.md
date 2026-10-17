@@ -53,3 +53,18 @@ Validate new or changed KQL and revalidate after repairs. Use [schema discovery]
 Static analysis uses bundled and mounted schemas without inspecting a live workspace. Runtime success, payload coverage, and detection effectiveness require checks against actual data.
 
 All endpoints are unauthenticated. On deployments with external ingress, [catalog metadata is public](self-hosting.md#public-schema-disclosure).
+
+## Column wildcard projections
+
+Query validation for XDR, Sentinel, and unified catalogs supports prefix (`Name*`), suffix (`*1`), infix (`N*1`), and contains (`*1*`) column patterns.
+
+| Operator | Selection behavior |
+| --- | --- |
+| [`project-away`](https://learn.microsoft.com/en-us/kusto/query/project-away-operator) | Removes matching columns. Unmatched patterns leave the input columns unchanged. |
+| [`project-keep`](https://learn.microsoft.com/en-us/kusto/query/project-keep-operator) | Retains matching columns in input order. Unmatched patterns are ignored. |
+| [`project-reorder`](https://learn.microsoft.com/en-us/kusto/query/project-reorder-operator) | Reorders matching columns and retains remaining columns. Unmatched patterns are ignored. |
+| [`project-by-names`](https://learn.microsoft.com/en-us/kusto/query/project-by-names-operator) | Selects and orders columns using quoted names, patterns, or dynamic arrays. Unmatched names and patterns are ignored. |
+
+Missing explicit column names remain errors for `project-away`, `project-keep`, and `project-reorder`. Each projection must retain at least one column. `KQLV003` reports statically known empty selections, including intermediate projections followed by `count`, and remains active when lint is disabled. Dynamic selections that cannot be resolved statically require runtime verification.
+
+These behaviors were checked through Microsoft Graph advanced hunting on 2026-10-17 using synthetic columns, mixed selections, zero-match patterns, and join suffix cleanup. The shared query analyzer applies the same behavior to Sentinel validation.

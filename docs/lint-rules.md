@@ -55,7 +55,7 @@ For `target: defender-nrt` in `xdr`/`unified` detection requests, the query must
 
 ## Diagnostics and repairs
 
-See [response semantics](api-and-mcp.md#responses-and-limits) for validity and truncation. Parser and semantic errors retain their Kusto IDs and blocking severity. `KQLV002` flags a statically known FileProfile enrichment limit outside 1–1000 and remains active when lint is disabled. FileProfile column selectors are checked against invocation input columns.
+See [response semantics](api-and-mcp.md#responses-and-limits) for validity and truncation. Parser and semantic errors retain their Kusto IDs and blocking severity. `KQLV002` flags a statically known FileProfile enrichment limit outside 1–1000 and remains active when lint is disabled. FileProfile column selectors are checked against invocation input columns. `KQLV003` reports [column projections](api-and-mcp.md#column-wildcard-projections) that retain zero columns and remains active when lint is disabled.
 
 Time-filter rules `KQLH010`/`KQLH011` accept `>` or `>=`, optional whitespace before `ago`, and filters inside join branches.
 
