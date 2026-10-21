@@ -10,7 +10,7 @@ namespace KqlValidator.Tests;
 
 public sealed class ColumnRelationTests
 {
-    private readonly SchemaCatalog catalog = new();
+    private readonly SchemaCatalog catalog = TestSchemaCatalog.Bundled;
 
     private ValidationResponse Validate(string query, LintOptions? lint = null, KqlEnvironment environment = KqlEnvironment.Xdr,
         ValidationExtensions? extensions = null)

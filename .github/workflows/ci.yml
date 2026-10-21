@@ -34,7 +34,11 @@ jobs:
       - name: Build
         run: dotnet build kql-validator.slnx --configuration Release --no-restore
       - name: Test
-        run: dotnet test tests/KqlValidator.Tests/KqlValidator.Tests.csproj --configuration Release --no-build --no-restore
+        timeout-minutes: 5
+        run: >-
+          dotnet test tests/KqlValidator.Tests/KqlValidator.Tests.csproj
+          --configuration Release --no-build --no-restore
+          --timeout 3m --long-running 15 --output Detailed
       - name: Test mocked NRT response handling
         shell: pwsh
         run: ./scripts/Test-NrtProbe.ps1

@@ -6,7 +6,7 @@ namespace KqlValidator.Tests;
 /// <summary>Coverage for lint rules, limits, cancellation, and schema search paths.</summary>
 public sealed class ValidationCoverageTests
 {
-    private static readonly SchemaCatalog Catalog = new();
+    private static readonly SchemaCatalog Catalog = TestSchemaCatalog.Bundled;
     private static readonly LintRuleCatalog LintRules = new();
 
     private readonly KqlValidationService validator = new(

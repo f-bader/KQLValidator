@@ -27,7 +27,7 @@ public sealed class StructuredColumnCatalog
     };
     private readonly StructuredSnapshot snapshot;
     private readonly string hash;
-    private readonly StructuredVariant[] variants;
+    private readonly (string Table, string Column, StructuredVariant Variant)[] variants;
 
     public StructuredColumnCatalog(string path, bool required = true)
     {
@@ -53,31 +53,25 @@ public sealed class StructuredColumnCatalog
                 throw new InvalidDataException("Malformed structured columns snapshot.", e);
             }
         }
+        var entriesByTarget = snapshot.Entries.ToLookup(e => StructuredSnapshotValidator.TargetKey(e.Table, e.Column, e.Discriminators), StringComparer.Ordinal);
+        var actionsByTarget = snapshot.KnownActions.ToLookup(a => StructuredSnapshotValidator.TargetKey(a.Table, a.Column, a.Discriminators), StringComparer.Ordinal);
         variants = snapshot.Combinations.Select(c => (c.Table, c.Column, c.Discriminators))
             .Concat(snapshot.KnownActions.Select(c => (c.Table, c.Column, c.Discriminators)))
             .Concat(snapshot.Entries.Select(c => (c.Table, c.Column, c.Discriminators)))
-            .DistinctBy(c => Key(c.Table, c.Column, c.Discriminators))
-            .OrderBy(c => Key(c.Table, c.Column, c.Discriminators), StringComparer.Ordinal)
+            .Select(c => (c.Table, c.Column, c.Discriminators, Key: StructuredSnapshotValidator.TargetKey(c.Table, c.Column, c.Discriminators)))
+            .DistinctBy(c => c.Key, StringComparer.Ordinal)
+            .OrderBy(c => c.Key, StringComparer.Ordinal)
             .Select(c =>
             {
-                var entries = snapshot.Entries.Where(e => Key(e.Table, e.Column, e.Discriminators) == Key(c.Table, c.Column, c.Discriminators)).OrderBy(e => e.Id, StringComparer.Ordinal).ToArray();
-                var actions = snapshot.KnownActions.Where(e => Key(e.Table, e.Column, e.Discriminators) == Key(c.Table, c.Column, c.Discriminators)).ToArray();
-                return new StructuredVariant(c.Discriminators, Status(entries, true), entries, actions);
+                var entries = entriesByTarget[c.Key].OrderBy(e => e.Id, StringComparer.Ordinal).ToArray();
+                var actions = actionsByTarget[c.Key].ToArray();
+                return (c.Table, c.Column, new StructuredVariant(c.Discriminators, Status(entries, true), entries, actions));
             }).ToArray();
     }
 
-    // Keep table/column identity alongside each variant, including combinations with no captured shape.
-    private IEnumerable<(string Table, string Column, StructuredVariant Variant)> All() =>
-        snapshot.Combinations.Select(c => (c.Table, c.Column, c.Discriminators))
-            .Concat(snapshot.KnownActions.Select(c => (c.Table, c.Column, c.Discriminators)))
-            .Concat(snapshot.Entries.Select(c => (c.Table, c.Column, c.Discriminators)))
-            .DistinctBy(c => Key(c.Table, c.Column, c.Discriminators))
-            .OrderBy(c => Key(c.Table, c.Column, c.Discriminators), StringComparer.Ordinal)
-            .Zip(variants, (c, v) => (c.Table, c.Column, v));
-
     public StructuredListResponse List(EnvironmentSchema schema, string? table, string? column, int limit, string? cursor)
     {
-        var items = All().Where(x => Available(schema, x.Table, x.Column) is not null)
+        var items = variants.Where(x => Available(schema, x.Table, x.Column) is not null)
             .Where(x => (table is null || x.Table.Equals(table, StringComparison.OrdinalIgnoreCase)) &&
                 (column is null || x.Column.Equals(column, StringComparison.OrdinalIgnoreCase)))
             .GroupBy(x => (x.Table, x.Column)).Select(g => new StructuredColumnSummary(g.Key.Table, g.Key.Column,
@@ -101,7 +95,7 @@ public sealed class StructuredColumnCatalog
         if (discriminators is not null && discriminators.Any(d => string.IsNullOrWhiteSpace(d.Key) || d.Value is null))
             throw new ArgumentException("Discriminators must have nonempty keys and string values.");
         var type = Available(schema, table, column);
-        var items = type is null ? [] : All().Where(x => x.Table.Equals(table, StringComparison.OrdinalIgnoreCase) && x.Column.Equals(column, StringComparison.OrdinalIgnoreCase))
+        var items = type is null ? [] : variants.Where(x => x.Table.Equals(table, StringComparison.OrdinalIgnoreCase) && x.Column.Equals(column, StringComparison.OrdinalIgnoreCase))
             .Select(x => x.Variant).Where(v => discriminators is null || discriminators.All(d => v.Discriminators.TryGetValue(d.Key, out var value) && value == d.Value)).ToArray();
         var status = type is null ? "target-unavailable" : Status(items.SelectMany(v => v.Shapes), items.Length > 0);
         var page = Page(items, limit, cursor);
@@ -117,8 +111,6 @@ public sealed class StructuredColumnCatalog
     private static string Status(IEnumerable<StructuredEntry> entries, bool known) => entries.Any(e => e.Origin == "observed")
         ? "observed-shapes-available" : entries.Any() ? "illustrative-only" : known ? "known-combination-without-shape" : "no-catalog-match";
     private static string? Available(EnvironmentSchema schema, string table, string column) => schema.Tables.GetValueOrDefault(table)?.Columns.FirstOrDefault(c => c.Name.Equals(column, StringComparison.OrdinalIgnoreCase))?.Type;
-    private static string Key(string table, string column, IReadOnlyDictionary<string, string> discriminators) =>
-        JsonSerializer.Serialize(new { table, column, discriminators = discriminators.OrderBy(d => d.Key, StringComparer.Ordinal).ToArray() });
     private static (T[] Items, string? Next) Page<T>(T[] items, int limit, string? cursor)
     {
         limit = Math.Clamp(limit, 1, 100);

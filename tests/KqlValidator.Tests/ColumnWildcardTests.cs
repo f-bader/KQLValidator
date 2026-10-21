@@ -10,7 +10,7 @@ public sealed class ColumnWildcardTests
 
     public ColumnWildcardTests()
     {
-        var catalog = new SchemaCatalog();
+        var catalog = TestSchemaCatalog.Bundled;
         var rules = new LintRuleCatalog();
         validator = new(catalog, new GlobalStateFactory(), new RequestValidator(catalog, rules),
             new KqlLinter(catalog, rules), new DefenderNrtValidator(rules), rules);

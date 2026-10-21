@@ -404,7 +404,7 @@ public sealed class DefenderNrtProbeTests
 
     private static KqlValidationService Validator(DefenderNrtFeatures? features = null)
     {
-        var catalog = new SchemaCatalog();
+        var catalog = TestSchemaCatalog.Bundled;
         var rules = new LintRuleCatalog();
         return new(catalog, new GlobalStateFactory(), new RequestValidator(catalog, rules), new KqlLinter(catalog, rules),
             new DefenderNrtValidator(rules, features), rules);

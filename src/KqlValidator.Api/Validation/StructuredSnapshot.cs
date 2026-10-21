@@ -20,13 +20,14 @@ public sealed record StructuredSnapshot(int Version, IReadOnlyList<StructuredEnt
 
 public static class StructuredSnapshotValidator
 {
-    private static string Key(string table, string column, IReadOnlyDictionary<string, string> discriminators) =>
+    internal static string TargetKey(string table, string column, IReadOnlyDictionary<string, string> discriminators) =>
         JsonSerializer.Serialize(new { table, column, discriminators = discriminators.OrderBy(d => d.Key, StringComparer.Ordinal).ToArray() });
     public static void Validate(StructuredSnapshot value)
     {
         if (value.Version != 1 || value.Entries is null || value.Combinations is null || value.KnownActions is null)
             throw new InvalidDataException("Unsupported structured columns snapshot.");
         var ids = new HashSet<string>(StringComparer.Ordinal);
+        var entryShapes = new HashSet<(string Target, string Shape, string Origin)>();
         foreach (var e in value.Entries)
         {
             Target(e.Table, e.Column, e.Discriminators);
@@ -37,22 +38,27 @@ public static class StructuredSnapshotValidator
                 e.Fields.Any(f => f is null || string.IsNullOrWhiteSpace(f.Path) || string.IsNullOrWhiteSpace(f.Type)) ||
                 string.IsNullOrWhiteSpace(e.Notes) || string.IsNullOrWhiteSpace(e.SourceUrl) || e.GeneratorVersion < 1 || e.PolicyVersion < 1)
                 throw new InvalidDataException("Invalid structured entry.");
+            entryShapes.Add((TargetKey(e.Table, e.Column, e.Discriminators), e.ShapeId, e.Origin));
         }
         var combinations = new HashSet<string>(StringComparer.Ordinal);
+        var referencedShapes = new HashSet<(string Target, string Shape, string Origin)>();
         foreach (var c in value.Combinations)
         {
             Target(c.Table, c.Column, c.Discriminators);
-            if (!combinations.Add(Key(c.Table, c.Column, c.Discriminators)) || c.ObservedShapes is null || c.IllustrativeShapes is null)
+            var target = TargetKey(c.Table, c.Column, c.Discriminators);
+            if (!combinations.Add(target) || c.ObservedShapes is null || c.IllustrativeShapes is null)
                 throw new InvalidDataException("Invalid structured combination.");
             foreach (var (shapes, origin) in new[] { (c.ObservedShapes, "observed"), (c.IllustrativeShapes, "illustrative") })
                 foreach (var shape in shapes)
-                    if (!value.Entries.Any(e => e.ShapeId == shape && e.Origin == origin && Key(e.Table, e.Column, e.Discriminators) == Key(c.Table, c.Column, c.Discriminators)))
+                {
+                    var reference = (target, shape, origin);
+                    if (!entryShapes.Contains(reference))
                         throw new InvalidDataException("Unknown structured shape reference.");
+                    referencedShapes.Add(reference);
+                }
         }
-        foreach (var e in value.Entries)
-            if (!value.Combinations.Any(c => Key(c.Table, c.Column, c.Discriminators) == Key(e.Table, e.Column, e.Discriminators) &&
-                (e.Origin == "observed" ? c.ObservedShapes : c.IllustrativeShapes).Contains(e.ShapeId)))
-                throw new InvalidDataException("Structured entry is not referenced by its combination.");
+        if (!entryShapes.IsSubsetOf(referencedShapes))
+            throw new InvalidDataException("Structured entry is not referenced by its combination.");
         foreach (var a in value.KnownActions)
         {
             Target(a.Table, a.Column, a.Discriminators);
