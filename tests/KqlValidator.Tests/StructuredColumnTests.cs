@@ -10,7 +10,7 @@ namespace KqlValidator.Tests;
 
 public sealed class StructuredColumnTests(WebApplicationFactory<Program> factory) : IClassFixture<WebApplicationFactory<Program>>
 {
-    private readonly SchemaCatalog catalog = new();
+    private readonly SchemaCatalog catalog = TestSchemaCatalog.Bundled;
     private static string SnapshotPath => Path.Combine(AppContext.BaseDirectory, "Schemas", "structured-columns.json");
 
     [Fact]

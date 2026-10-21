@@ -11,7 +11,7 @@ public sealed class ValidationTests
 
     public ValidationTests()
     {
-        var catalog = new SchemaCatalog();
+        var catalog = TestSchemaCatalog.Bundled;
         lintRules = new LintRuleCatalog();
         validator = new KqlValidationService(
             catalog,
