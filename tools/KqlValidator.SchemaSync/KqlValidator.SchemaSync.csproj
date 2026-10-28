@@ -7,5 +7,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../../src/KqlValidator.Api/Validation/StructuredSnapshot.cs" Link="StructuredSnapshot.cs" />
+    <Compile Include="../../src/KqlValidator.Api/Validation/ColumnObservationSnapshot.cs" Link="ColumnObservationSnapshot.cs" />
   </ItemGroup>
 </Project>

@@ -24,6 +24,25 @@ Directory.CreateDirectory(outputDirectory);
 using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(60) };
 http.DefaultRequestHeaders.UserAgent.ParseAdd("kql-validator-schema-sync/1.0");
 
+// A local input supports reviewing a source PR before its public feed is deployed.
+var observations = ColumnObservationNormalizer.Normalize(arguments.TryGetValue("observations-file", out var observationFile)
+    ? await File.ReadAllTextAsync(observationFile)
+    : await http.GetStringAsync(ColumnObservationNormalizer.SourceUrl));
+EnforceDropGuard(Path.Combine(outputDirectory, "column-observations.json"), observations, "observations", 0.8);
+await WriteIfChanged(Path.Combine(outputDirectory, "column-observations.json"), observations);
+if (arguments.ContainsKey("observations-only"))
+{
+    var path = Path.Combine(outputDirectory, "manifest.json");
+    var manifest = File.Exists(path) ? JsonNode.Parse(await File.ReadAllTextAsync(path))!.AsObject() : new JsonObject();
+    var sources = manifest["sources"] as JsonArray ?? new JsonArray();
+    foreach (var source in sources.Where(n => n?["url"]?.GetValue<string>() == ColumnObservationNormalizer.SourceUrl).ToArray())
+        sources.Remove(source);
+    sources.Add(Source(ColumnObservationNormalizer.SourceUrl, observations));
+    if (sources.Parent is null) manifest["sources"] = sources;
+    await WriteIfChanged(path, manifest);
+    return;
+}
+
 JsonObject? xdr = null;
 JsonObject? actions = null;
 // Cross-platform enrichment refreshes even with --sentinel-only.
@@ -98,7 +117,7 @@ if (arguments.TryGetValue("asim-dir", out var asimDirectory))
 
 if (xdr is not null && actions is not null)
 {
-    var sources = new JsonArray(Source(xdrSchemaUrl, xdr), Source(actionTypesUrl, actions), Source(ColumnRelationNormalizer.SourceUrl, relations!), Source(StructuredColumnNormalizer.SourceUrl, structures));
+    var sources = new JsonArray(Source(xdrSchemaUrl, xdr), Source(actionTypesUrl, actions), Source(ColumnRelationNormalizer.SourceUrl, relations!), Source(StructuredColumnNormalizer.SourceUrl, structures), Source(ColumnObservationNormalizer.SourceUrl, observations));
     if (officialXdrTables is not null)
         foreach (var source in officialXdrSources)
             if (officialXdrTables["tables"]!.AsArray().FirstOrDefault(table => table!["name"]!.GetValue<string>().Equals(source.TableName, StringComparison.OrdinalIgnoreCase)) is JsonObject table)
@@ -114,9 +133,11 @@ else
     var manifestPath = Path.Combine(outputDirectory, "manifest.json");
     var manifest = File.Exists(manifestPath) ? JsonNode.Parse(await File.ReadAllTextAsync(manifestPath))!.AsObject() : new JsonObject();
     var sources = manifest["sources"] as JsonArray ?? new JsonArray();
-    foreach (var source in sources.Where(n => n?["url"]?.GetValue<string>() == StructuredColumnNormalizer.SourceUrl).ToArray())
+    foreach (var source in sources.Where(n => n?["url"]?.GetValue<string>() is var url &&
+        (url == StructuredColumnNormalizer.SourceUrl || url == ColumnObservationNormalizer.SourceUrl)).ToArray())
         sources.Remove(source);
     sources.Add(Source(StructuredColumnNormalizer.SourceUrl, structures));
+    sources.Add(Source(ColumnObservationNormalizer.SourceUrl, observations));
     if (sources.Parent is null) manifest["sources"] = sources;
     await WriteIfChanged(manifestPath, manifest);
 }
@@ -130,6 +151,7 @@ static Dictionary<string, string> ParseArguments(string[] values)
             throw new ArgumentException("Arguments must be --name value pairs, except --include-custom-tables and --sentinel-only.");
         var name = values[i][2..];
         if (name.Equals("include-custom-tables", StringComparison.OrdinalIgnoreCase) ||
+            name.Equals("observations-only", StringComparison.OrdinalIgnoreCase) ||
             name.Equals("sentinel-only", StringComparison.OrdinalIgnoreCase) ||
             name.Equals("prune-official-xdr-tables", StringComparison.OrdinalIgnoreCase))
         {

@@ -1,6 +1,8 @@
 namespace KqlValidator.Validation;
 
-public sealed record SchemaColumn(string Name, string Type);
+public sealed record SchemaColumn(string Name, string Type,
+    [property: System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    IReadOnlyList<ColumnObservation>? Observations = null);
 
 public sealed record SchemaTable(string Name, IReadOnlyList<SchemaColumn> Columns);
 

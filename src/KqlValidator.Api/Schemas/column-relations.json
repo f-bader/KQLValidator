@@ -129,19 +129,27 @@
           "queryLanguage": "kusto"
         },
         {
+          "title": "Pivot from AAD Graph activity to the sign-in",
+          "text": "Invictus IR describes correlating AADGraphActivityLogs.SignInActivityId with SigninLogs.UniqueTokenIdentifier after removing trailing token padding. This adapted example uses EntraIdSignInEvents.UniqueTokenId in Defender. Preserve identifier case and verify the formats in your own data; padding normalization does not convert GUID-shaped values into token identifiers.",
+          "sourceLabel": "Invictus IR: The missing link \u2014 AADGraphActivityLogs finally arrives",
+          "sourceUrl": "https://www.invictus-ir.com/news/the-missing-link-aadgraphactivitylogs-finally-arrives",
+          "query": "let LeftEvents = EntraIdSignInEvents\n| where Timestamp \u003E ago(7d)\n| extend LeftKey = trim_end(@\u0022=\u002B\u0022, tostring(UniqueTokenId))\n| where isnotempty(LeftKey);\nlet RightEvents = AADGraphActivityLogs\n| where TimeRequested \u003E ago(7d)\n| extend RightKey = trim_end(@\u0022=\u002B\u0022, tostring(SignInActivityId))\n| where isnotempty(RightKey);\nLeftEvents\n| join kind=inner (RightEvents) on $left.LeftKey == $right.RightKey\n| project-away LeftKey, RightKey",
+          "queryLanguage": "kusto"
+        },
+        {
           "title": "SignInActivityId formats",
-          "text": "The Cloudbrothers article reports both padded token identifiers and GUID-shaped SignInActivityId values in AAD Graph logs. Removing trailing padding can resolve that formatting difference; GUID-shaped values were not found in the other connected log sources in the author\u2019s lab. Preserve case, check the formats in your own data, and investigate unmatched values without assuming a GUID is the same as sign-in Id or CorrelationId.",
+          "text": "SignInActivityId can contain padded token identifiers and GUID-shaped values. Remove trailing Base64 padding when correlating token identifiers and preserve case. Padding removal does not convert GUID-shaped values into token identifiers. Inspect unmatched GUID-shaped values separately.",
           "sourceLabel": "Cloudbrothers: Now You See Me \u2014 AADGraphActivityLogs",
           "sourceUrl": "https://cloudbrothers.info/aadgraphactivitylogs/",
           "query": "AADGraphActivityLogs\n| where TimeGenerated \u003E ago(90d)\n| summarize by SignInActivityId\n| summarize\n    Padded=countif(SignInActivityId endswith \u0022==\u0022),\n    GUID=countif(SignInActivityId matches regex @\u0022^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$\u0022),\n    TotalUnique=dcount(SignInActivityId)",
           "queryLanguage": "kusto"
         },
         {
-          "title": "Pivot from AAD Graph activity to the sign-in",
-          "text": "Invictus IR describes correlating AADGraphActivityLogs.SignInActivityId with SigninLogs.UniqueTokenIdentifier after removing trailing token padding. This adapted example uses EntraIdSignInEvents.UniqueTokenId in Defender. Preserve identifier case and verify the formats in your own data; padding normalization does not convert GUID-shaped values into token identifiers.",
+          "title": "SignInActivityId formats",
+          "text": "SignInActivityId can contain padded token identifiers and GUID-shaped values. Remove trailing Base64 padding when correlating token identifiers and preserve case. Padding removal does not convert GUID-shaped values into token identifiers. Inspect unmatched GUID-shaped values separately.",
           "sourceLabel": "Invictus IR: The missing link \u2014 AADGraphActivityLogs finally arrives",
           "sourceUrl": "https://www.invictus-ir.com/news/the-missing-link-aadgraphactivitylogs-finally-arrives",
-          "query": "let LeftEvents = EntraIdSignInEvents\n| where Timestamp \u003E ago(7d)\n| extend LeftKey = trim_end(@\u0022=\u002B\u0022, tostring(UniqueTokenId))\n| where isnotempty(LeftKey);\nlet RightEvents = AADGraphActivityLogs\n| where TimeRequested \u003E ago(7d)\n| extend RightKey = trim_end(@\u0022=\u002B\u0022, tostring(SignInActivityId))\n| where isnotempty(RightKey);\nLeftEvents\n| join kind=inner (RightEvents) on $left.LeftKey == $right.RightKey\n| project-away LeftKey, RightKey",
+          "query": "AADGraphActivityLogs\n| where TimeGenerated \u003E ago(90d)\n| summarize by SignInActivityId\n| summarize\n    Padded=countif(SignInActivityId endswith \u0022==\u0022),\n    GUID=countif(SignInActivityId matches regex @\u0022^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$\u0022),\n    TotalUnique=dcount(SignInActivityId)",
           "queryLanguage": "kusto"
         }
       ],
@@ -167,7 +175,8 @@
         "Evidence"
       ],
       "guidance": "An alert can have multiple evidence records, so expect one-to-many results. Use the evidence role and entity type to understand how each item relates to the alert.",
-      "family": "defender-alert"
+      "family": "defender-alert",
+      "otherNotes": []
     },
     {
       "id": "email-to-attachment-info",
@@ -189,7 +198,8 @@
         "Attachments"
       ],
       "guidance": "An email can have multiple attachments, so expect one-to-many results. Use attachment names, hashes, and timestamps to review each file.",
-      "family": "email-message"
+      "family": "email-message",
+      "otherNotes": []
     },
     {
       "id": "email-to-url-info",
@@ -211,7 +221,8 @@
         "URLs"
       ],
       "guidance": "An email can contain multiple URLs. Review each URL and its domain alongside the email verdict and recipient context.",
-      "family": "email-message"
+      "family": "email-message",
+      "otherNotes": []
     },
     {
       "id": "email-to-post-delivery-events",
@@ -233,7 +244,8 @@
         "Remediation"
       ],
       "guidance": "A message may have multiple post-delivery action records. Compare action, result, and trigger fields to understand what happened and when.",
-      "family": "email-message"
+      "family": "email-message",
+      "otherNotes": []
     },
     {
       "id": "email-to-url-click-events",
@@ -255,7 +267,8 @@
         "URL clicks"
       ],
       "guidance": "A message can have multiple click records, including clicks by different recipients or at different times. Use the click timestamp, account, and URL to narrow the investigation.",
-      "family": "email-message"
+      "family": "email-message",
+      "otherNotes": []
     },
     {
       "id": "device-info-to-process-events",
@@ -276,7 +289,8 @@
         "Process activity"
       ],
       "guidance": "A device can have many process events. Set a useful time range on both tables and retain the device name and event timestamp when reviewing results.",
-      "family": "defender-device"
+      "family": "defender-device",
+      "otherNotes": []
     },
     {
       "id": "device-info-to-network-events",
@@ -297,7 +311,8 @@
         "Network activity"
       ],
       "guidance": "A device can have many network events. Set a useful time range on both tables and review remote addresses, ports, initiating process details, and event timestamps.",
-      "family": "defender-device"
+      "family": "defender-device",
+      "otherNotes": []
     },
     {
       "id": "identity-info-to-logon-events",
@@ -319,7 +334,8 @@
         "Logon activity"
       ],
       "guidance": "An account can have many logon events, and IdentityInfo can contain multiple profile snapshots. For enrichment, select the newest IdentityInfo record per AccountObjectId and keep the logon event time for investigation.",
-      "family": "entra-user"
+      "family": "entra-user",
+      "otherNotes": []
     },
     {
       "id": "entra-signin-microsoft-graph-session",
@@ -839,10 +855,18 @@
       "otherNotes": [
         {
           "title": "SignInActivityId formats",
-          "text": "Check padded and GUID-shaped identifiers before relying on this relationship. Remove trailing padding only; GUID conversion is not established.",
+          "text": "SignInActivityId can contain padded token identifiers and GUID-shaped values. Remove trailing Base64 padding when correlating token identifiers and preserve case. Padding removal does not convert GUID-shaped values into token identifiers. Inspect unmatched GUID-shaped values separately.",
           "sourceLabel": "Cloudbrothers: Now You See Me \u2014 AADGraphActivityLogs",
           "sourceUrl": "https://cloudbrothers.info/aadgraphactivitylogs/",
-          "query": "let LeftEvents = SigninLogs\n| where TimeGenerated \u003E ago(7d)\n| extend LeftKey = trim_end(@\u0022=\u002B\u0022, tostring(UniqueTokenIdentifier))\n| where isnotempty(LeftKey);\nlet RightEvents = AADGraphActivityLogs\n| where TimeRequested \u003E ago(7d)\n| extend RightKey = trim_end(@\u0022=\u002B\u0022, tostring(SignInActivityId))\n| where isnotempty(RightKey);\nLeftEvents\n| join kind=inner (RightEvents) on $left.LeftKey == $right.RightKey\n| project-away LeftKey, RightKey",
+          "query": "AADGraphActivityLogs\n| where TimeGenerated \u003E ago(90d)\n| summarize by SignInActivityId\n| summarize\n    Padded=countif(SignInActivityId endswith \u0022==\u0022),\n    GUID=countif(SignInActivityId matches regex @\u0022^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$\u0022),\n    TotalUnique=dcount(SignInActivityId)",
+          "queryLanguage": "kusto"
+        },
+        {
+          "title": "SignInActivityId formats",
+          "text": "SignInActivityId can contain padded token identifiers and GUID-shaped values. Remove trailing Base64 padding when correlating token identifiers and preserve case. Padding removal does not convert GUID-shaped values into token identifiers. Inspect unmatched GUID-shaped values separately.",
+          "sourceLabel": "Invictus IR: The missing link \u2014 AADGraphActivityLogs finally arrives",
+          "sourceUrl": "https://www.invictus-ir.com/news/the-missing-link-aadgraphactivitylogs-finally-arrives",
+          "query": "AADGraphActivityLogs\n| where TimeGenerated \u003E ago(90d)\n| summarize by SignInActivityId\n| summarize\n    Padded=countif(SignInActivityId endswith \u0022==\u0022),\n    GUID=countif(SignInActivityId matches regex @\u0022^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$\u0022),\n    TotalUnique=dcount(SignInActivityId)",
           "queryLanguage": "kusto"
         }
       ],
@@ -868,7 +892,8 @@
         "Microsoft Sentinel"
       ],
       "guidance": "This is the Entra sid claim and links authentication artifacts from the same root sign-in. A session can contain many tokens and activity records; SessionId and UniqueTokenIdentifier are different keys. Exclude empty values and retain actor, tenant, and time context. Some application-only or background events have no session ID.",
-      "family": "entra-session"
+      "family": "entra-session",
+      "otherNotes": []
     },
     {
       "id": "signin-logs-aad-graph-activity-logs-session",
@@ -890,7 +915,8 @@
         "Microsoft Sentinel"
       ],
       "guidance": "This is the Entra sid claim and links authentication artifacts from the same root sign-in. A session can contain many tokens and activity records; SessionId and UniqueTokenIdentifier are different keys. Exclude empty values and retain actor, tenant, and time context. Some application-only or background events have no session ID. Use TimeRequested for event timing and allow for ingestion delay.",
-      "family": "entra-session"
+      "family": "entra-session",
+      "otherNotes": []
     },
     {
       "id": "signin-logs-office-activity-token",
@@ -984,7 +1010,8 @@
         "Nested JSON"
       ],
       "guidance": "Compare non-empty token identifiers exactly and preserve case; never lowercase a UTI. One token can have many activity records. Keep actor, tenant, application, and time context, and include the originating sign-in in the lookback. A missing match can reflect retention or collection gaps. AppAccessContext is populated only for supported Exchange, SharePoint, and Teams audit events; aggregated or background events can omit it. The property names are case-sensitive.",
-      "family": "entra-token"
+      "family": "entra-token",
+      "otherNotes": []
     },
     {
       "id": "signin-logs-cloudapp-m365-session",
@@ -1008,7 +1035,8 @@
         "Nested JSON"
       ],
       "guidance": "This is the Entra sid claim and links authentication artifacts from the same root sign-in. A session can contain many tokens and activity records; SessionId and UniqueTokenIdentifier are different keys. Exclude empty values and retain actor, tenant, and time context. Some application-only or background events have no session ID. AppAccessContext is populated only for supported Exchange, SharePoint, and Teams audit events; aggregated or background events can omit it. The property names are case-sensitive.",
-      "family": "entra-session"
+      "family": "entra-session",
+      "otherNotes": []
     },
     {
       "id": "aad-non-interactive-user-sign-in-logs-graphapi-audit-events-unique-token-identifier",
@@ -1030,7 +1058,8 @@
         "Microsoft Graph"
       ],
       "guidance": "Compare non-empty token identifiers exactly and preserve case; never lowercase a UTI. One token can have many activity records. Keep actor, tenant, application, and time context, and include the originating sign-in in the lookback. A missing match can reflect retention or collection gaps.",
-      "family": "entra-token"
+      "family": "entra-token",
+      "otherNotes": []
     },
     {
       "id": "aad-non-interactive-user-sign-in-logs-microsoft-graph-activity-logs-sign-in-activity-id",
@@ -1053,7 +1082,8 @@
         "Microsoft Sentinel"
       ],
       "guidance": "Compare non-empty token identifiers exactly and preserve case; never lowercase a UTI. One token can have many activity records. Keep actor, tenant, application, and time context, and include the originating sign-in in the lookback. A missing match can reflect retention or collection gaps.",
-      "family": "entra-token"
+      "family": "entra-token",
+      "otherNotes": []
     },
     {
       "id": "aad-non-interactive-user-sign-in-logs-microsoft-graph-activity-logs-unique-token-id",
@@ -1076,7 +1106,8 @@
         "Microsoft Sentinel"
       ],
       "guidance": "Compare non-empty token identifiers exactly and preserve case; never lowercase a UTI. One token can have many activity records. Keep actor, tenant, application, and time context, and include the originating sign-in in the lookback. A missing match can reflect retention or collection gaps.",
-      "family": "entra-token"
+      "family": "entra-token",
+      "otherNotes": []
     },
     {
       "id": "aad-non-interactive-user-sign-in-logs-aad-graph-activity-logs-sign-in-activity-id",
@@ -1103,10 +1134,18 @@
       "otherNotes": [
         {
           "title": "SignInActivityId formats",
-          "text": "Check padded and GUID-shaped identifiers before relying on this relationship. Remove trailing padding only; GUID conversion is not established.",
+          "text": "SignInActivityId can contain padded token identifiers and GUID-shaped values. Remove trailing Base64 padding when correlating token identifiers and preserve case. Padding removal does not convert GUID-shaped values into token identifiers. Inspect unmatched GUID-shaped values separately.",
           "sourceLabel": "Cloudbrothers: Now You See Me \u2014 AADGraphActivityLogs",
           "sourceUrl": "https://cloudbrothers.info/aadgraphactivitylogs/",
-          "query": "let LeftEvents = AADNonInteractiveUserSignInLogs\n| where TimeGenerated \u003E ago(7d)\n| extend LeftKey = trim_end(@\u0022=\u002B\u0022, tostring(UniqueTokenIdentifier))\n| where isnotempty(LeftKey);\nlet RightEvents = AADGraphActivityLogs\n| where TimeRequested \u003E ago(7d)\n| extend RightKey = trim_end(@\u0022=\u002B\u0022, tostring(SignInActivityId))\n| where isnotempty(RightKey);\nLeftEvents\n| join kind=inner (RightEvents) on $left.LeftKey == $right.RightKey\n| project-away LeftKey, RightKey",
+          "query": "AADGraphActivityLogs\n| where TimeGenerated \u003E ago(90d)\n| summarize by SignInActivityId\n| summarize\n    Padded=countif(SignInActivityId endswith \u0022==\u0022),\n    GUID=countif(SignInActivityId matches regex @\u0022^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$\u0022),\n    TotalUnique=dcount(SignInActivityId)",
+          "queryLanguage": "kusto"
+        },
+        {
+          "title": "SignInActivityId formats",
+          "text": "SignInActivityId can contain padded token identifiers and GUID-shaped values. Remove trailing Base64 padding when correlating token identifiers and preserve case. Padding removal does not convert GUID-shaped values into token identifiers. Inspect unmatched GUID-shaped values separately.",
+          "sourceLabel": "Invictus IR: The missing link \u2014 AADGraphActivityLogs finally arrives",
+          "sourceUrl": "https://www.invictus-ir.com/news/the-missing-link-aadgraphactivitylogs-finally-arrives",
+          "query": "AADGraphActivityLogs\n| where TimeGenerated \u003E ago(90d)\n| summarize by SignInActivityId\n| summarize\n    Padded=countif(SignInActivityId endswith \u0022==\u0022),\n    GUID=countif(SignInActivityId matches regex @\u0022^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$\u0022),\n    TotalUnique=dcount(SignInActivityId)",
           "queryLanguage": "kusto"
         }
       ],
@@ -1132,7 +1171,8 @@
         "Microsoft Sentinel"
       ],
       "guidance": "This is the Entra sid claim and links authentication artifacts from the same root sign-in. A session can contain many tokens and activity records; SessionId and UniqueTokenIdentifier are different keys. Exclude empty values and retain actor, tenant, and time context. Some application-only or background events have no session ID.",
-      "family": "entra-session"
+      "family": "entra-session",
+      "otherNotes": []
     },
     {
       "id": "aad-non-interactive-user-sign-in-logs-aad-graph-activity-logs-session",
@@ -1154,7 +1194,8 @@
         "Microsoft Sentinel"
       ],
       "guidance": "This is the Entra sid claim and links authentication artifacts from the same root sign-in. A session can contain many tokens and activity records; SessionId and UniqueTokenIdentifier are different keys. Exclude empty values and retain actor, tenant, and time context. Some application-only or background events have no session ID. Use TimeRequested for event timing and allow for ingestion delay.",
-      "family": "entra-session"
+      "family": "entra-session",
+      "otherNotes": []
     },
     {
       "id": "aad-non-interactive-user-sign-in-logs-office-activity-token",
@@ -1179,7 +1220,8 @@
         "Nested JSON"
       ],
       "guidance": "Compare non-empty token identifiers exactly and preserve case; never lowercase a UTI. One token can have many activity records. Keep actor, tenant, application, and time context, and include the originating sign-in in the lookback. A missing match can reflect retention or collection gaps. AppAccessContext is populated only for supported Exchange, SharePoint, and Teams audit events; aggregated or background events can omit it. The property names are case-sensitive.",
-      "family": "entra-token"
+      "family": "entra-token",
+      "otherNotes": []
     },
     {
       "id": "aad-non-interactive-user-sign-in-logs-office-activity-session",
@@ -1204,7 +1246,8 @@
         "Nested JSON"
       ],
       "guidance": "This is the Entra sid claim and links authentication artifacts from the same root sign-in. A session can contain many tokens and activity records; SessionId and UniqueTokenIdentifier are different keys. Exclude empty values and retain actor, tenant, and time context. Some application-only or background events have no session ID. AppAccessContext is populated only for supported Exchange, SharePoint, and Teams audit events; aggregated or background events can omit it. The property names are case-sensitive.",
-      "family": "entra-session"
+      "family": "entra-session",
+      "otherNotes": []
     },
     {
       "id": "aad-non-interactive-user-sign-in-logs-cloudapp-m365-token",
@@ -1228,7 +1271,8 @@
         "Nested JSON"
       ],
       "guidance": "Compare non-empty token identifiers exactly and preserve case; never lowercase a UTI. One token can have many activity records. Keep actor, tenant, application, and time context, and include the originating sign-in in the lookback. A missing match can reflect retention or collection gaps. AppAccessContext is populated only for supported Exchange, SharePoint, and Teams audit events; aggregated or background events can omit it. The property names are case-sensitive.",
-      "family": "entra-token"
+      "family": "entra-token",
+      "otherNotes": []
     },
     {
       "id": "aad-non-interactive-user-sign-in-logs-cloudapp-m365-session",
@@ -1252,7 +1296,8 @@
         "Nested JSON"
       ],
       "guidance": "This is the Entra sid claim and links authentication artifacts from the same root sign-in. A session can contain many tokens and activity records; SessionId and UniqueTokenIdentifier are different keys. Exclude empty values and retain actor, tenant, and time context. Some application-only or background events have no session ID. AppAccessContext is populated only for supported Exchange, SharePoint, and Teams audit events; aggregated or background events can omit it. The property names are case-sensitive.",
-      "family": "entra-session"
+      "family": "entra-session",
+      "otherNotes": []
     },
     {
       "id": "aad-service-principal-sign-in-logs-graphapi-audit-events-unique-token-identifier",
@@ -1274,7 +1319,8 @@
         "Microsoft Graph"
       ],
       "guidance": "Compare non-empty token identifiers exactly and preserve case; never lowercase a UTI. One token can have many activity records. Keep actor, tenant, application, and time context, and include the originating sign-in in the lookback. A missing match can reflect retention or collection gaps.",
-      "family": "entra-token"
+      "family": "entra-token",
+      "otherNotes": []
     },
     {
       "id": "aad-service-principal-sign-in-logs-microsoft-graph-activity-logs-sign-in-activity-id",
@@ -1297,7 +1343,8 @@
         "Microsoft Sentinel"
       ],
       "guidance": "Compare non-empty token identifiers exactly and preserve case; never lowercase a UTI. One token can have many activity records. Keep actor, tenant, application, and time context, and include the originating sign-in in the lookback. A missing match can reflect retention or collection gaps.",
-      "family": "entra-token"
+      "family": "entra-token",
+      "otherNotes": []
     },
     {
       "id": "aad-service-principal-sign-in-logs-microsoft-graph-activity-logs-unique-token-id",
@@ -1320,7 +1367,8 @@
         "Microsoft Sentinel"
       ],
       "guidance": "Compare non-empty token identifiers exactly and preserve case; never lowercase a UTI. One token can have many activity records. Keep actor, tenant, application, and time context, and include the originating sign-in in the lookback. A missing match can reflect retention or collection gaps.",
-      "family": "entra-token"
+      "family": "entra-token",
+      "otherNotes": []
     },
     {
       "id": "aad-service-principal-sign-in-logs-aad-graph-activity-logs-sign-in-activity-id",
@@ -1347,10 +1395,18 @@
       "otherNotes": [
         {
           "title": "SignInActivityId formats",
-          "text": "Check padded and GUID-shaped identifiers before relying on this relationship. Remove trailing padding only; GUID conversion is not established.",
+          "text": "SignInActivityId can contain padded token identifiers and GUID-shaped values. Remove trailing Base64 padding when correlating token identifiers and preserve case. Padding removal does not convert GUID-shaped values into token identifiers. Inspect unmatched GUID-shaped values separately.",
           "sourceLabel": "Cloudbrothers: Now You See Me \u2014 AADGraphActivityLogs",
           "sourceUrl": "https://cloudbrothers.info/aadgraphactivitylogs/",
-          "query": "let LeftEvents = AADServicePrincipalSignInLogs\n| where TimeGenerated \u003E ago(7d)\n| extend LeftKey = trim_end(@\u0022=\u002B\u0022, tostring(UniqueTokenIdentifier))\n| where isnotempty(LeftKey);\nlet RightEvents = AADGraphActivityLogs\n| where TimeRequested \u003E ago(7d)\n| extend RightKey = trim_end(@\u0022=\u002B\u0022, tostring(SignInActivityId))\n| where isnotempty(RightKey);\nLeftEvents\n| join kind=inner (RightEvents) on $left.LeftKey == $right.RightKey\n| project-away LeftKey, RightKey",
+          "query": "AADGraphActivityLogs\n| where TimeGenerated \u003E ago(90d)\n| summarize by SignInActivityId\n| summarize\n    Padded=countif(SignInActivityId endswith \u0022==\u0022),\n    GUID=countif(SignInActivityId matches regex @\u0022^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$\u0022),\n    TotalUnique=dcount(SignInActivityId)",
+          "queryLanguage": "kusto"
+        },
+        {
+          "title": "SignInActivityId formats",
+          "text": "SignInActivityId can contain padded token identifiers and GUID-shaped values. Remove trailing Base64 padding when correlating token identifiers and preserve case. Padding removal does not convert GUID-shaped values into token identifiers. Inspect unmatched GUID-shaped values separately.",
+          "sourceLabel": "Invictus IR: The missing link \u2014 AADGraphActivityLogs finally arrives",
+          "sourceUrl": "https://www.invictus-ir.com/news/the-missing-link-aadgraphactivitylogs-finally-arrives",
+          "query": "AADGraphActivityLogs\n| where TimeGenerated \u003E ago(90d)\n| summarize by SignInActivityId\n| summarize\n    Padded=countif(SignInActivityId endswith \u0022==\u0022),\n    GUID=countif(SignInActivityId matches regex @\u0022^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$\u0022),\n    TotalUnique=dcount(SignInActivityId)",
           "queryLanguage": "kusto"
         }
       ],
@@ -1376,7 +1432,8 @@
         "Microsoft Sentinel"
       ],
       "guidance": "This is the Entra sid claim and links authentication artifacts from the same root sign-in. A session can contain many tokens and activity records; SessionId and UniqueTokenIdentifier are different keys. Exclude empty values and retain actor, tenant, and time context. Some application-only or background events have no session ID.",
-      "family": "entra-session"
+      "family": "entra-session",
+      "otherNotes": []
     },
     {
       "id": "aad-service-principal-sign-in-logs-aad-graph-activity-logs-session",
@@ -1398,7 +1455,8 @@
         "Microsoft Sentinel"
       ],
       "guidance": "This is the Entra sid claim and links authentication artifacts from the same root sign-in. A session can contain many tokens and activity records; SessionId and UniqueTokenIdentifier are different keys. Exclude empty values and retain actor, tenant, and time context. Some application-only or background events have no session ID. Use TimeRequested for event timing and allow for ingestion delay.",
-      "family": "entra-session"
+      "family": "entra-session",
+      "otherNotes": []
     },
     {
       "id": "aad-service-principal-sign-in-logs-office-activity-token",
@@ -1423,7 +1481,8 @@
         "Nested JSON"
       ],
       "guidance": "Compare non-empty token identifiers exactly and preserve case; never lowercase a UTI. One token can have many activity records. Keep actor, tenant, application, and time context, and include the originating sign-in in the lookback. A missing match can reflect retention or collection gaps. AppAccessContext is populated only for supported Exchange, SharePoint, and Teams audit events; aggregated or background events can omit it. The property names are case-sensitive.",
-      "family": "entra-token"
+      "family": "entra-token",
+      "otherNotes": []
     },
     {
       "id": "aad-service-principal-sign-in-logs-office-activity-session",
@@ -1448,7 +1507,8 @@
         "Nested JSON"
       ],
       "guidance": "This is the Entra sid claim and links authentication artifacts from the same root sign-in. A session can contain many tokens and activity records; SessionId and UniqueTokenIdentifier are different keys. Exclude empty values and retain actor, tenant, and time context. Some application-only or background events have no session ID. AppAccessContext is populated only for supported Exchange, SharePoint, and Teams audit events; aggregated or background events can omit it. The property names are case-sensitive.",
-      "family": "entra-session"
+      "family": "entra-session",
+      "otherNotes": []
     },
     {
       "id": "aad-managed-identity-sign-in-logs-graphapi-audit-events-unique-token-identifier",
@@ -1470,7 +1530,8 @@
         "Microsoft Graph"
       ],
       "guidance": "Compare non-empty token identifiers exactly and preserve case; never lowercase a UTI. One token can have many activity records. Keep actor, tenant, application, and time context, and include the originating sign-in in the lookback. A missing match can reflect retention or collection gaps.",
-      "family": "entra-token"
+      "family": "entra-token",
+      "otherNotes": []
     },
     {
       "id": "aad-managed-identity-sign-in-logs-microsoft-graph-activity-logs-sign-in-activity-id",
@@ -1493,7 +1554,8 @@
         "Microsoft Sentinel"
       ],
       "guidance": "Compare non-empty token identifiers exactly and preserve case; never lowercase a UTI. One token can have many activity records. Keep actor, tenant, application, and time context, and include the originating sign-in in the lookback. A missing match can reflect retention or collection gaps.",
-      "family": "entra-token"
+      "family": "entra-token",
+      "otherNotes": []
     },
     {
       "id": "aad-managed-identity-sign-in-logs-microsoft-graph-activity-logs-unique-token-id",
@@ -1516,7 +1578,8 @@
         "Microsoft Sentinel"
       ],
       "guidance": "Compare non-empty token identifiers exactly and preserve case; never lowercase a UTI. One token can have many activity records. Keep actor, tenant, application, and time context, and include the originating sign-in in the lookback. A missing match can reflect retention or collection gaps.",
-      "family": "entra-token"
+      "family": "entra-token",
+      "otherNotes": []
     },
     {
       "id": "aad-managed-identity-sign-in-logs-aad-graph-activity-logs-sign-in-activity-id",
@@ -1543,10 +1606,18 @@
       "otherNotes": [
         {
           "title": "SignInActivityId formats",
-          "text": "Check padded and GUID-shaped identifiers before relying on this relationship. Remove trailing padding only; GUID conversion is not established.",
+          "text": "SignInActivityId can contain padded token identifiers and GUID-shaped values. Remove trailing Base64 padding when correlating token identifiers and preserve case. Padding removal does not convert GUID-shaped values into token identifiers. Inspect unmatched GUID-shaped values separately.",
           "sourceLabel": "Cloudbrothers: Now You See Me \u2014 AADGraphActivityLogs",
           "sourceUrl": "https://cloudbrothers.info/aadgraphactivitylogs/",
-          "query": "let LeftEvents = AADManagedIdentitySignInLogs\n| where TimeGenerated \u003E ago(7d)\n| extend LeftKey = trim_end(@\u0022=\u002B\u0022, tostring(UniqueTokenIdentifier))\n| where isnotempty(LeftKey);\nlet RightEvents = AADGraphActivityLogs\n| where TimeRequested \u003E ago(7d)\n| extend RightKey = trim_end(@\u0022=\u002B\u0022, tostring(SignInActivityId))\n| where isnotempty(RightKey);\nLeftEvents\n| join kind=inner (RightEvents) on $left.LeftKey == $right.RightKey\n| project-away LeftKey, RightKey",
+          "query": "AADGraphActivityLogs\n| where TimeGenerated \u003E ago(90d)\n| summarize by SignInActivityId\n| summarize\n    Padded=countif(SignInActivityId endswith \u0022==\u0022),\n    GUID=countif(SignInActivityId matches regex @\u0022^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$\u0022),\n    TotalUnique=dcount(SignInActivityId)",
+          "queryLanguage": "kusto"
+        },
+        {
+          "title": "SignInActivityId formats",
+          "text": "SignInActivityId can contain padded token identifiers and GUID-shaped values. Remove trailing Base64 padding when correlating token identifiers and preserve case. Padding removal does not convert GUID-shaped values into token identifiers. Inspect unmatched GUID-shaped values separately.",
+          "sourceLabel": "Invictus IR: The missing link \u2014 AADGraphActivityLogs finally arrives",
+          "sourceUrl": "https://www.invictus-ir.com/news/the-missing-link-aadgraphactivitylogs-finally-arrives",
+          "query": "AADGraphActivityLogs\n| where TimeGenerated \u003E ago(90d)\n| summarize by SignInActivityId\n| summarize\n    Padded=countif(SignInActivityId endswith \u0022==\u0022),\n    GUID=countif(SignInActivityId matches regex @\u0022^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$\u0022),\n    TotalUnique=dcount(SignInActivityId)",
           "queryLanguage": "kusto"
         }
       ],
@@ -1572,7 +1643,8 @@
         "Microsoft Sentinel"
       ],
       "guidance": "This is the Entra sid claim and links authentication artifacts from the same root sign-in. A session can contain many tokens and activity records; SessionId and UniqueTokenIdentifier are different keys. Exclude empty values and retain actor, tenant, and time context. Some application-only or background events have no session ID.",
-      "family": "entra-session"
+      "family": "entra-session",
+      "otherNotes": []
     },
     {
       "id": "aad-managed-identity-sign-in-logs-aad-graph-activity-logs-session",
@@ -1594,7 +1666,8 @@
         "Microsoft Sentinel"
       ],
       "guidance": "This is the Entra sid claim and links authentication artifacts from the same root sign-in. A session can contain many tokens and activity records; SessionId and UniqueTokenIdentifier are different keys. Exclude empty values and retain actor, tenant, and time context. Some application-only or background events have no session ID. Use TimeRequested for event timing and allow for ingestion delay.",
-      "family": "entra-session"
+      "family": "entra-session",
+      "otherNotes": []
     },
     {
       "id": "aad-managed-identity-sign-in-logs-office-activity-token",
@@ -1619,7 +1692,8 @@
         "Nested JSON"
       ],
       "guidance": "Compare non-empty token identifiers exactly and preserve case; never lowercase a UTI. One token can have many activity records. Keep actor, tenant, application, and time context, and include the originating sign-in in the lookback. A missing match can reflect retention or collection gaps. AppAccessContext is populated only for supported Exchange, SharePoint, and Teams audit events; aggregated or background events can omit it. The property names are case-sensitive.",
-      "family": "entra-token"
+      "family": "entra-token",
+      "otherNotes": []
     },
     {
       "id": "aad-managed-identity-sign-in-logs-office-activity-session",
@@ -1644,7 +1718,8 @@
         "Nested JSON"
       ],
       "guidance": "This is the Entra sid claim and links authentication artifacts from the same root sign-in. A session can contain many tokens and activity records; SessionId and UniqueTokenIdentifier are different keys. Exclude empty values and retain actor, tenant, and time context. Some application-only or background events have no session ID. AppAccessContext is populated only for supported Exchange, SharePoint, and Teams audit events; aggregated or background events can omit it. The property names are case-sensitive.",
-      "family": "entra-session"
+      "family": "entra-session",
+      "otherNotes": []
     },
     {
       "id": "entra-id-spn-sign-in-events-graphapi-audit-events-unique-token-identifier",
@@ -1666,7 +1741,8 @@
         "Microsoft Graph"
       ],
       "guidance": "Compare non-empty token identifiers exactly and preserve case; never lowercase a UTI. One token can have many activity records. Keep actor, tenant, application, and time context, and include the originating sign-in in the lookback. A missing match can reflect retention or collection gaps.",
-      "family": "entra-token"
+      "family": "entra-token",
+      "otherNotes": []
     },
     {
       "id": "entra-id-spn-sign-in-events-microsoft-graph-activity-logs-sign-in-activity-id",
@@ -1689,7 +1765,8 @@
         "Microsoft Sentinel"
       ],
       "guidance": "Compare non-empty token identifiers exactly and preserve case; never lowercase a UTI. One token can have many activity records. Keep actor, tenant, application, and time context, and include the originating sign-in in the lookback. A missing match can reflect retention or collection gaps.",
-      "family": "entra-token"
+      "family": "entra-token",
+      "otherNotes": []
     },
     {
       "id": "entra-id-spn-sign-in-events-microsoft-graph-activity-logs-unique-token-id",
@@ -1712,7 +1789,8 @@
         "Microsoft Sentinel"
       ],
       "guidance": "Compare non-empty token identifiers exactly and preserve case; never lowercase a UTI. One token can have many activity records. Keep actor, tenant, application, and time context, and include the originating sign-in in the lookback. A missing match can reflect retention or collection gaps.",
-      "family": "entra-token"
+      "family": "entra-token",
+      "otherNotes": []
     },
     {
       "id": "entra-id-spn-sign-in-events-aad-graph-activity-logs-sign-in-activity-id",
@@ -1739,10 +1817,18 @@
       "otherNotes": [
         {
           "title": "SignInActivityId formats",
-          "text": "Check padded and GUID-shaped identifiers before relying on this relationship. Remove trailing padding only; GUID conversion is not established.",
+          "text": "SignInActivityId can contain padded token identifiers and GUID-shaped values. Remove trailing Base64 padding when correlating token identifiers and preserve case. Padding removal does not convert GUID-shaped values into token identifiers. Inspect unmatched GUID-shaped values separately.",
           "sourceLabel": "Cloudbrothers: Now You See Me \u2014 AADGraphActivityLogs",
           "sourceUrl": "https://cloudbrothers.info/aadgraphactivitylogs/",
-          "query": "let LeftEvents = EntraIdSpnSignInEvents\n| where Timestamp \u003E ago(7d)\n| extend LeftKey = trim_end(@\u0022=\u002B\u0022, tostring(UniqueTokenId))\n| where isnotempty(LeftKey);\nlet RightEvents = AADGraphActivityLogs\n| where TimeRequested \u003E ago(7d)\n| extend RightKey = trim_end(@\u0022=\u002B\u0022, tostring(SignInActivityId))\n| where isnotempty(RightKey);\nLeftEvents\n| join kind=inner (RightEvents) on $left.LeftKey == $right.RightKey\n| project-away LeftKey, RightKey",
+          "query": "AADGraphActivityLogs\n| where TimeGenerated \u003E ago(90d)\n| summarize by SignInActivityId\n| summarize\n    Padded=countif(SignInActivityId endswith \u0022==\u0022),\n    GUID=countif(SignInActivityId matches regex @\u0022^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$\u0022),\n    TotalUnique=dcount(SignInActivityId)",
+          "queryLanguage": "kusto"
+        },
+        {
+          "title": "SignInActivityId formats",
+          "text": "SignInActivityId can contain padded token identifiers and GUID-shaped values. Remove trailing Base64 padding when correlating token identifiers and preserve case. Padding removal does not convert GUID-shaped values into token identifiers. Inspect unmatched GUID-shaped values separately.",
+          "sourceLabel": "Invictus IR: The missing link \u2014 AADGraphActivityLogs finally arrives",
+          "sourceUrl": "https://www.invictus-ir.com/news/the-missing-link-aadgraphactivitylogs-finally-arrives",
+          "query": "AADGraphActivityLogs\n| where TimeGenerated \u003E ago(90d)\n| summarize by SignInActivityId\n| summarize\n    Padded=countif(SignInActivityId endswith \u0022==\u0022),\n    GUID=countif(SignInActivityId matches regex @\u0022^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$\u0022),\n    TotalUnique=dcount(SignInActivityId)",
           "queryLanguage": "kusto"
         }
       ],
@@ -1768,7 +1854,8 @@
         "Microsoft Sentinel"
       ],
       "guidance": "This is the Entra sid claim and links authentication artifacts from the same root sign-in. A session can contain many tokens and activity records; SessionId and UniqueTokenIdentifier are different keys. Exclude empty values and retain actor, tenant, and time context. Some application-only or background events have no session ID.",
-      "family": "entra-session"
+      "family": "entra-session",
+      "otherNotes": []
     },
     {
       "id": "entra-id-spn-sign-in-events-aad-graph-activity-logs-session",
@@ -1790,7 +1877,8 @@
         "Microsoft Sentinel"
       ],
       "guidance": "This is the Entra sid claim and links authentication artifacts from the same root sign-in. A session can contain many tokens and activity records; SessionId and UniqueTokenIdentifier are different keys. Exclude empty values and retain actor, tenant, and time context. Some application-only or background events have no session ID. Use TimeRequested for event timing and allow for ingestion delay.",
-      "family": "entra-session"
+      "family": "entra-session",
+      "otherNotes": []
     },
     {
       "id": "entra-id-spn-sign-in-events-office-activity-token",
@@ -1815,7 +1903,8 @@
         "Nested JSON"
       ],
       "guidance": "Compare non-empty token identifiers exactly and preserve case; never lowercase a UTI. One token can have many activity records. Keep actor, tenant, application, and time context, and include the originating sign-in in the lookback. A missing match can reflect retention or collection gaps. AppAccessContext is populated only for supported Exchange, SharePoint, and Teams audit events; aggregated or background events can omit it. The property names are case-sensitive.",
-      "family": "entra-token"
+      "family": "entra-token",
+      "otherNotes": []
     },
     {
       "id": "entra-id-spn-sign-in-events-office-activity-session",
@@ -1840,7 +1929,8 @@
         "Nested JSON"
       ],
       "guidance": "This is the Entra sid claim and links authentication artifacts from the same root sign-in. A session can contain many tokens and activity records; SessionId and UniqueTokenIdentifier are different keys. Exclude empty values and retain actor, tenant, and time context. Some application-only or background events have no session ID. AppAccessContext is populated only for supported Exchange, SharePoint, and Teams audit events; aggregated or background events can omit it. The property names are case-sensitive.",
-      "family": "entra-session"
+      "family": "entra-session",
+      "otherNotes": []
     },
     {
       "id": "entra-id-sign-in-events-aad-graph-activity-logs-session",
@@ -1897,7 +1987,8 @@
         "Nested JSON"
       ],
       "guidance": "Compare non-empty token identifiers exactly and preserve case; never lowercase a UTI. One token can have many activity records. Keep actor, tenant, application, and time context, and include the originating sign-in in the lookback. A missing match can reflect retention or collection gaps. AppAccessContext is populated only for supported Exchange, SharePoint, and Teams audit events; aggregated or background events can omit it. The property names are case-sensitive.",
-      "family": "entra-token"
+      "family": "entra-token",
+      "otherNotes": []
     },
     {
       "id": "entra-id-sign-in-events-office-activity-session",
@@ -1922,7 +2013,8 @@
         "Nested JSON"
       ],
       "guidance": "This is the Entra sid claim and links authentication artifacts from the same root sign-in. A session can contain many tokens and activity records; SessionId and UniqueTokenIdentifier are different keys. Exclude empty values and retain actor, tenant, and time context. Some application-only or background events have no session ID. AppAccessContext is populated only for supported Exchange, SharePoint, and Teams audit events; aggregated or background events can omit it. The property names are case-sensitive.",
-      "family": "entra-session"
+      "family": "entra-session",
+      "otherNotes": []
     },
     {
       "id": "entra-id-sign-in-events-signin-logs-token",
@@ -1944,7 +2036,8 @@
         "Token correlation"
       ],
       "guidance": "Compare non-empty token identifiers exactly and preserve case; never lowercase a UTI. One token can have many activity records. Keep actor, tenant, application, and time context, and include the originating sign-in in the lookback. A missing match can reflect retention or collection gaps. These sources can contain overlapping records; a match does not establish a separate authentication event.",
-      "family": "entra-token"
+      "family": "entra-token",
+      "otherNotes": []
     },
     {
       "id": "entra-id-sign-in-events-signin-logs-session",
@@ -1966,7 +2059,8 @@
         "Session correlation"
       ],
       "guidance": "This is the Entra sid claim and links authentication artifacts from the same root sign-in. A session can contain many tokens and activity records; SessionId and UniqueTokenIdentifier are different keys. Exclude empty values and retain actor, tenant, and time context. Some application-only or background events have no session ID. These sources can contain overlapping records; a match does not establish a separate authentication event.",
-      "family": "entra-session"
+      "family": "entra-session",
+      "otherNotes": []
     },
     {
       "id": "entra-id-sign-in-events-aad-non-interactive-user-sign-in-logs-token",
@@ -1988,7 +2082,8 @@
         "Token correlation"
       ],
       "guidance": "Compare non-empty token identifiers exactly and preserve case; never lowercase a UTI. One token can have many activity records. Keep actor, tenant, application, and time context, and include the originating sign-in in the lookback. A missing match can reflect retention or collection gaps. These sources can contain overlapping records; a match does not establish a separate authentication event.",
-      "family": "entra-token"
+      "family": "entra-token",
+      "otherNotes": []
     },
     {
       "id": "entra-id-sign-in-events-aad-non-interactive-user-sign-in-logs-session",
@@ -2010,7 +2105,8 @@
         "Session correlation"
       ],
       "guidance": "This is the Entra sid claim and links authentication artifacts from the same root sign-in. A session can contain many tokens and activity records; SessionId and UniqueTokenIdentifier are different keys. Exclude empty values and retain actor, tenant, and time context. Some application-only or background events have no session ID. These sources can contain overlapping records; a match does not establish a separate authentication event.",
-      "family": "entra-session"
+      "family": "entra-session",
+      "otherNotes": []
     },
     {
       "id": "entra-id-spn-sign-in-events-aad-service-principal-sign-in-logs-token",
@@ -2032,7 +2128,8 @@
         "Token correlation"
       ],
       "guidance": "Compare non-empty token identifiers exactly and preserve case; never lowercase a UTI. One token can have many activity records. Keep actor, tenant, application, and time context, and include the originating sign-in in the lookback. A missing match can reflect retention or collection gaps. These sources can contain overlapping records; a match does not establish a separate authentication event.",
-      "family": "entra-token"
+      "family": "entra-token",
+      "otherNotes": []
     },
     {
       "id": "entra-id-spn-sign-in-events-aad-service-principal-sign-in-logs-session",
@@ -2054,7 +2151,8 @@
         "Session correlation"
       ],
       "guidance": "This is the Entra sid claim and links authentication artifacts from the same root sign-in. A session can contain many tokens and activity records; SessionId and UniqueTokenIdentifier are different keys. Exclude empty values and retain actor, tenant, and time context. Some application-only or background events have no session ID. These sources can contain overlapping records; a match does not establish a separate authentication event.",
-      "family": "entra-session"
+      "family": "entra-session",
+      "otherNotes": []
     },
     {
       "id": "entra-id-spn-sign-in-events-aad-managed-identity-sign-in-logs-token",
@@ -2076,7 +2174,8 @@
         "Token correlation"
       ],
       "guidance": "Compare non-empty token identifiers exactly and preserve case; never lowercase a UTI. One token can have many activity records. Keep actor, tenant, application, and time context, and include the originating sign-in in the lookback. A missing match can reflect retention or collection gaps. These sources can contain overlapping records; a match does not establish a separate authentication event.",
-      "family": "entra-token"
+      "family": "entra-token",
+      "otherNotes": []
     },
     {
       "id": "entra-id-spn-sign-in-events-aad-managed-identity-sign-in-logs-session",
@@ -2098,7 +2197,8 @@
         "Session correlation"
       ],
       "guidance": "This is the Entra sid claim and links authentication artifacts from the same root sign-in. A session can contain many tokens and activity records; SessionId and UniqueTokenIdentifier are different keys. Exclude empty values and retain actor, tenant, and time context. Some application-only or background events have no session ID. These sources can contain overlapping records; a match does not establish a separate authentication event.",
-      "family": "entra-session"
+      "family": "entra-session",
+      "otherNotes": []
     },
     {
       "id": "sentinel-interactive-to-noninteractive-session",
@@ -2120,7 +2220,8 @@
         "Microsoft Sentinel"
       ],
       "guidance": "This is the Entra sid claim and links authentication artifacts from the same root sign-in. A session can contain many tokens and activity records; SessionId and UniqueTokenIdentifier are different keys. Exclude empty values and retain actor, tenant, and time context. Some application-only or background events have no session ID.",
-      "family": "entra-session"
+      "family": "entra-session",
+      "otherNotes": []
     },
     {
       "id": "identity-info-entra-id-sign-in-events-account-object-id",
@@ -2141,7 +2242,8 @@
         "User enrichment"
       ],
       "guidance": "Match the Microsoft Entra user object ID within the same identity tenant. Keep actor and target identities distinct; a shared account is enrichment, not proof that two events share a token or session. IdentityInfo can contain multiple snapshots; select the appropriate or latest snapshot before enrichment.",
-      "family": "entra-user"
+      "family": "entra-user",
+      "otherNotes": []
     },
     {
       "id": "identity-info-signin-logs-user-id",
@@ -2162,7 +2264,8 @@
         "User enrichment"
       ],
       "guidance": "Match the Microsoft Entra user object ID within the same identity tenant. Keep actor and target identities distinct; a shared account is enrichment, not proof that two events share a token or session. IdentityInfo can contain multiple snapshots; select the appropriate or latest snapshot before enrichment.",
-      "family": "entra-user"
+      "family": "entra-user",
+      "otherNotes": []
     },
     {
       "id": "identity-info-aad-non-interactive-user-sign-in-logs-user-id",
@@ -2183,7 +2286,8 @@
         "User enrichment"
       ],
       "guidance": "Match the Microsoft Entra user object ID within the same identity tenant. Keep actor and target identities distinct; a shared account is enrichment, not proof that two events share a token or session. IdentityInfo can contain multiple snapshots; select the appropriate or latest snapshot before enrichment.",
-      "family": "entra-user"
+      "family": "entra-user",
+      "otherNotes": []
     },
     {
       "id": "identity-info-microsoft-graph-activity-logs-user-id",
@@ -2204,7 +2308,8 @@
         "User enrichment"
       ],
       "guidance": "Match the Microsoft Entra user object ID within the same identity tenant. Keep actor and target identities distinct; a shared account is enrichment, not proof that two events share a token or session. IdentityInfo can contain multiple snapshots; select the appropriate or latest snapshot before enrichment.",
-      "family": "entra-user"
+      "family": "entra-user",
+      "otherNotes": []
     },
     {
       "id": "identity-info-graphapi-audit-events-account-object-id",
@@ -2225,7 +2330,8 @@
         "User enrichment"
       ],
       "guidance": "Match the Microsoft Entra user object ID within the same identity tenant. Keep actor and target identities distinct; a shared account is enrichment, not proof that two events share a token or session. IdentityInfo can contain multiple snapshots; select the appropriate or latest snapshot before enrichment.",
-      "family": "entra-user"
+      "family": "entra-user",
+      "otherNotes": []
     },
     {
       "id": "identity-info-cloud-app-events-account-object-id",
@@ -2246,7 +2352,8 @@
         "User enrichment"
       ],
       "guidance": "Match the Microsoft Entra user object ID within the same identity tenant. Keep actor and target identities distinct; a shared account is enrichment, not proof that two events share a token or session. IdentityInfo can contain multiple snapshots; select the appropriate or latest snapshot before enrichment.",
-      "family": "entra-user"
+      "family": "entra-user",
+      "otherNotes": []
     },
     {
       "id": "identity-info-identity-query-events-account-object-id",
@@ -2267,7 +2374,8 @@
         "User enrichment"
       ],
       "guidance": "Match the Microsoft Entra user object ID within the same identity tenant. Keep actor and target identities distinct; a shared account is enrichment, not proof that two events share a token or session. IdentityInfo can contain multiple snapshots; select the appropriate or latest snapshot before enrichment.",
-      "family": "entra-user"
+      "family": "entra-user",
+      "otherNotes": []
     },
     {
       "id": "identity-info-identity-directory-events-account-object-id",
@@ -2288,7 +2396,8 @@
         "User enrichment"
       ],
       "guidance": "Match the Microsoft Entra user object ID within the same identity tenant. Keep actor and target identities distinct; a shared account is enrichment, not proof that two events share a token or session. IdentityInfo can contain multiple snapshots; select the appropriate or latest snapshot before enrichment.",
-      "family": "entra-user"
+      "family": "entra-user",
+      "otherNotes": []
     },
     {
       "id": "identity-info-alert-evidence-account-object-id",
@@ -2309,7 +2418,8 @@
         "User enrichment"
       ],
       "guidance": "Match the Microsoft Entra user object ID within the same identity tenant. Keep actor and target identities distinct; a shared account is enrichment, not proof that two events share a token or session. IdentityInfo can contain multiple snapshots; select the appropriate or latest snapshot before enrichment.",
-      "family": "entra-user"
+      "family": "entra-user",
+      "otherNotes": []
     },
     {
       "id": "identity-info-behavior-entities-account-object-id",
@@ -2330,7 +2440,8 @@
         "User enrichment"
       ],
       "guidance": "Match the Microsoft Entra user object ID within the same identity tenant. Keep actor and target identities distinct; a shared account is enrichment, not proof that two events share a token or session. IdentityInfo can contain multiple snapshots; select the appropriate or latest snapshot before enrichment.",
-      "family": "entra-user"
+      "family": "entra-user",
+      "otherNotes": []
     },
     {
       "id": "identity-info-data-security-events-account-object-id",
@@ -2351,7 +2462,8 @@
         "User enrichment"
       ],
       "guidance": "Match the Microsoft Entra user object ID within the same identity tenant. Keep actor and target identities distinct; a shared account is enrichment, not proof that two events share a token or session. IdentityInfo can contain multiple snapshots; select the appropriate or latest snapshot before enrichment.",
-      "family": "entra-user"
+      "family": "entra-user",
+      "otherNotes": []
     },
     {
       "id": "identity-info-email-events-sender-object-id",
@@ -2372,7 +2484,8 @@
         "User enrichment"
       ],
       "guidance": "Match the Microsoft Entra user object ID within the same identity tenant. Keep actor and target identities distinct; a shared account is enrichment, not proof that two events share a token or session. IdentityInfo can contain multiple snapshots; select the appropriate or latest snapshot before enrichment.",
-      "family": "entra-user"
+      "family": "entra-user",
+      "otherNotes": []
     },
     {
       "id": "identity-info-email-events-recipient-object-id",
@@ -2393,7 +2506,8 @@
         "User enrichment"
       ],
       "guidance": "Match the Microsoft Entra user object ID within the same identity tenant. Keep actor and target identities distinct; a shared account is enrichment, not proof that two events share a token or session. IdentityInfo can contain multiple snapshots; select the appropriate or latest snapshot before enrichment.",
-      "family": "entra-user"
+      "family": "entra-user",
+      "otherNotes": []
     },
     {
       "id": "identity-info-message-events-sender-object-id",
@@ -2414,7 +2528,8 @@
         "User enrichment"
       ],
       "guidance": "Match the Microsoft Entra user object ID within the same identity tenant. Keep actor and target identities distinct; a shared account is enrichment, not proof that two events share a token or session. IdentityInfo can contain multiple snapshots; select the appropriate or latest snapshot before enrichment.",
-      "family": "entra-user"
+      "family": "entra-user",
+      "otherNotes": []
     },
     {
       "id": "identity-info-to-account-info",
@@ -2434,7 +2549,8 @@
         "Identity"
       ],
       "guidance": "One identity can own multiple provider accounts. IdentityId is the unified identity key; AccountId is an internal account key and SourceProviderAccountId belongs to the named provider. Select the appropriate account and identity snapshots.",
-      "family": "unified-identity"
+      "family": "unified-identity",
+      "otherNotes": []
     },
     {
       "id": "identity-account-info-to-events",
@@ -2455,7 +2571,8 @@
         "User enrichment"
       ],
       "guidance": "Use the internal account key. SourceProviderAccountId and an Entra object ID are different identifier namespaces. Select the appropriate account snapshot and preserve its SourceProvider context.",
-      "family": "identity-account"
+      "family": "identity-account",
+      "otherNotes": []
     },
     {
       "id": "oauth-app-info-entra-id-sign-in-events-application-id",
@@ -2477,7 +2594,8 @@
         "Application enrichment"
       ],
       "guidance": "The OAuth application/client ID and the service principal object ID are different namespaces. Scope service principal joins to the same tenant. App metadata can have multiple snapshots; select the relevant snapshot. A shared application enriches activity and does not establish a shared token or session.",
-      "family": "oauth-client"
+      "family": "oauth-client",
+      "otherNotes": []
     },
     {
       "id": "oauth-app-info-entra-id-spn-sign-in-events-application-id",
@@ -2499,7 +2617,8 @@
         "Application enrichment"
       ],
       "guidance": "The OAuth application/client ID and the service principal object ID are different namespaces. Scope service principal joins to the same tenant. App metadata can have multiple snapshots; select the relevant snapshot. A shared application enriches activity and does not establish a shared token or session.",
-      "family": "oauth-client"
+      "family": "oauth-client",
+      "otherNotes": []
     },
     {
       "id": "oauth-app-info-entra-id-spn-sign-in-events-service-principal-id",
@@ -2521,7 +2640,8 @@
         "Application enrichment"
       ],
       "guidance": "The OAuth application/client ID and the service principal object ID are different namespaces. Scope service principal joins to the same tenant. App metadata can have multiple snapshots; select the relevant snapshot. A shared application enriches activity and does not establish a shared token or session.",
-      "family": "service-principal"
+      "family": "service-principal",
+      "otherNotes": []
     },
     {
       "id": "oauth-app-info-microsoft-graph-activity-logs-app-id",
@@ -2543,7 +2663,8 @@
         "Application enrichment"
       ],
       "guidance": "The OAuth application/client ID and the service principal object ID are different namespaces. Scope service principal joins to the same tenant. App metadata can have multiple snapshots; select the relevant snapshot. A shared application enriches activity and does not establish a shared token or session.",
-      "family": "oauth-client"
+      "family": "oauth-client",
+      "otherNotes": []
     },
     {
       "id": "oauth-app-info-microsoft-graph-activity-logs-service-principal-id",
@@ -2565,7 +2686,8 @@
         "Application enrichment"
       ],
       "guidance": "The OAuth application/client ID and the service principal object ID are different namespaces. Scope service principal joins to the same tenant. App metadata can have multiple snapshots; select the relevant snapshot. A shared application enriches activity and does not establish a shared token or session.",
-      "family": "service-principal"
+      "family": "service-principal",
+      "otherNotes": []
     },
     {
       "id": "oauth-app-info-graphapi-audit-events-application-id",
@@ -2587,7 +2709,8 @@
         "Application enrichment"
       ],
       "guidance": "The OAuth application/client ID and the service principal object ID are different namespaces. Scope service principal joins to the same tenant. App metadata can have multiple snapshots; select the relevant snapshot. A shared application enriches activity and does not establish a shared token or session.",
-      "family": "oauth-client"
+      "family": "oauth-client",
+      "otherNotes": []
     },
     {
       "id": "oauth-app-info-graphapi-audit-events-service-principal-id",
@@ -2609,7 +2732,8 @@
         "Application enrichment"
       ],
       "guidance": "The OAuth application/client ID and the service principal object ID are different namespaces. Scope service principal joins to the same tenant. App metadata can have multiple snapshots; select the relevant snapshot. A shared application enriches activity and does not establish a shared token or session.",
-      "family": "service-principal"
+      "family": "service-principal",
+      "otherNotes": []
     },
     {
       "id": "oauth-app-info-cloud-app-events-o-auth-app-id",
@@ -2631,7 +2755,8 @@
         "Application enrichment"
       ],
       "guidance": "The OAuth application/client ID and the service principal object ID are different namespaces. Scope service principal joins to the same tenant. App metadata can have multiple snapshots; select the relevant snapshot. A shared application enriches activity and does not establish a shared token or session.",
-      "family": "oauth-client"
+      "family": "oauth-client",
+      "otherNotes": []
     },
     {
       "id": "oauth-app-info-signin-logs-app-id",
@@ -2653,7 +2778,8 @@
         "Application enrichment"
       ],
       "guidance": "The OAuth application/client ID and the service principal object ID are different namespaces. Scope service principal joins to the same tenant. App metadata can have multiple snapshots; select the relevant snapshot. A shared application enriches activity and does not establish a shared token or session.",
-      "family": "oauth-client"
+      "family": "oauth-client",
+      "otherNotes": []
     },
     {
       "id": "oauth-app-info-signin-logs-service-principal-id",
@@ -2675,7 +2801,8 @@
         "Application enrichment"
       ],
       "guidance": "The OAuth application/client ID and the service principal object ID are different namespaces. Scope service principal joins to the same tenant. App metadata can have multiple snapshots; select the relevant snapshot. A shared application enriches activity and does not establish a shared token or session.",
-      "family": "service-principal"
+      "family": "service-principal",
+      "otherNotes": []
     },
     {
       "id": "oauth-app-info-aad-non-interactive-user-sign-in-logs-app-id",
@@ -2697,7 +2824,8 @@
         "Application enrichment"
       ],
       "guidance": "The OAuth application/client ID and the service principal object ID are different namespaces. Scope service principal joins to the same tenant. App metadata can have multiple snapshots; select the relevant snapshot. A shared application enriches activity and does not establish a shared token or session.",
-      "family": "oauth-client"
+      "family": "oauth-client",
+      "otherNotes": []
     },
     {
       "id": "oauth-app-info-aad-non-interactive-user-sign-in-logs-service-principal-id",
@@ -2719,7 +2847,8 @@
         "Application enrichment"
       ],
       "guidance": "The OAuth application/client ID and the service principal object ID are different namespaces. Scope service principal joins to the same tenant. App metadata can have multiple snapshots; select the relevant snapshot. A shared application enriches activity and does not establish a shared token or session.",
-      "family": "service-principal"
+      "family": "service-principal",
+      "otherNotes": []
     },
     {
       "id": "oauth-app-info-aad-service-principal-sign-in-logs-app-id",
@@ -2741,7 +2870,8 @@
         "Application enrichment"
       ],
       "guidance": "The OAuth application/client ID and the service principal object ID are different namespaces. Scope service principal joins to the same tenant. App metadata can have multiple snapshots; select the relevant snapshot. A shared application enriches activity and does not establish a shared token or session.",
-      "family": "oauth-client"
+      "family": "oauth-client",
+      "otherNotes": []
     },
     {
       "id": "oauth-app-info-aad-service-principal-sign-in-logs-service-principal-id",
@@ -2763,7 +2893,8 @@
         "Application enrichment"
       ],
       "guidance": "The OAuth application/client ID and the service principal object ID are different namespaces. Scope service principal joins to the same tenant. App metadata can have multiple snapshots; select the relevant snapshot. A shared application enriches activity and does not establish a shared token or session.",
-      "family": "service-principal"
+      "family": "service-principal",
+      "otherNotes": []
     },
     {
       "id": "oauth-app-info-aad-managed-identity-sign-in-logs-app-id",
@@ -2785,7 +2916,8 @@
         "Application enrichment"
       ],
       "guidance": "The OAuth application/client ID and the service principal object ID are different namespaces. Scope service principal joins to the same tenant. App metadata can have multiple snapshots; select the relevant snapshot. A shared application enriches activity and does not establish a shared token or session.",
-      "family": "oauth-client"
+      "family": "oauth-client",
+      "otherNotes": []
     },
     {
       "id": "oauth-app-info-aad-managed-identity-sign-in-logs-service-principal-id",
@@ -2807,7 +2939,8 @@
         "Application enrichment"
       ],
       "guidance": "The OAuth application/client ID and the service principal object ID are different namespaces. Scope service principal joins to the same tenant. App metadata can have multiple snapshots; select the relevant snapshot. A shared application enriches activity and does not establish a shared token or session.",
-      "family": "service-principal"
+      "family": "service-principal",
+      "otherNotes": []
     },
     {
       "id": "device-info-device-network-info",
@@ -2828,7 +2961,8 @@
         "Device enrichment"
       ],
       "guidance": "DeviceId identifies a Defender for Endpoint device. It is different from an Entra device ID. Select the relevant DeviceInfo snapshot before enrichment; repeated snapshots and events can produce multiple matches.",
-      "family": "defender-device"
+      "family": "defender-device",
+      "otherNotes": []
     },
     {
       "id": "device-info-device-file-events",
@@ -2849,7 +2983,8 @@
         "Device enrichment"
       ],
       "guidance": "DeviceId identifies a Defender for Endpoint device. It is different from an Entra device ID. Select the relevant DeviceInfo snapshot before enrichment; repeated snapshots and events can produce multiple matches.",
-      "family": "defender-device"
+      "family": "defender-device",
+      "otherNotes": []
     },
     {
       "id": "device-info-device-registry-events",
@@ -2870,7 +3005,8 @@
         "Device enrichment"
       ],
       "guidance": "DeviceId identifies a Defender for Endpoint device. It is different from an Entra device ID. Select the relevant DeviceInfo snapshot before enrichment; repeated snapshots and events can produce multiple matches.",
-      "family": "defender-device"
+      "family": "defender-device",
+      "otherNotes": []
     },
     {
       "id": "device-info-device-logon-events",
@@ -2891,7 +3027,8 @@
         "Device enrichment"
       ],
       "guidance": "DeviceId identifies a Defender for Endpoint device. It is different from an Entra device ID. Select the relevant DeviceInfo snapshot before enrichment; repeated snapshots and events can produce multiple matches.",
-      "family": "defender-device"
+      "family": "defender-device",
+      "otherNotes": []
     },
     {
       "id": "device-info-device-image-load-events",
@@ -2912,7 +3049,8 @@
         "Device enrichment"
       ],
       "guidance": "DeviceId identifies a Defender for Endpoint device. It is different from an Entra device ID. Select the relevant DeviceInfo snapshot before enrichment; repeated snapshots and events can produce multiple matches.",
-      "family": "defender-device"
+      "family": "defender-device",
+      "otherNotes": []
     },
     {
       "id": "device-info-device-events",
@@ -2933,7 +3071,8 @@
         "Device enrichment"
       ],
       "guidance": "DeviceId identifies a Defender for Endpoint device. It is different from an Entra device ID. Select the relevant DeviceInfo snapshot before enrichment; repeated snapshots and events can produce multiple matches.",
-      "family": "defender-device"
+      "family": "defender-device",
+      "otherNotes": []
     },
     {
       "id": "device-info-device-file-certificate-info",
@@ -2954,7 +3093,8 @@
         "Device enrichment"
       ],
       "guidance": "DeviceId identifies a Defender for Endpoint device. It is different from an Entra device ID. Select the relevant DeviceInfo snapshot before enrichment; repeated snapshots and events can produce multiple matches.",
-      "family": "defender-device"
+      "family": "defender-device",
+      "otherNotes": []
     },
     {
       "id": "device-info-device-alert-events",
@@ -2975,7 +3115,8 @@
         "Device enrichment"
       ],
       "guidance": "DeviceId identifies a Defender for Endpoint device. It is different from an Entra device ID. Select the relevant DeviceInfo snapshot before enrichment; repeated snapshots and events can produce multiple matches.",
-      "family": "defender-device"
+      "family": "defender-device",
+      "otherNotes": []
     },
     {
       "id": "device-info-device-tvm-software-vulnerabilities",
@@ -2995,7 +3136,8 @@
         "Device enrichment"
       ],
       "guidance": "DeviceId identifies a Defender for Endpoint device. It is different from an Entra device ID. Select the relevant DeviceInfo snapshot before enrichment; repeated snapshots and events can produce multiple matches.",
-      "family": "defender-device"
+      "family": "defender-device",
+      "otherNotes": []
     },
     {
       "id": "device-info-device-tvm-secure-configuration-assessment",
@@ -3016,7 +3158,8 @@
         "Device enrichment"
       ],
       "guidance": "DeviceId identifies a Defender for Endpoint device. It is different from an Entra device ID. Select the relevant DeviceInfo snapshot before enrichment; repeated snapshots and events can produce multiple matches.",
-      "family": "defender-device"
+      "family": "defender-device",
+      "otherNotes": []
     },
     {
       "id": "device-info-device-tvm-software-inventory",
@@ -3036,7 +3179,8 @@
         "Device enrichment"
       ],
       "guidance": "DeviceId identifies a Defender for Endpoint device. It is different from an Entra device ID. Select the relevant DeviceInfo snapshot before enrichment; repeated snapshots and events can produce multiple matches.",
-      "family": "defender-device"
+      "family": "defender-device",
+      "otherNotes": []
     },
     {
       "id": "device-info-device-tvm-info-gathering",
@@ -3057,7 +3201,8 @@
         "Device enrichment"
       ],
       "guidance": "DeviceId identifies a Defender for Endpoint device. It is different from an Entra device ID. Select the relevant DeviceInfo snapshot before enrichment; repeated snapshots and events can produce multiple matches.",
-      "family": "defender-device"
+      "family": "defender-device",
+      "otherNotes": []
     },
     {
       "id": "device-info-device-tvm-software-evidence-beta",
@@ -3077,7 +3222,8 @@
         "Device enrichment"
       ],
       "guidance": "DeviceId identifies a Defender for Endpoint device. It is different from an Entra device ID. Select the relevant DeviceInfo snapshot before enrichment; repeated snapshots and events can produce multiple matches.",
-      "family": "defender-device"
+      "family": "defender-device",
+      "otherNotes": []
     },
     {
       "id": "device-info-entra-id-sign-in-events-entra-device",
@@ -3099,7 +3245,8 @@
         "Device enrichment"
       ],
       "guidance": "Use the Entra device GUID, not DeviceInfo.DeviceId. Device details are available only when recorded in the authentication context. Exclude empty identifiers and select the appropriate DeviceInfo snapshot.",
-      "family": "entra-device"
+      "family": "entra-device",
+      "otherNotes": []
     },
     {
       "id": "device-info-microsoft-graph-activity-logs-entra-device",
@@ -3121,7 +3268,8 @@
         "Device enrichment"
       ],
       "guidance": "Use the Entra device GUID, not DeviceInfo.DeviceId. Device details are available only when recorded in the authentication context. Exclude empty identifiers and select the appropriate DeviceInfo snapshot.",
-      "family": "entra-device"
+      "family": "entra-device",
+      "otherNotes": []
     },
     {
       "id": "device-info-signin-logs-entra-device",
@@ -3145,7 +3293,8 @@
         "Nested JSON"
       ],
       "guidance": "Use the Entra device GUID, not DeviceInfo.DeviceId. Device details are available only when recorded in the authentication context. Exclude empty identifiers and select the appropriate DeviceInfo snapshot.",
-      "family": "entra-device"
+      "family": "entra-device",
+      "otherNotes": []
     },
     {
       "id": "device-info-aad-non-interactive-user-sign-in-logs-entra-device",
@@ -3169,7 +3318,8 @@
         "Nested JSON"
       ],
       "guidance": "Use the Entra device GUID, not DeviceInfo.DeviceId. Device details are available only when recorded in the authentication context. Exclude empty identifiers and select the appropriate DeviceInfo snapshot.",
-      "family": "entra-device"
+      "family": "entra-device",
+      "otherNotes": []
     },
     {
       "id": "message-events-message-url-info",
@@ -3190,7 +3340,8 @@
         "Message correlation"
       ],
       "guidance": "One message can have multiple URLs, versions, or post-delivery records. Preserve sender, thread, and event-time context; use TeamsMessageId rather than assuming MessageId uses the same namespace.",
-      "family": "teams-message"
+      "family": "teams-message",
+      "otherNotes": []
     },
     {
       "id": "message-events-message-post-delivery-events",
@@ -3211,7 +3362,8 @@
         "Message correlation"
       ],
       "guidance": "One message can have multiple URLs, versions, or post-delivery records. Preserve sender, thread, and event-time context; use TeamsMessageId rather than assuming MessageId uses the same namespace.",
-      "family": "teams-message"
+      "family": "teams-message",
+      "otherNotes": []
     },
     {
       "id": "email-events-campaign-info-message",
@@ -3232,7 +3384,8 @@
         "Message correlation"
       ],
       "guidance": "A message can have multiple recipients and activity or evidence rows. Add recipient context when correlating a particular delivery. NetworkMessageId is different from an InternetMessageId.",
-      "family": "email-message"
+      "family": "email-message",
+      "otherNotes": []
     },
     {
       "id": "email-events-data-security-events-message",
@@ -3253,7 +3406,8 @@
         "Message correlation"
       ],
       "guidance": "A message can have multiple recipients and activity or evidence rows. Add recipient context when correlating a particular delivery. NetworkMessageId is different from an InternetMessageId.",
-      "family": "email-message"
+      "family": "email-message",
+      "otherNotes": []
     },
     {
       "id": "email-events-alert-evidence-message",
@@ -3274,7 +3428,8 @@
         "Message correlation"
       ],
       "guidance": "A message can have multiple recipients and activity or evidence rows. Add recipient context when correlating a particular delivery. NetworkMessageId is different from an InternetMessageId.",
-      "family": "email-message"
+      "family": "email-message",
+      "otherNotes": []
     },
     {
       "id": "alert-info-to-device-alert-events",
@@ -3295,7 +3450,8 @@
         "Device"
       ],
       "guidance": "Keep device and alert context. One alert may have multiple device event records.",
-      "family": "defender-alert"
+      "family": "defender-alert",
+      "otherNotes": []
     },
     {
       "id": "sentinel-incident-to-alerts",
@@ -3348,7 +3504,8 @@
         "Vulnerability management"
       ],
       "guidance": "One CVE can affect many devices and software versions. Preserve device and software context. The knowledge base has no event timestamp filter; PublishedDate or LastModifiedTime would exclude older CVEs that still affect current devices.",
-      "family": "cve"
+      "family": "cve",
+      "otherNotes": []
     },
     {
       "id": "device-configuration-to-knowledge-base",
@@ -3368,7 +3525,8 @@
         "Vulnerability management"
       ],
       "guidance": "One configuration can be assessed on many devices. Preserve DeviceId, compliance status, and assessment time. The knowledge base has no event timestamp filter.",
-      "family": "configuration"
+      "family": "configuration",
+      "otherNotes": []
     },
     {
       "id": "process-start-key-device-network-events",
@@ -5041,7 +5199,8 @@
       ],
       "guidance": "AADSignInEventsBeta is deprecated. The two tables can expose the same authentication session identifiers for retained records. Prefer EntraIdSignInEvents for current data; treat matches as one-to-many, exclude empty values, and retain AccountObjectId and time context when joining.",
       "kql": "let EntraSessions = EntraIdSignInEvents\n| where Timestamp \u003E ago(1d)\n| where isnotempty(AccountObjectId) and isnotempty(SessionId)\n| summarize by AccountObjectId, SessionId;\nlet BetaSessions = AADSignInEventsBeta\n| where Timestamp \u003E ago(1d)\n| where isnotempty(AccountObjectId) and isnotempty(SessionId)\n| summarize by AccountObjectId, SessionId;\nEntraSessions\n| join kind=inner BetaSessions on AccountObjectId, SessionId",
-      "family": "entra-session"
+      "family": "entra-session",
+      "otherNotes": []
     },
     {
       "id": "aad-signin-beta-device-id-alias",
@@ -5065,7 +5224,8 @@
       ],
       "guidance": "AADSignInEventsBeta is deprecated. These fields may represent aliases for the same Entra device identifier in retained beta records. Prefer current Entra sign-in schemas when available, compare non-empty values before relying on the alias, and preserve both source field names because schema aliases can vary by table version.",
       "kql": "AADSignInEventsBeta\n| where Timestamp \u003E ago(1d)\n| where isnotempty(AadDeviceId) and isnotempty(EntraIdDeviceId)\n| extend AadHash = hash_sha256(tostring(AadDeviceId)), EntraHash = hash_sha256(tostring(EntraIdDeviceId))\n| summarize Rows = count(), Different = countif(AadHash != EntraHash)",
-      "family": "entra-device"
+      "family": "entra-device",
+      "otherNotes": []
     },
     {
       "id": "graph-audit-to-graph-activity-request-uri",
@@ -5088,7 +5248,8 @@
       ],
       "guidance": "The same Microsoft Graph request may be represented in both sources. RequestUri is not globally unique, so retain request method, actor, application, and a narrow time window; normalize object IDs only for endpoint-pattern analysis, not exact event correlation.",
       "kql": "let GraphAudit = GraphAPIAuditEvents\n| where Timestamp \u003E ago(1d)\n| where isnotempty(RequestUri)\n| project RequestUri, AccountObjectId, RequestMethod, AuditTime = Timestamp;\nlet GraphActivity = MicrosoftGraphActivityLogs\n| where TimeGenerated \u003E ago(1d)\n| where isnotempty(RequestUri)\n| project RequestUri, UserId, RequestMethod, ActivityTime = TimeGenerated;\nGraphAudit\n| join kind=inner GraphActivity on RequestUri, RequestMethod\n| project RequestUri, RequestMethod, AccountObjectId, UserId, AuditTime, ActivityTime",
-      "family": "entra-token"
+      "family": "entra-token",
+      "otherNotes": []
     },
     {
       "id": "audit-target-resource-id-account-object-id",

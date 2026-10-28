@@ -1,0 +1,2827 @@
+{
+  "version": 1,
+  "sources": [
+    {
+      "id": "olaf-hartong",
+      "name": "Olaf Hartong",
+      "url": "https://github.com/olafhartong",
+      "dataset": "CaseInconsistentFields.json"
+    },
+    {
+      "id": "cloudbrothers-aad-graph",
+      "name": "Cloudbrothers: Now You See Me \u2014 AADGraphActivityLogs",
+      "url": "https://cloudbrothers.info/aadgraphactivitylogs/"
+    },
+    {
+      "id": "invictus-aad-graph",
+      "name": "Invictus IR: The missing link \u2014 AADGraphActivityLogs finally arrives",
+      "url": "https://www.invictus-ir.com/news/the-missing-link-aadgraphactivitylogs-finally-arrives"
+    }
+  ],
+  "observations": [
+    {
+      "id": "case-aadmanagedidentitysigninlogs-serviceprincipalname",
+      "table": "AADManagedIdentitySignInLogs",
+      "column": "ServicePrincipalName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-aadmanagedidentitysigninlogs-uniquetokenidentifier",
+      "table": "AADManagedIdentitySignInLogs",
+      "column": "UniqueTokenIdentifier",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-aadnoninteractiveusersigninlogs-uniquetokenidentifier",
+      "table": "AADNonInteractiveUserSignInLogs",
+      "column": "UniqueTokenIdentifier",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-aadprovisioninglogs-provisioningsteps",
+      "table": "AADProvisioningLogs",
+      "column": "ProvisioningSteps",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-aadserviceprincipalsigninlogs-uniquetokenidentifier",
+      "table": "AADServicePrincipalSignInLogs",
+      "column": "UniqueTokenIdentifier",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-azfwapplicationrule-targeturl",
+      "table": "AZFWApplicationRule",
+      "column": "TargetUrl",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-alertevidence-accountdomain",
+      "table": "AlertEvidence",
+      "column": "AccountDomain",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-alertevidence-devicename",
+      "table": "AlertEvidence",
+      "column": "DeviceName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-alertevidence-filename",
+      "table": "AlertEvidence",
+      "column": "FileName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-alertevidence-folderpath",
+      "table": "AlertEvidence",
+      "column": "FolderPath",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-apimanagementgatewaylogs-apiid",
+      "table": "ApiManagementGatewayLogs",
+      "column": "ApiId",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-apimanagementgatewaylogs-backendrequestbody",
+      "table": "ApiManagementGatewayLogs",
+      "column": "BackendRequestBody",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-apimanagementgatewaylogs-backendresponsebody",
+      "table": "ApiManagementGatewayLogs",
+      "column": "BackendResponseBody",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-apimanagementgatewaylogs-backendurl",
+      "table": "ApiManagementGatewayLogs",
+      "column": "BackendUrl",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-apimanagementgatewaylogs-operationid",
+      "table": "ApiManagementGatewayLogs",
+      "column": "OperationId",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-apimanagementgatewaylogs-productid",
+      "table": "ApiManagementGatewayLogs",
+      "column": "ProductId",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-apimanagementgatewaylogs-requestbody",
+      "table": "ApiManagementGatewayLogs",
+      "column": "RequestBody",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-apimanagementgatewaylogs-url",
+      "table": "ApiManagementGatewayLogs",
+      "column": "Url",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-auditlogs-resultdescription",
+      "table": "AuditLogs",
+      "column": "ResultDescription",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-auditlogs-resultreason",
+      "table": "AuditLogs",
+      "column": "ResultReason",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-auditd-cl-auid-s",
+      "table": "Auditd_CL",
+      "column": "AUID_s",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-auditd-cl-euid-s",
+      "table": "Auditd_CL",
+      "column": "EUID_s",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-auditd-cl-fsuid-s",
+      "table": "Auditd_CL",
+      "column": "FSUID_s",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-auditd-cl-id-s",
+      "table": "Auditd_CL",
+      "column": "ID_s",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-auditd-cl-ouid-s",
+      "table": "Auditd_CL",
+      "column": "OUID_s",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-auditd-cl-uid-s",
+      "table": "Auditd_CL",
+      "column": "UID_s",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-auditd-cl-acct",
+      "table": "Auditd_CL",
+      "column": "acct",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-auditd-cl-cwd",
+      "table": "Auditd_CL",
+      "column": "cwd",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-auditd-cl-name",
+      "table": "Auditd_CL",
+      "column": "name",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-azureactivity-authorization",
+      "table": "AzureActivity",
+      "column": "Authorization",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-azureactivity-hierarchy",
+      "table": "AzureActivity",
+      "column": "Hierarchy",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-azureactivity-operationnamevalue",
+      "table": "AzureActivity",
+      "column": "OperationNameValue",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-azureactivity-resource",
+      "table": "AzureActivity",
+      "column": "Resource",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-azureactivity-resourcegroup",
+      "table": "AzureActivity",
+      "column": "ResourceGroup",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-azureactivity-resourceid",
+      "table": "AzureActivity",
+      "column": "ResourceId",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-azureactivity-resourceprovider",
+      "table": "AzureActivity",
+      "column": "ResourceProvider",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-azureactivity-resourceprovidervalue",
+      "table": "AzureActivity",
+      "column": "ResourceProviderValue",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-azurediagnostics-backendpoolname-s",
+      "table": "AzureDiagnostics",
+      "column": "backendPoolName_s",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-azurediagnostics-backendsettingname-s",
+      "table": "AzureDiagnostics",
+      "column": "backendSettingName_s",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-azurediagnostics-originalrequesturiwithargs-s",
+      "table": "AzureDiagnostics",
+      "column": "originalRequestUriWithArgs_s",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-azurediagnostics-requestquery-s",
+      "table": "AzureDiagnostics",
+      "column": "requestQuery_s",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-azurediagnostics-requesturi-s",
+      "table": "AzureDiagnostics",
+      "column": "requestUri_s",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-azurediagnostics-rulename-s",
+      "table": "AzureDiagnostics",
+      "column": "ruleName_s",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-azurediagnostics-trustedservice-s",
+      "table": "AzureDiagnostics",
+      "column": "trustedService_s",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-behavioranalytics-destinationdevice",
+      "table": "BehaviorAnalytics",
+      "column": "DestinationDevice",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-behavioranalytics-targetname",
+      "table": "BehaviorAnalytics",
+      "column": "TargetName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-behavioranalytics-targetprincipalname",
+      "table": "BehaviorAnalytics",
+      "column": "TargetPrincipalName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-behavioranalytics-username",
+      "table": "BehaviorAnalytics",
+      "column": "UserName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-cloudappevents-actiontype",
+      "table": "CloudAppEvents",
+      "column": "ActionType",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-cloudappevents-objectid",
+      "table": "CloudAppEvents",
+      "column": "ObjectId",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-cloudappevents-objectname",
+      "table": "CloudAppEvents",
+      "column": "ObjectName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-cloudauditevents-azureresourceid",
+      "table": "CloudAuditEvents",
+      "column": "AzureResourceId",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-cloudauditevents-operationname",
+      "table": "CloudAuditEvents",
+      "column": "OperationName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-clouddnsevents-dnsquery",
+      "table": "CloudDnsEvents",
+      "column": "DnsQuery",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-cloudkeyvaultevents-requesturi",
+      "table": "CloudKeyVaultEvents",
+      "column": "RequestUri",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-cloudprocessevents-processcommandline",
+      "table": "CloudProcessEvents",
+      "column": "ProcessCommandLine",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-cloudstorageaggregatedevents-authenticationtype",
+      "table": "CloudStorageAggregatedEvents",
+      "column": "AuthenticationType",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-commonsecuritylog-devicecustomstring1",
+      "table": "CommonSecurityLog",
+      "column": "DeviceCustomString1",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-commonsecuritylog-requestclientapplication",
+      "table": "CommonSecurityLog",
+      "column": "RequestClientApplication",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-commonsecuritylog-requestcontext",
+      "table": "CommonSecurityLog",
+      "column": "RequestContext",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-commonsecuritylog-requesturl",
+      "table": "CommonSecurityLog",
+      "column": "RequestURL",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-databricksaccounts-identity",
+      "table": "DatabricksAccounts",
+      "column": "Identity",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceevents-accountdomain",
+      "table": "DeviceEvents",
+      "column": "AccountDomain",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceevents-accountname",
+      "table": "DeviceEvents",
+      "column": "AccountName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceevents-additionalfields",
+      "table": "DeviceEvents",
+      "column": "AdditionalFields",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceevents-filename",
+      "table": "DeviceEvents",
+      "column": "FileName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceevents-folderpath",
+      "table": "DeviceEvents",
+      "column": "FolderPath",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceevents-initiatingprocessaccountdomain",
+      "table": "DeviceEvents",
+      "column": "InitiatingProcessAccountDomain",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceevents-initiatingprocessaccountname",
+      "table": "DeviceEvents",
+      "column": "InitiatingProcessAccountName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceevents-initiatingprocessaccountupn",
+      "table": "DeviceEvents",
+      "column": "InitiatingProcessAccountUpn",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceevents-initiatingprocesscommandline",
+      "table": "DeviceEvents",
+      "column": "InitiatingProcessCommandLine",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceevents-initiatingprocessfilename",
+      "table": "DeviceEvents",
+      "column": "InitiatingProcessFileName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceevents-initiatingprocessfolderpath",
+      "table": "DeviceEvents",
+      "column": "InitiatingProcessFolderPath",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceevents-initiatingprocessparentfilename",
+      "table": "DeviceEvents",
+      "column": "InitiatingProcessParentFileName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceevents-initiatingprocessversioninfocompanyname",
+      "table": "DeviceEvents",
+      "column": "InitiatingProcessVersionInfoCompanyName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceevents-initiatingprocessversioninfofiledescription",
+      "table": "DeviceEvents",
+      "column": "InitiatingProcessVersionInfoFileDescription",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceevents-initiatingprocessversioninfointernalfilename",
+      "table": "DeviceEvents",
+      "column": "InitiatingProcessVersionInfoInternalFileName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceevents-initiatingprocessversioninfooriginalfilename",
+      "table": "DeviceEvents",
+      "column": "InitiatingProcessVersionInfoOriginalFileName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceevents-initiatingprocessversioninfoproductname",
+      "table": "DeviceEvents",
+      "column": "InitiatingProcessVersionInfoProductName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceevents-processcommandline",
+      "table": "DeviceEvents",
+      "column": "ProcessCommandLine",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceevents-remoteurl",
+      "table": "DeviceEvents",
+      "column": "RemoteUrl",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-devicefileevents-filename",
+      "table": "DeviceFileEvents",
+      "column": "FileName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ],
+      "diagnosticEligibility": "windows-path-case-review",
+      "guidance": "Review case-sensitive string comparisons when the query establishes Windows path context. Preserve intentional case-sensitive matching."
+    },
+    {
+      "id": "case-devicefileevents-fileoriginreferrerurl",
+      "table": "DeviceFileEvents",
+      "column": "FileOriginReferrerUrl",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-devicefileevents-fileoriginurl",
+      "table": "DeviceFileEvents",
+      "column": "FileOriginUrl",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-devicefileevents-folderpath",
+      "table": "DeviceFileEvents",
+      "column": "FolderPath",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ],
+      "diagnosticEligibility": "windows-path-case-review",
+      "guidance": "Review case-sensitive string comparisons when the query establishes Windows path context. Preserve intentional case-sensitive matching."
+    },
+    {
+      "id": "case-devicefileevents-initiatingprocessaccountupn",
+      "table": "DeviceFileEvents",
+      "column": "InitiatingProcessAccountUpn",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-devicefileevents-initiatingprocesscommandline",
+      "table": "DeviceFileEvents",
+      "column": "InitiatingProcessCommandLine",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-devicefileevents-initiatingprocessparentfilename",
+      "table": "DeviceFileEvents",
+      "column": "InitiatingProcessParentFileName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-devicefileevents-initiatingprocessversioninfocompanyname",
+      "table": "DeviceFileEvents",
+      "column": "InitiatingProcessVersionInfoCompanyName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-devicefileevents-initiatingprocessversioninfofiledescription",
+      "table": "DeviceFileEvents",
+      "column": "InitiatingProcessVersionInfoFileDescription",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-devicefileevents-initiatingprocessversioninfointernalfilename",
+      "table": "DeviceFileEvents",
+      "column": "InitiatingProcessVersionInfoInternalFileName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-devicefileevents-initiatingprocessversioninfooriginalfilename",
+      "table": "DeviceFileEvents",
+      "column": "InitiatingProcessVersionInfoOriginalFileName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-devicefileevents-initiatingprocessversioninfoproductname",
+      "table": "DeviceFileEvents",
+      "column": "InitiatingProcessVersionInfoProductName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-devicefileevents-previousfilename",
+      "table": "DeviceFileEvents",
+      "column": "PreviousFileName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-devicefileevents-previousfolderpath",
+      "table": "DeviceFileEvents",
+      "column": "PreviousFolderPath",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-devicefileevents-requestaccountname",
+      "table": "DeviceFileEvents",
+      "column": "RequestAccountName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-devicefileevents-sharename",
+      "table": "DeviceFileEvents",
+      "column": "ShareName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceimageloadevents-filename",
+      "table": "DeviceImageLoadEvents",
+      "column": "FileName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ],
+      "diagnosticEligibility": "windows-path-case-review",
+      "guidance": "Review case-sensitive string comparisons when the query establishes Windows path context. Preserve intentional case-sensitive matching."
+    },
+    {
+      "id": "case-deviceimageloadevents-folderpath",
+      "table": "DeviceImageLoadEvents",
+      "column": "FolderPath",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ],
+      "diagnosticEligibility": "windows-path-case-review",
+      "guidance": "Review case-sensitive string comparisons when the query establishes Windows path context. Preserve intentional case-sensitive matching."
+    },
+    {
+      "id": "case-deviceimageloadevents-initiatingprocessaccountupn",
+      "table": "DeviceImageLoadEvents",
+      "column": "InitiatingProcessAccountUpn",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceimageloadevents-initiatingprocesscommandline",
+      "table": "DeviceImageLoadEvents",
+      "column": "InitiatingProcessCommandLine",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceimageloadevents-initiatingprocessparentfilename",
+      "table": "DeviceImageLoadEvents",
+      "column": "InitiatingProcessParentFileName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceimageloadevents-initiatingprocessversioninfocompanyname",
+      "table": "DeviceImageLoadEvents",
+      "column": "InitiatingProcessVersionInfoCompanyName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceimageloadevents-initiatingprocessversioninfofiledescription",
+      "table": "DeviceImageLoadEvents",
+      "column": "InitiatingProcessVersionInfoFileDescription",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceimageloadevents-initiatingprocessversioninfointernalfilename",
+      "table": "DeviceImageLoadEvents",
+      "column": "InitiatingProcessVersionInfoInternalFileName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceimageloadevents-initiatingprocessversioninfooriginalfilename",
+      "table": "DeviceImageLoadEvents",
+      "column": "InitiatingProcessVersionInfoOriginalFileName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceimageloadevents-initiatingprocessversioninfoproductname",
+      "table": "DeviceImageLoadEvents",
+      "column": "InitiatingProcessVersionInfoProductName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceinfo-azureresourceid",
+      "table": "DeviceInfo",
+      "column": "AzureResourceId",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceinfo-osdistribution",
+      "table": "DeviceInfo",
+      "column": "OSDistribution",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-devicelogonevents-additionalfields",
+      "table": "DeviceLogonEvents",
+      "column": "AdditionalFields",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-devicelogonevents-initiatingprocesscommandline",
+      "table": "DeviceLogonEvents",
+      "column": "InitiatingProcessCommandLine",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-devicelogonevents-initiatingprocessparentfilename",
+      "table": "DeviceLogonEvents",
+      "column": "InitiatingProcessParentFileName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-devicelogonevents-remotedevicename",
+      "table": "DeviceLogonEvents",
+      "column": "RemoteDeviceName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-devicenetworkevents-additionalfields",
+      "table": "DeviceNetworkEvents",
+      "column": "AdditionalFields",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-devicenetworkevents-initiatingprocessaccountupn",
+      "table": "DeviceNetworkEvents",
+      "column": "InitiatingProcessAccountUpn",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-devicenetworkevents-initiatingprocesscommandline",
+      "table": "DeviceNetworkEvents",
+      "column": "InitiatingProcessCommandLine",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-devicenetworkevents-initiatingprocessfilename",
+      "table": "DeviceNetworkEvents",
+      "column": "InitiatingProcessFileName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-devicenetworkevents-initiatingprocessfolderpath",
+      "table": "DeviceNetworkEvents",
+      "column": "InitiatingProcessFolderPath",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-devicenetworkevents-initiatingprocessparentfilename",
+      "table": "DeviceNetworkEvents",
+      "column": "InitiatingProcessParentFileName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-devicenetworkevents-initiatingprocessversioninfocompanyname",
+      "table": "DeviceNetworkEvents",
+      "column": "InitiatingProcessVersionInfoCompanyName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-devicenetworkevents-initiatingprocessversioninfofiledescription",
+      "table": "DeviceNetworkEvents",
+      "column": "InitiatingProcessVersionInfoFileDescription",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-devicenetworkevents-initiatingprocessversioninfointernalfilename",
+      "table": "DeviceNetworkEvents",
+      "column": "InitiatingProcessVersionInfoInternalFileName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-devicenetworkevents-initiatingprocessversioninfooriginalfilename",
+      "table": "DeviceNetworkEvents",
+      "column": "InitiatingProcessVersionInfoOriginalFileName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-devicenetworkevents-initiatingprocessversioninfoproductname",
+      "table": "DeviceNetworkEvents",
+      "column": "InitiatingProcessVersionInfoProductName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-devicenetworkevents-remoteurl",
+      "table": "DeviceNetworkEvents",
+      "column": "RemoteUrl",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceprocessevents-accountupn",
+      "table": "DeviceProcessEvents",
+      "column": "AccountUpn",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceprocessevents-additionalfields",
+      "table": "DeviceProcessEvents",
+      "column": "AdditionalFields",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceprocessevents-filename",
+      "table": "DeviceProcessEvents",
+      "column": "FileName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ],
+      "diagnosticEligibility": "windows-path-case-review",
+      "guidance": "Review case-sensitive string comparisons when the query establishes Windows path context. Preserve intentional case-sensitive matching."
+    },
+    {
+      "id": "case-deviceprocessevents-folderpath",
+      "table": "DeviceProcessEvents",
+      "column": "FolderPath",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ],
+      "diagnosticEligibility": "windows-path-case-review",
+      "guidance": "Review case-sensitive string comparisons when the query establishes Windows path context. Preserve intentional case-sensitive matching."
+    },
+    {
+      "id": "case-deviceprocessevents-initiatingprocessaccountupn",
+      "table": "DeviceProcessEvents",
+      "column": "InitiatingProcessAccountUpn",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceprocessevents-initiatingprocesscommandline",
+      "table": "DeviceProcessEvents",
+      "column": "InitiatingProcessCommandLine",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceprocessevents-initiatingprocessfilename",
+      "table": "DeviceProcessEvents",
+      "column": "InitiatingProcessFileName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ],
+      "diagnosticEligibility": "windows-path-case-review",
+      "guidance": "Review case-sensitive string comparisons when the query establishes Windows path context. Preserve intentional case-sensitive matching."
+    },
+    {
+      "id": "case-deviceprocessevents-initiatingprocessfolderpath",
+      "table": "DeviceProcessEvents",
+      "column": "InitiatingProcessFolderPath",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ],
+      "diagnosticEligibility": "windows-path-case-review",
+      "guidance": "Review case-sensitive string comparisons when the query establishes Windows path context. Preserve intentional case-sensitive matching."
+    },
+    {
+      "id": "case-deviceprocessevents-initiatingprocessparentfilename",
+      "table": "DeviceProcessEvents",
+      "column": "InitiatingProcessParentFileName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceprocessevents-initiatingprocessversioninfocompanyname",
+      "table": "DeviceProcessEvents",
+      "column": "InitiatingProcessVersionInfoCompanyName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceprocessevents-initiatingprocessversioninfofiledescription",
+      "table": "DeviceProcessEvents",
+      "column": "InitiatingProcessVersionInfoFileDescription",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceprocessevents-initiatingprocessversioninfointernalfilename",
+      "table": "DeviceProcessEvents",
+      "column": "InitiatingProcessVersionInfoInternalFileName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceprocessevents-initiatingprocessversioninfooriginalfilename",
+      "table": "DeviceProcessEvents",
+      "column": "InitiatingProcessVersionInfoOriginalFileName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceprocessevents-initiatingprocessversioninfoproductname",
+      "table": "DeviceProcessEvents",
+      "column": "InitiatingProcessVersionInfoProductName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceprocessevents-processcommandline",
+      "table": "DeviceProcessEvents",
+      "column": "ProcessCommandLine",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceprocessevents-processversioninfocompanyname",
+      "table": "DeviceProcessEvents",
+      "column": "ProcessVersionInfoCompanyName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceprocessevents-processversioninfofiledescription",
+      "table": "DeviceProcessEvents",
+      "column": "ProcessVersionInfoFileDescription",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceprocessevents-processversioninfointernalfilename",
+      "table": "DeviceProcessEvents",
+      "column": "ProcessVersionInfoInternalFileName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceprocessevents-processversioninfooriginalfilename",
+      "table": "DeviceProcessEvents",
+      "column": "ProcessVersionInfoOriginalFileName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceprocessevents-processversioninfoproductname",
+      "table": "DeviceProcessEvents",
+      "column": "ProcessVersionInfoProductName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceregistryevents-initiatingprocessaccountupn",
+      "table": "DeviceRegistryEvents",
+      "column": "InitiatingProcessAccountUpn",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceregistryevents-initiatingprocesscommandline",
+      "table": "DeviceRegistryEvents",
+      "column": "InitiatingProcessCommandLine",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceregistryevents-initiatingprocessparentfilename",
+      "table": "DeviceRegistryEvents",
+      "column": "InitiatingProcessParentFileName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceregistryevents-initiatingprocessversioninfocompanyname",
+      "table": "DeviceRegistryEvents",
+      "column": "InitiatingProcessVersionInfoCompanyName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceregistryevents-initiatingprocessversioninfointernalfilename",
+      "table": "DeviceRegistryEvents",
+      "column": "InitiatingProcessVersionInfoInternalFileName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceregistryevents-initiatingprocessversioninfooriginalfilename",
+      "table": "DeviceRegistryEvents",
+      "column": "InitiatingProcessVersionInfoOriginalFileName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceregistryevents-previousregistrykey",
+      "table": "DeviceRegistryEvents",
+      "column": "PreviousRegistryKey",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceregistryevents-previousregistryvaluedata",
+      "table": "DeviceRegistryEvents",
+      "column": "PreviousRegistryValueData",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceregistryevents-previousregistryvaluename",
+      "table": "DeviceRegistryEvents",
+      "column": "PreviousRegistryValueName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceregistryevents-registrykey",
+      "table": "DeviceRegistryEvents",
+      "column": "RegistryKey",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceregistryevents-registryvaluedata",
+      "table": "DeviceRegistryEvents",
+      "column": "RegistryValueData",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-deviceregistryevents-registryvaluename",
+      "table": "DeviceRegistryEvents",
+      "column": "RegistryValueName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-devices-datahealth-2-cl-computer",
+      "table": "Devices_DataHealth_2_CL",
+      "column": "Computer",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-emailattachmentinfo-fileextension",
+      "table": "EmailAttachmentInfo",
+      "column": "FileExtension",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-emailattachmentinfo-filename",
+      "table": "EmailAttachmentInfo",
+      "column": "FileName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-emailattachmentinfo-senderdisplayname",
+      "table": "EmailAttachmentInfo",
+      "column": "SenderDisplayName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-emailevents-additionalfields",
+      "table": "EmailEvents",
+      "column": "AdditionalFields",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-emailevents-distributionlist",
+      "table": "EmailEvents",
+      "column": "DistributionList",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-emailevents-senderdisplayname",
+      "table": "EmailEvents",
+      "column": "SenderDisplayName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-emailevents-subject",
+      "table": "EmailEvents",
+      "column": "Subject",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-emailurlinfo-url",
+      "table": "EmailUrlInfo",
+      "column": "Url",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-entraidsigninevents-accountupn",
+      "table": "EntraIdSignInEvents",
+      "column": "AccountUpn",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-entraidsigninevents-alternatesigninname",
+      "table": "EntraIdSignInEvents",
+      "column": "AlternateSignInName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-entraidsigninevents-authenticationprocessingdetails",
+      "table": "EntraIdSignInEvents",
+      "column": "AuthenticationProcessingDetails",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-entraidsigninevents-devicename",
+      "table": "EntraIdSignInEvents",
+      "column": "DeviceName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-entraidsigninevents-uniquetokenid",
+      "table": "EntraIdSignInEvents",
+      "column": "UniqueTokenId",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-entraidspnsigninevents-application",
+      "table": "EntraIdSpnSignInEvents",
+      "column": "Application",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-entraidspnsigninevents-serviceprincipalname",
+      "table": "EntraIdSpnSignInEvents",
+      "column": "ServicePrincipalName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-entraidspnsigninevents-uniquetokenid",
+      "table": "EntraIdSpnSignInEvents",
+      "column": "UniqueTokenId",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-event-parameterxml",
+      "table": "Event",
+      "column": "ParameterXml",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-event-rendereddescription",
+      "table": "Event",
+      "column": "RenderedDescription",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-event-username",
+      "table": "Event",
+      "column": "UserName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-heartbeat-resourcegroup",
+      "table": "Heartbeat",
+      "column": "ResourceGroup",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-heartbeat-resourceid",
+      "table": "Heartbeat",
+      "column": "ResourceId",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-identitydirectoryevents-accountdomain",
+      "table": "IdentityDirectoryEvents",
+      "column": "AccountDomain",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-identityinfo-givenname",
+      "table": "IdentityInfo",
+      "column": "GivenName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-identityinfo-jobtitle",
+      "table": "IdentityInfo",
+      "column": "JobTitle",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-identitylogonevents-accountdomain",
+      "table": "IdentityLogonEvents",
+      "column": "AccountDomain",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-identitylogonevents-accountname",
+      "table": "IdentityLogonEvents",
+      "column": "AccountName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-identitylogonevents-accountupn",
+      "table": "IdentityLogonEvents",
+      "column": "AccountUpn",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-identityqueryevents-accountdomain",
+      "table": "IdentityQueryEvents",
+      "column": "AccountDomain",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-identityqueryevents-query",
+      "table": "IdentityQueryEvents",
+      "column": "Query",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-identityqueryevents-querytarget",
+      "table": "IdentityQueryEvents",
+      "column": "QueryTarget",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-mcasshadowitreporting-enrichedusername",
+      "table": "McasShadowItReporting",
+      "column": "EnrichedUserName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-messageurlinfo-url",
+      "table": "MessageUrlInfo",
+      "column": "Url",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-microsoftgraphactivitylogs-requesturi",
+      "table": "MicrosoftGraphActivityLogs",
+      "column": "RequestUri",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-microsoftgraphactivitylogs-signinactivityid",
+      "table": "MicrosoftGraphActivityLogs",
+      "column": "SignInActivityId",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-microsoftpurviewinformationprotection-itemname",
+      "table": "MicrosoftPurviewInformationProtection",
+      "column": "ItemName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-microsoftpurviewinformationprotection-objectid",
+      "table": "MicrosoftPurviewInformationProtection",
+      "column": "ObjectId",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-microsoftpurviewinformationprotection-platform",
+      "table": "MicrosoftPurviewInformationProtection",
+      "column": "Platform",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-microsoftpurviewinformationprotection-userid",
+      "table": "MicrosoftPurviewInformationProtection",
+      "column": "UserId",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-officeactivity-affecteditems",
+      "table": "OfficeActivity",
+      "column": "AffectedItems",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-officeactivity-channelguid",
+      "table": "OfficeActivity",
+      "column": "ChannelGuid",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-officeactivity-chatname",
+      "table": "OfficeActivity",
+      "column": "ChatName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-officeactivity-chatthreadid",
+      "table": "OfficeActivity",
+      "column": "ChatThreadId",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-officeactivity-communicationtype",
+      "table": "OfficeActivity",
+      "column": "CommunicationType",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-officeactivity-destinationfileextension",
+      "table": "OfficeActivity",
+      "column": "DestinationFileExtension",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-officeactivity-destinationfilename",
+      "table": "OfficeActivity",
+      "column": "DestinationFileName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-officeactivity-destinationrelativeurl",
+      "table": "OfficeActivity",
+      "column": "DestinationRelativeUrl",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-officeactivity-item",
+      "table": "OfficeActivity",
+      "column": "Item",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-officeactivity-itemname",
+      "table": "OfficeActivity",
+      "column": "ItemName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-officeactivity-name",
+      "table": "OfficeActivity",
+      "column": "Name",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-officeactivity-officeobjectid",
+      "table": "OfficeActivity",
+      "column": "OfficeObjectId",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-officeactivity-parameters",
+      "table": "OfficeActivity",
+      "column": "Parameters",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-officeactivity-sourcefileextension",
+      "table": "OfficeActivity",
+      "column": "SourceFileExtension",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-officeactivity-sourcefilename",
+      "table": "OfficeActivity",
+      "column": "SourceFileName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-officeactivity-sourcefilename-variant",
+      "table": "OfficeActivity",
+      "column": "SourceFileName_",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-officeactivity-sourcerelativeurl",
+      "table": "OfficeActivity",
+      "column": "SourceRelativeUrl",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-officeactivity-sourcerelativeurl-variant",
+      "table": "OfficeActivity",
+      "column": "SourceRelativeUrl_",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-officeactivity-targetuserorgroupname",
+      "table": "OfficeActivity",
+      "column": "TargetUserOrGroupName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-officeactivity-userid",
+      "table": "OfficeActivity",
+      "column": "UserId",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-officeactivity-userid-variant",
+      "table": "OfficeActivity",
+      "column": "UserId_",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-powerbiactivity-datasetname",
+      "table": "PowerBIActivity",
+      "column": "DatasetName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-powerbiactivity-itemname",
+      "table": "PowerBIActivity",
+      "column": "ItemName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-powerbiactivity-objectid",
+      "table": "PowerBIActivity",
+      "column": "ObjectId",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-powerbiactivity-reportname",
+      "table": "PowerBIActivity",
+      "column": "ReportName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-purviewdlpdetections-cl-name",
+      "table": "PurviewDLPDetections_CL",
+      "column": "Name",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-purviewdlpdetections-cl-value",
+      "table": "PurviewDLPDetections_CL",
+      "column": "Value",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-securityalert-extendedproperties",
+      "table": "SecurityAlert",
+      "column": "ExtendedProperties",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-securityevent-account",
+      "table": "SecurityEvent",
+      "column": "Account",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-securityevent-additionalinfo2",
+      "table": "SecurityEvent",
+      "column": "AdditionalInfo2",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-securityevent-commandline",
+      "table": "SecurityEvent",
+      "column": "CommandLine",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-securityevent-eventdata",
+      "table": "SecurityEvent",
+      "column": "EventData",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-securityevent-newprocessname",
+      "table": "SecurityEvent",
+      "column": "NewProcessName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-securityevent-objectname",
+      "table": "SecurityEvent",
+      "column": "ObjectName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-securityevent-parentprocessname",
+      "table": "SecurityEvent",
+      "column": "ParentProcessName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-securityevent-process",
+      "table": "SecurityEvent",
+      "column": "Process",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-securityevent-processname",
+      "table": "SecurityEvent",
+      "column": "ProcessName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-securityevent-relativetargetname",
+      "table": "SecurityEvent",
+      "column": "RelativeTargetName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-securityevent-servicefilename",
+      "table": "SecurityEvent",
+      "column": "ServiceFileName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-securityevent-servicename",
+      "table": "SecurityEvent",
+      "column": "ServiceName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-securityevent-subjectaccount",
+      "table": "SecurityEvent",
+      "column": "SubjectAccount",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-securityevent-subjectusername",
+      "table": "SecurityEvent",
+      "column": "SubjectUserName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-securityevent-targetaccount",
+      "table": "SecurityEvent",
+      "column": "TargetAccount",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-securityevent-targetdomainname",
+      "table": "SecurityEvent",
+      "column": "TargetDomainName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-securityevent-targetinfo",
+      "table": "SecurityEvent",
+      "column": "TargetInfo",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-securityevent-targetoutbounddomainname",
+      "table": "SecurityEvent",
+      "column": "TargetOutboundDomainName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-securityevent-targetservername",
+      "table": "SecurityEvent",
+      "column": "TargetServerName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-securityevent-targetusername",
+      "table": "SecurityEvent",
+      "column": "TargetUserName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-signinlogs-alternatesigninname",
+      "table": "SigninLogs",
+      "column": "AlternateSignInName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-signinlogs-signinidentifier",
+      "table": "SigninLogs",
+      "column": "SignInIdentifier",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-signinlogs-uniquetokenidentifier",
+      "table": "SigninLogs",
+      "column": "UniqueTokenIdentifier",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-signinlogs-userprincipalname",
+      "table": "SigninLogs",
+      "column": "UserPrincipalName",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-syslog-syslogmessage",
+      "table": "Syslog",
+      "column": "SyslogMessage",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-urlclickevents-url",
+      "table": "UrlClickEvents",
+      "column": "Url",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-urlclickevents-urlchain",
+      "table": "UrlClickEvents",
+      "column": "UrlChain",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "case-cmdb-ci-vmware-instance-cl-name",
+      "table": "cmdb_ci_vmware_instance_CL",
+      "column": "name",
+      "kind": "value-case-variation",
+      "title": "Value casing varies",
+      "text": "Values in this field have been observed with different casing. Choose comparison behavior according to the meaning of the value and the query intent.",
+      "sourceIds": [
+        "olaf-hartong"
+      ]
+    },
+    {
+      "id": "aad-graph-signinactivityid-formats",
+      "table": "AADGraphActivityLogs",
+      "column": "SignInActivityId",
+      "kind": "identifier-format-variation",
+      "title": "SignInActivityId formats",
+      "text": "SignInActivityId can contain padded token identifiers and GUID-shaped values. Remove trailing Base64 padding when correlating token identifiers and preserve case. Padding removal does not convert GUID-shaped values into token identifiers. Inspect unmatched GUID-shaped values separately.",
+      "guidance": "Compare nonempty token identifiers with exact equality after removing only trailing Base64 padding. Keep tenant, actor, application, and time context.",
+      "sourceIds": [
+        "cloudbrothers-aad-graph",
+        "invictus-aad-graph"
+      ],
+      "query": "AADGraphActivityLogs\n| where TimeGenerated \u003E ago(90d)\n| summarize by SignInActivityId\n| summarize\n    Padded=countif(SignInActivityId endswith \u0022==\u0022),\n    GUID=countif(SignInActivityId matches regex @\u0022^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$\u0022),\n    TotalUnique=dcount(SignInActivityId)",
+      "queryLanguage": "kusto"
+    }
+  ],
+  "source": "https://xdrinternals.com/data/column-observations.json"
+}

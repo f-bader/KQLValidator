@@ -204,3 +204,11 @@ Relation guidance covers timing windows, empty keys, inventory snapshots, event 
 [dxbp2]: https://kqlquery.com/posts/dxbp-part2/
 [falcon-nrt]: https://falconforce.nl/falconfriday-need-for-speed-going-underground-with-near-real-time-nrt-rules-0xff26/
 [fabian-bader]: https://github.com/f-bader/KQLValidator/blob/main/docs/lint-rules.md
+
+## Column observations
+
+The `community-observations` rule set is opt-in. `KQLO001` reports informational guidance for case-sensitive comparisons on eight cataloged filename/path fields in `DeviceProcessEvents`, `DeviceFileEvents`, and `DeviceImageLoadEvents`, with demonstrated Windows path context. The source dataset is attributed to [Olaf Hartong](https://github.com/olafhartong).
+
+The rule checks `==`, `!=`, `<>`, `in`, and `!in` against nonempty string constants inside filters. It follows unambiguous column aliases, requires explicit `windows-path-case-review` eligibility, and preserves intentional case-sensitive matching. Membership checks initially support literal string lists. Queries containing joins, transformed values, nested paths, unresolved origins, token identifiers, URLs, and serialized payload comparisons are skipped. Imported observations without reviewed eligibility remain available as metadata.
+
+When both `KQLO001` and `KQLD007` apply to the same comparison, the observation advisory takes precedence. `KQLD007` retains its existing behavior when enabled independently. No query is rewritten and no casing observation creates a validation error.

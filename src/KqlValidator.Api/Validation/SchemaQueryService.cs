@@ -28,8 +28,20 @@ public sealed class SchemaQueryService
 
     public IReadOnlyList<EnvironmentSummary> ListEnvironments() => catalog.List();
 
-    public SchemaTable? GetTable(KqlEnvironment environment, string table) =>
-        catalog.Get(environment).Tables.GetValueOrDefault(table);
+    public ColumnObservationResponse GetObservations(KqlEnvironment environment, string? table = null, string? column = null, string? path = null) =>
+        catalog.Observations.Get(catalog.Get(environment), table, column, path);
+
+    public SchemaTable? GetTable(KqlEnvironment environment, string table)
+    {
+        var known = catalog.Get(environment).Tables.GetValueOrDefault(table);
+        if (known is null) return null;
+        var observations = GetObservations(environment, known.Name).Items.ToLookup(e => e.Column, StringComparer.OrdinalIgnoreCase);
+        return known with
+        {
+            Columns = known.Columns.Select(c => observations.Contains(c.Name)
+            ? c with { Observations = observations[c.Name].ToArray() } : c).ToArray()
+        };
+    }
 
     public SchemaFunction? GetFunction(KqlEnvironment environment, string function) =>
         catalog.Get(environment).Functions.GetValueOrDefault(function);

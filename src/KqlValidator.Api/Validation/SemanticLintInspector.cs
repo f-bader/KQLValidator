@@ -17,20 +17,24 @@ internal sealed class SemanticLintInspector
     private readonly LintPolicy policy;
     private readonly KustoCode code;
     private readonly CancellationToken cancellationToken;
+    private readonly ColumnObservationCatalog? observations;
     private readonly List<ValidationDiagnostic> diagnostics = [];
     private readonly Dictionary<ColumnSymbol, Origin> physical = [];
     private readonly HashSet<FunctionSymbol> builtins;
     private readonly Dictionary<ColumnSymbol, Origin?> origins = [];
     private readonly List<SyntaxNode> nodes = [];
+    private bool containsJoin;
     private readonly Dictionary<Symbol, int> referenceCounts = [];
 
-    public SemanticLintInspector(LintRuleCatalog rules, ValidateRequest request, LintPolicy policy, KustoCode code, CancellationToken cancellationToken)
+    public SemanticLintInspector(LintRuleCatalog rules, ValidateRequest request, LintPolicy policy, KustoCode code, CancellationToken cancellationToken,
+        ColumnObservationCatalog? observations = null)
     {
         this.rules = rules;
         this.request = request;
         this.policy = policy;
         this.code = code;
         this.cancellationToken = cancellationToken;
+        this.observations = observations;
         builtins = code.Globals.Functions.Concat(code.Globals.Aggregates).ToHashSet();
         foreach (var table in code.Globals.Database.Members.OfType<TableSymbol>())
             foreach (var column in table.Columns)
@@ -43,6 +47,7 @@ internal sealed class SemanticLintInspector
         {
             cancellationToken.ThrowIfCancellationRequested();
             nodes.Add(node);
+            if (node is JoinOperator) containsJoin = true;
             if (node is NameReference { ReferencedSymbol: { } symbol })
                 referenceCounts[symbol] = referenceCounts.GetValueOrDefault(symbol) + 1;
         });
@@ -62,7 +67,9 @@ internal sealed class SemanticLintInspector
                     CheckReuse(alias.Name, pipe.Expression, implicitUse: true); break;
             }
         }
-        return diagnostics.DistinctBy(d => (d.RuleId, d.Span.Start)).ToArray();
+        var observedStarts = diagnostics.Where(d => d.RuleId == "KQLO001").Select(d => d.Span.Start).ToHashSet();
+        return diagnostics.Where(d => d.RuleId != "KQLD007" || !observedStarts.Contains(d.Span.Start))
+            .DistinctBy(d => (d.RuleId, d.Span.Start)).ToArray();
     }
 
     private void Add(string id, string message, SyntaxNode node, DiagnosticSeverity? severity = null)
@@ -81,6 +88,8 @@ internal sealed class SemanticLintInspector
 
         if (op is "==" or "!=" or "<>")
         {
+            CheckObservationCase(binary.Left, binary.Right.ConstantValue as string, binary);
+            CheckObservationCase(binary.Right, binary.Left.ConstantValue as string, binary);
             foreach (var (operand, literal) in new[] { (binary.Left, binary.Right), (binary.Right, binary.Left) })
             {
                 if (operand.ResultType == ScalarTypes.String && literal.ResultType == ScalarTypes.String && literal.ConstantValue is string { Length: 0 })
@@ -150,6 +159,9 @@ internal sealed class SemanticLintInspector
         }
         if (syntax is InExpression membership)
         {
+            if (membership.Operator.Text is "in" or "!in" && expressions.Length > 0 &&
+                expressions.All(e => e.ConstantValue is string))
+                foreach (var text in values) CheckObservationCase(left, text, syntax);
             var unicode = values.Any(v => v.EnumerateRunes().Any(r => r.Value > 127 && Rune.IsLetter(r)));
             if (membership.Operator.Text is "in~" or "!in~" && unicode)
                 Add("KQLP015", "in~ and !in~ support ASCII case-insensitive matching only. Use explicit normalization if Unicode case-insensitive comparison is intended.", syntax);
@@ -188,6 +200,24 @@ internal sealed class SemanticLintInspector
             if (windows)
                 Add("KQLD007", "Review case-sensitive filename/path equality in this Windows context. Consider =~ or in~ if case variations should match; case sensitivity can be intentional.", binary);
         }
+    }
+
+    private void CheckObservationCase(Expression operand, string? text, SyntaxNode syntax)
+    {
+        if (containsJoin || string.IsNullOrEmpty(text) || operand.ResultType != ScalarTypes.String || observations is null ||
+            !policy.IsEnabled("KQLO001", DiagnosticSeverity.Information) ||
+            Ancestor<FilterOperator>(syntax) is not { } filter ||
+            Resolve(operand) is not
+            {
+                Table.Name: "DeviceProcessEvents" or "DeviceFileEvents" or "DeviceImageLoadEvents",
+                Column: "FileName" or "FolderPath" or "InitiatingProcessFileName" or "InitiatingProcessFolderPath"
+            } origin ||
+            !observations.WindowsCaseReview(origin.Table.Name, origin.Column)) return;
+        var windows = origin.Column.EndsWith("FolderPath", StringComparison.Ordinal) && WindowsPath(text) ||
+            WindowsPredicate(filter.Condition) || PrecedingWindowsFilter(filter);
+        if (windows)
+            Add("KQLO001", $"Different value casing has been observed in {origin.Table.Name}.{origin.Column} (Olaf Hartong). " +
+                "Review whether this comparison should match case variations. Preserve intentional case-sensitive matching.", syntax);
     }
 
     private bool PrecedingWindowsFilter(FilterOperator filter)
