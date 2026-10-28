@@ -36,8 +36,11 @@ public sealed class SchemaQueryService
         var known = catalog.Get(environment).Tables.GetValueOrDefault(table);
         if (known is null) return null;
         var observations = GetObservations(environment, known.Name).Items.ToLookup(e => e.Column, StringComparer.OrdinalIgnoreCase);
-        return known with { Columns = known.Columns.Select(c => observations.Contains(c.Name)
-            ? c with { Observations = observations[c.Name].ToArray() } : c).ToArray() };
+        return known with
+        {
+            Columns = known.Columns.Select(c => observations.Contains(c.Name)
+            ? c with { Observations = observations[c.Name].ToArray() } : c).ToArray()
+        };
     }
 
     public SchemaFunction? GetFunction(KqlEnvironment environment, string function) =>

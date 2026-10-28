@@ -207,8 +207,11 @@ internal sealed class SemanticLintInspector
         if (containsJoin || string.IsNullOrEmpty(text) || operand.ResultType != ScalarTypes.String || observations is null ||
             !policy.IsEnabled("KQLO001", DiagnosticSeverity.Information) ||
             Ancestor<FilterOperator>(syntax) is not { } filter ||
-            Resolve(operand) is not { Table.Name: "DeviceProcessEvents" or "DeviceFileEvents" or "DeviceImageLoadEvents",
-                Column: "FileName" or "FolderPath" or "InitiatingProcessFileName" or "InitiatingProcessFolderPath" } origin ||
+            Resolve(operand) is not
+            {
+                Table.Name: "DeviceProcessEvents" or "DeviceFileEvents" or "DeviceImageLoadEvents",
+                Column: "FileName" or "FolderPath" or "InitiatingProcessFileName" or "InitiatingProcessFolderPath"
+            } origin ||
             !observations.WindowsCaseReview(origin.Table.Name, origin.Column)) return;
         var windows = origin.Column.EndsWith("FolderPath", StringComparison.Ordinal) && WindowsPath(text) ||
             WindowsPredicate(filter.Condition) || PrecedingWindowsFilter(filter);
