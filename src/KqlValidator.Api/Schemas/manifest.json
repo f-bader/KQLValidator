@@ -10,7 +10,7 @@
     },
     {
       "url": "https://xdrinternals.com/data/column-relations.json",
-      "sha256": "147b2cc3920832b8c860af125d023bd14b1d57b857c0325417fa0fb0dac6c844"
+      "sha256": "2718a8161cb70777a466f672253ff07f11d126b2ec29112fa62bb04cb582ea12"
     },
     {
       "url": "https://xdrinternals.com/data/structured-columns/index.json",
@@ -275,6 +275,10 @@
     {
       "url": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-urlclickevents-table",
       "sha256": "1975f592705fa11b5e827e895c13802368515c0f09db1b7e4ca29422f41aec04"
+    },
+    {
+      "url": "https://xdrinternals.com/data/column-observations.json",
+      "sha256": "ff24b246338458c326cdb02fee91db9373d961d16635793e6a5118babf3d9bed"
     }
   ]
 }

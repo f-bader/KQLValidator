@@ -21,12 +21,14 @@ public sealed partial class KqlLinter
     private readonly IReadOnlySet<string> knownActionTypes;
     private readonly LintRuleCatalog rules;
     private readonly ColumnRelationCatalog relations;
+    private readonly ColumnObservationCatalog observations;
 
     public KqlLinter(SchemaCatalog catalog, LintRuleCatalog rules)
     {
         knownActionTypes = catalog.ActionTypes.Count > 0 ? catalog.ActionTypes : FallbackActionTypes;
         this.rules = rules;
         relations = catalog.Relations;
+        observations = catalog.Observations;
     }
 
     public IReadOnlyList<ValidationDiagnostic> Analyze(
@@ -67,7 +69,7 @@ public sealed partial class KqlLinter
         AddWatchlistColumnDiagnostics(diagnostics, policy, searchable, cancellationToken);
         AddMicrosoftKustoDiagnostics(diagnostics, policy, searchable, cancellationToken);
         AddLargeParseDiagnostics(diagnostics, policy, request.Query, code, cancellationToken);
-        diagnostics.AddRange(new SemanticLintInspector(rules, request, policy, code, cancellationToken).Analyze());
+        diagnostics.AddRange(new SemanticLintInspector(rules, request, policy, code, cancellationToken, observations).Analyze());
         if (new[] { "KQLR001", "KQLR002", "KQLR003" }.Any(id => policy.IsEnabled(id, rules.Get(id).DefaultSeverity)))
             diagnostics.AddRange(new ColumnRelationInspector(relations, rules, code, cancellationToken).Analyze(query, code, policy));
         cancellationToken.ThrowIfCancellationRequested();

@@ -11,12 +11,14 @@ public sealed class SchemaCatalog
     private readonly IReadOnlyDictionary<KqlEnvironment, EnvironmentSchema> schemas;
     public ColumnRelationCatalog Relations { get; }
     public StructuredColumnCatalog Structures { get; }
+    public ColumnObservationCatalog Observations { get; }
 
     public SchemaCatalog(string? schemasDirectory = null, string? overlayPath = null)
     {
         var schemaDirectory = schemasDirectory ?? Path.Combine(AppContext.BaseDirectory, "Schemas");
         Relations = new ColumnRelationCatalog(Path.Combine(schemaDirectory, "column-relations.json"), required: schemasDirectory is null);
         Structures = new StructuredColumnCatalog(Path.Combine(schemaDirectory, "structured-columns.json"), required: schemasDirectory is null);
+        Observations = new ColumnObservationCatalog(Path.Combine(schemaDirectory, "column-observations.json"), required: schemasDirectory is null);
         var xdr = BuildXdr(schemaDirectory);
         var sentinel = BuildSentinel(schemaDirectory);
         if (!string.IsNullOrWhiteSpace(overlayPath))

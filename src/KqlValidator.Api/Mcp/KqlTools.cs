@@ -59,7 +59,7 @@ public sealed class KqlTools
         [Description("Opaque nextCursor from the previous search response; reuse the same environment, query, kind, and limit. Omit for the first page; a null nextCursor means no more results.")] string? cursor = null) => services.GetRequiredService<SchemaQueryService>().Search(environment, query, kind, limit, cursor);
 
     [McpServerTool(Name = "get_kql_table", Title = "Get KQL table", ReadOnly = true, Destructive = false, Idempotent = true, OpenWorld = false, UseStructuredContent = true)]
-    [Description("Get a known table's columns and types from the effective catalog, including mounted custom declarations. Missing tables return null (empty MCP content). Use search_kql_schema for uncertain names. For nested fields in a known column, use get_kql_structured_column; discover available structured columns with list_kql_structured_columns.")]
+    [Description("Get a known table's columns, types, and attributed observations from the effective catalog, including mounted custom declarations. Use get_kql_column_observations to filter field observations and inspect provenance. Missing tables return null (empty MCP content). Use search_kql_schema for uncertain names. For nested fields in a known column, use get_kql_structured_column; discover available structured columns with list_kql_structured_columns.")]
     public static SchemaTable? GetKqlTable(
         IServiceProvider services,
         [Description("Effective schema catalog: xdr (Defender XDR), sentinel (Sentinel), or unified (combined).")] KqlEnvironment environment,
@@ -74,6 +74,16 @@ public sealed class KqlTools
         [Description("Exact known table name, matched case-insensitively. Returns relations in either direction; unknown tables return an empty items list.")] string table,
         [Description("Optional exact column name on the requested table, matched case-insensitively, for example RawEventData. Matches either relation endpoint; nested paths are included in results.")] string? column = null) =>
         services.GetRequiredService<SchemaQueryService>().GetRelations(environment, table, column);
+
+    [McpServerTool(Name = "get_kql_column_observations", Title = "Get KQL column observations", ReadOnly = true, Destructive = false, Idempotent = true, OpenWorld = false, UseStructuredContent = true)]
+    [Description("Inspect attributed field observations about value casing and identifier formats in the effective schema. Missing observations indicate incomplete coverage. Casing variation alone does not establish safe case folding. Enable community-observations for reviewed opt-in advisory checks.")]
+    public static ColumnObservationResponse GetKqlColumnObservations(
+        IServiceProvider services,
+        [Description("Effective schema environment: xdr, sentinel, or unified.")] KqlEnvironment environment,
+        [Description("Optional exact table name, matched case-insensitively. Unknown tables return empty items.")] string? table = null,
+        [Description("Optional exact column name, matched case-insensitively.")] string? column = null,
+        [Description("Optional exact case-sensitive nested path. Empty matches the whole column; omission includes all paths.")] string? path = null) =>
+        services.GetRequiredService<SchemaQueryService>().GetObservations(environment, table, column, path);
 
     [McpServerTool(Name = "list_kql_structured_columns", Title = "List KQL structured columns", ReadOnly = true, Destructive = false, Idempotent = true, OpenWorld = false, UseStructuredContent = true)]
     [Description("Find table columns with cataloged nested structures and discover their discriminator keys. Returns coverage summaries filtered against the effective schema. For a known table and column, call get_kql_structured_column directly for nested fields, variants, and parsing guidance. Captured and illustrative shapes are incomplete; missing evidence leaves KQL validity unchanged.")]

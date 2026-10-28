@@ -43,6 +43,7 @@ public sealed class McpGuidanceTests(WebApplicationFactory<Program> factory) : I
             ["search_kql_schema"] = (["environment"], ["unknown", "substring", "nextCursor", "get_kql_table", "get_kql_function"]),
             ["get_kql_table"] = (["environment", "table"], ["known", "columns", "types", "null", "search_kql_schema"]),
             ["get_kql_column_relations"] = (["environment", "table"], ["join keys", "families", "empty", "community-correlations", "effective schema"]),
+            ["get_kql_column_observations"] = (["environment"], ["attributed", "casing", "effective schema", "incomplete", "community-observations"]),
             ["list_kql_structured_columns"] = (["environment"], ["incomplete", "effective schema", "discriminator keys", "known table and column", "get_kql_structured_column directly"]),
             ["get_kql_structured_column"] = (["environment", "table", "column"], ["known table and column", "list_kql_structured_columns", "incomplete", "illustrative", "missing", "parsing"]),
             ["get_kql_function"] = (["environment", "function"], ["known", "parameters", "return schema", "tabular input", "null", "search_kql_schema", "built-in scalar", "validate_kql"]),
@@ -81,6 +82,17 @@ public sealed class McpGuidanceTests(WebApplicationFactory<Program> factory) : I
         Assert.Contains("transformation", filters.GetProperty("profile").GetProperty("description").GetString());
         Assert.Contains("azure-monitor-transformation", filters.GetProperty("target").GetProperty("description").GetString());
         Assert.Contains("azure-monitor", filters.GetProperty("environment").GetProperty("description").GetString());
+    }
+
+    [Fact]
+    public async Task Column_observation_tool_preserves_provenance_and_filters()
+    {
+        var result = await Call("get_kql_column_observations", new { environment = "xdr", table = "DeviceProcessEvents", column = "FileName" });
+        var response = result.Deserialize<ColumnObservationResponse>(JsonOptions)!;
+        var observation = Assert.Single(response.Items);
+        Assert.Equal("Olaf Hartong", Assert.Single(observation.Sources).Name);
+        var missing = await Call("get_kql_column_observations", new { environment = "xdr", table = "AADGraphActivityLogs" });
+        Assert.Empty(missing.Deserialize<ColumnObservationResponse>(JsonOptions)!.Items);
     }
 
     [Theory]

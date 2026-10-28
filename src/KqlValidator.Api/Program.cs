@@ -254,6 +254,15 @@ api.MapGet("/environments/{environment}/tables/{table}/relations", (
     .ProducesProblem(StatusCodes.Status400BadRequest)
     .ProducesProblem(StatusCodes.Status429TooManyRequests);
 
+api.MapGet("/environments/{environment}/column-observations", (
+    string environment, string? table, string? column, string? path, SchemaQueryService schemas) =>
+    TryEnvironment(environment, out var parsed)
+        ? Results.Ok(schemas.GetObservations(parsed, table, column, path))
+        : UnknownEnvironment())
+    .Produces<ColumnObservationResponse>()
+    .ProducesProblem(StatusCodes.Status400BadRequest)
+    .ProducesProblem(StatusCodes.Status429TooManyRequests);
+
 api.MapGet("/environments/{environment}/structured-columns", (
     string environment, string? table, string? column, int? limit, string? cursor, SchemaQueryService schemas) =>
     TryEnvironment(environment, out var parsed)

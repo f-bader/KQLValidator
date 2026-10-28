@@ -51,3 +51,17 @@ The bundled [XDRInternals relations](https://xdrinternals.com/data/column-relati
 ## Snapshot maintenance
 
 SchemaSync refreshes relation and structured-column snapshots and records their digests in the manifest. Structured columns refresh even with `--sentinel-only`. The refresh rejects malformed references and large drops in entries, combinations, or known actions before replacing the structured snapshot.
+
+## Column observations
+
+`get_kql_table` includes optional column `observations` with explanations, resolved source credits, and reviewed guidance. Use `get_kql_column_observations` or `GET /api/v1/environments/{environment}/column-observations` to inspect the catalog, optionally filtering by `table`, `column`, and `path`. Table and column filters match exact names case-insensitively; nested paths are case-sensitive. Omit `path` to include all paths, or pass an empty path for the whole column. Results include the source URL and snapshot digest and are filtered against the effective environment schema. Missing observations indicate incomplete coverage.
+
+The standalone [XDRInternals column observation catalog](https://xdrinternals.com/data/column-observations.json) is authoritative for validator enrichment. Embedded upstream full-schema observations are generated exports. The catalog credits [Olaf Hartong](https://github.com/olafhartong) for the supplied `CaseInconsistentFields.json` dataset, retaining all 252 table/column pairs, including references outside the bundled schemas. Value casing observations do not establish safe case folding. AAD Graph token format guidance preserves identifier case and distinguishes padding removal from GUID-shaped values.
+
+SchemaSync refreshes observations during full and `--sentinel-only` runs. Before a source change is published, review a local catalog with:
+
+```sh
+dotnet run --project tools/KqlValidator.SchemaSync -- --out src/KqlValidator.Api/Schemas --observations-only --observations-file /absolute/path/column-observations.json
+```
+
+The local input is validated and recorded under the canonical public source URL with its digest. This command updates only the observation snapshot and its manifest entry. Ordinary refreshes require the source catalog to be published first.
