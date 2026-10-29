@@ -17,6 +17,10 @@
       "sha256": "e4be3ba01870c4e2f61b2d14e89306b8086ac5f11999c9a01658d474027e2f19"
     },
     {
+      "url": "https://xdrinternals.com/data/column-observations.json",
+      "sha256": "ff24b246338458c326cdb02fee91db9373d961d16635793e6a5118babf3d9bed"
+    },
+    {
       "url": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-aadsignineventsbeta-table",
       "sha256": "66a56e27dc746505f22a7f785dfc1a45d9123768d5503f129ed271b0e2fcf7b6"
     },
@@ -275,10 +279,6 @@
     {
       "url": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-urlclickevents-table",
       "sha256": "1975f592705fa11b5e827e895c13802368515c0f09db1b7e4ca29422f41aec04"
-    },
-    {
-      "url": "https://xdrinternals.com/data/column-observations.json",
-      "sha256": "ff24b246338458c326cdb02fee91db9373d961d16635793e6a5118babf3d9bed"
     }
   ]
 }
