@@ -3,9 +3,7 @@ name: zizmor
 on:
   push:
     branches: [main]
-    paths: ['.github/**']
   pull_request:
-    paths: ['.github/**']
   schedule:
     - cron: '17 5 * * 1'
   workflow_dispatch:
@@ -14,6 +12,7 @@ permissions: {}
 
 jobs:
   analyze:
+    name: Workflow security
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -30,7 +29,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: echo "private=$(gh api "repos/$GITHUB_REPOSITORY" --jq .private)" >> "$GITHUB_OUTPUT"
-      - name: Enforce medium, high-confidence findings
+      - name: Upload workflow security findings
         uses: zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482 # v0.6.4
         with:
           inputs: .github
@@ -40,4 +39,15 @@ jobs:
           min-confidence: high
           # Findings land in the Security tab once the repository is public.
           advanced-security: ${{ steps.visibility.outputs.private == 'false' }}
+      # SARIF mode reports findings with exit code zero. Run the blocking scan
+      # after upload so findings remain visible when this check fails.
+      - name: Enforce medium, high-confidence findings
+        uses: zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482 # v0.6.4
+        with:
+          inputs: .github
+          version: v1.29.0
+          persona: regular
+          min-severity: medium
+          min-confidence: high
+          advanced-security: false
           annotations: true
