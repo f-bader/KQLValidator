@@ -25,7 +25,7 @@
         {
           "title": "Use the token ID to trace a sign-in session",
           "text": "GraphAPIAuditEvents.UniqueTokenIdentifier can be matched to the unique token identifier on an Entra sign-in record. In Defender XDR, this relationship is represented by EntraIdSignInEvents.UniqueTokenId. The matching sign-in can give you session context for investigating other activity. If you also query Sentinel sign-in tables, include interactive, non-interactive, service principal, and managed identity sign-ins for broader coverage. Keep user and application identities distinct when enriching results, and treat missing sign-in matches as a lead to investigate rather than proof of malicious activity.",
-          "sourceLabel": "Cloudbrothers: Graph API activity logs \u2014 Part 3",
+          "sourceLabel": "Cloudbrothers: Graph API activity logs - Part 3",
           "sourceUrl": "https://cloudbrothers.info/detect-threats-graphapiauditevents-part-3/",
           "query": "GraphAPIAuditEvents\n| where Timestamp \u003E ago(7d)\n| where isnotempty(UniqueTokenIdentifier)\n| join kind=inner (EntraIdSignInEvents\n    | where Timestamp \u003E ago(7d)\n    | where isnotempty(UniqueTokenId)\n    | project SignInTime=Timestamp, UniqueTokenId\n) on $left.UniqueTokenIdentifier == $right.UniqueTokenId\n| project GraphTime=Timestamp, UniqueTokenIdentifier, RequestUri, RequestMethod, AccountObjectId, SignInTime\n| order by GraphTime desc",
           "queryLanguage": "kusto"
@@ -33,7 +33,7 @@
         {
           "title": "Normalize Graph requests before comparing activity",
           "text": "When looking for automated discovery, compare endpoint patterns rather than raw request URLs. Replace object IDs in the path and remove query strings so requests for different objects collapse into the same pattern. Compare volume and endpoint combinations against a baseline for the account or application. UserAgent is not available in this GraphAPIAuditEvents schema; where another Graph log source provides it, remember that it can be changed and use it only as supporting context.",
-          "sourceLabel": "Cloudbrothers: Graph API activity logs \u2014 Part 1",
+          "sourceLabel": "Cloudbrothers: Graph API activity logs - Part 1",
           "sourceUrl": "https://cloudbrothers.info/detect-threats-microsoft-graph-logs-part-1/",
           "query": "GraphAPIAuditEvents\n| where Timestamp \u003E ago(1d)\n| extend ActorId = coalesce(AccountObjectId, ServicePrincipalId, ApplicationId)\n| extend NormalizedRequestUri = replace_regex(RequestUri, @\u0027[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12}\u0027, @\u0027\u003CUUID\u003E\u0027)\n| extend NormalizedRequestUri = replace_regex(NormalizedRequestUri, @\u0027\\?.*$\u0027, @\u0027\u0027)\n| summarize RequestCount=count(), Endpoints=make_set(NormalizedRequestUri, 100), IPAddresses=make_set(IpAddress, 100) by ActorId, EntityType\n| order by RequestCount desc",
           "queryLanguage": "kusto"
@@ -66,7 +66,7 @@
         {
           "title": "Keep user and application identities distinct",
           "text": "In MicrosoftGraphActivityLogs, the actor ID may be in UserId or ServicePrincipalId. Preserve which field supplied the value when enriching or grouping activity. For broader Sentinel sign-in coverage, the article unions interactive, non-interactive, service principal, and managed identity sign-in tables. Those Sentinel tables are separate from EntraIdSignInEvents in Defender XDR.",
-          "sourceLabel": "Cloudbrothers: Graph API activity logs \u2014 Part 2",
+          "sourceLabel": "Cloudbrothers: Graph API activity logs - Part 2",
           "sourceUrl": "https://cloudbrothers.info/detect-threats-microsoft-graph-logs-part-2/",
           "query": "MicrosoftGraphActivityLogs\n| where TimeGenerated \u003E ago(1d)\n| extend ObjectId = iff(isempty(UserId), ServicePrincipalId, UserId)\n| extend ObjectType = iff(isempty(UserId), \u0022ServicePrincipalId\u0022, \u0022UserId\u0022)\n| summarize Requests=count(), Endpoints=dcount(RequestUri) by ObjectType, ObjectId\n| order by Requests desc",
           "queryLanguage": "kusto"
@@ -74,7 +74,7 @@
         {
           "title": "Normalize request URLs and baseline activity",
           "text": "For reconnaissance hunts, compare normalized endpoint patterns and request volume by actor. Replace object IDs in URLs and remove query strings before comparing paths. User agents can be changed, and normal activity varies between environments, so treat tool fingerprints and unusual patterns as investigation leads and build a local baseline.",
-          "sourceLabel": "Cloudbrothers: Graph API activity logs \u2014 Part 1",
+          "sourceLabel": "Cloudbrothers: Graph API activity logs - Part 1",
           "sourceUrl": "https://cloudbrothers.info/detect-threats-microsoft-graph-logs-part-1/",
           "query": "MicrosoftGraphActivityLogs\n| where TimeGenerated \u003E ago(1d)\n| extend ObjectId = iff(isempty(UserId), ServicePrincipalId, UserId)\n| extend ObjectType = iff(isempty(UserId), \u0022ServicePrincipalId\u0022, \u0022UserId\u0022)\n| extend NormalizedRequestUri = replace_regex(RequestUri, @\u0027[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12}\u0027, @\u0027\u003CUUID\u003E\u0027)\n| extend NormalizedRequestUri = replace_regex(NormalizedRequestUri, @\u0027\\?.*$\u0027, @\u0027\u0027)\n| summarize Requests=count(), Endpoints=make_set(NormalizedRequestUri, 100), IPAddresses=make_set(IPAddress, 100) by ObjectType, ObjectId\n| order by Requests desc",
           "queryLanguage": "kusto"
@@ -82,7 +82,7 @@
         {
           "title": "Expand Graph batch requests",
           "text": "Microsoft Graph batch activity may include a record for the POST to $batch and separate records for the individual requests. The article uses OperationId to group the batch with its component requests, which can reveal the actual endpoints involved.",
-          "sourceLabel": "Cloudbrothers: Graph API activity logs \u2014 Part 2",
+          "sourceLabel": "Cloudbrothers: Graph API activity logs - Part 2",
           "sourceUrl": "https://cloudbrothers.info/detect-threats-microsoft-graph-logs-part-2/",
           "query": "let BatchRequests = MicrosoftGraphActivityLogs\n| where TimeGenerated \u003E ago(1d)\n| where RequestMethod == \u0022POST\u0022 and RequestUri endswith \u0022/$batch\u0022\n| project OperationId, BatchTime=TimeGenerated, BatchRequestUri=RequestUri;\nMicrosoftGraphActivityLogs\n| where TimeGenerated \u003E ago(1d)\n| where RequestMethod != \u0022POST\u0022\n| join kind=inner BatchRequests on OperationId\n| project BatchTime, TimeGenerated, OperationId, BatchRequestUri, RequestUri, RequestMethod\n| order by BatchTime desc",
           "queryLanguage": "kusto"
@@ -123,7 +123,7 @@
         {
           "title": "Account for request and record time differences",
           "text": "TimeRequested is when the API call occurred, while TimeGenerated is when the log record was generated. The article observed a median gap of about seven minutes and a maximum of 70 minutes in its lab. Measure the delay in your own data and use an appropriate time window when investigating related sign-ins.",
-          "sourceLabel": "Cloudbrothers: Now You See Me \u2014 AADGraphActivityLogs",
+          "sourceLabel": "Cloudbrothers: Now You See Me - AADGraphActivityLogs",
           "sourceUrl": "https://cloudbrothers.info/aadgraphactivitylogs/",
           "query": "AADGraphActivityLogs\n| where TimeGenerated \u003E ago(30d)\n| extend RequestDelay = TimeGenerated - TimeRequested\n| summarize MedianDelay=percentile(RequestDelay, 50), MaximumDelay=max(RequestDelay), Events=count()",
           "queryLanguage": "kusto"
@@ -131,7 +131,7 @@
         {
           "title": "Pivot from AAD Graph activity to the sign-in",
           "text": "Invictus IR describes correlating AADGraphActivityLogs.SignInActivityId with SigninLogs.UniqueTokenIdentifier after removing trailing token padding. This adapted example uses EntraIdSignInEvents.UniqueTokenId in Defender. Preserve identifier case and verify the formats in your own data; padding normalization does not convert GUID-shaped values into token identifiers.",
-          "sourceLabel": "Invictus IR: The missing link \u2014 AADGraphActivityLogs finally arrives",
+          "sourceLabel": "Invictus IR: The missing link - AADGraphActivityLogs finally arrives",
           "sourceUrl": "https://www.invictus-ir.com/news/the-missing-link-aadgraphactivitylogs-finally-arrives",
           "query": "let LeftEvents = EntraIdSignInEvents\n| where Timestamp \u003E ago(7d)\n| extend LeftKey = trim_end(@\u0022=\u002B\u0022, tostring(UniqueTokenId))\n| where isnotempty(LeftKey);\nlet RightEvents = AADGraphActivityLogs\n| where TimeRequested \u003E ago(7d)\n| extend RightKey = trim_end(@\u0022=\u002B\u0022, tostring(SignInActivityId))\n| where isnotempty(RightKey);\nLeftEvents\n| join kind=inner (RightEvents) on $left.LeftKey == $right.RightKey\n| project-away LeftKey, RightKey",
           "queryLanguage": "kusto"
@@ -139,7 +139,7 @@
         {
           "title": "SignInActivityId formats",
           "text": "SignInActivityId can contain padded token identifiers and GUID-shaped values. Remove trailing Base64 padding when correlating token identifiers and preserve case. Padding removal does not convert GUID-shaped values into token identifiers. Inspect unmatched GUID-shaped values separately.",
-          "sourceLabel": "Cloudbrothers: Now You See Me \u2014 AADGraphActivityLogs",
+          "sourceLabel": "Cloudbrothers: Now You See Me - AADGraphActivityLogs",
           "sourceUrl": "https://cloudbrothers.info/aadgraphactivitylogs/",
           "query": "AADGraphActivityLogs\n| where TimeGenerated \u003E ago(90d)\n| summarize by SignInActivityId\n| summarize\n    Padded=countif(SignInActivityId endswith \u0022==\u0022),\n    GUID=countif(SignInActivityId matches regex @\u0022^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$\u0022),\n    TotalUnique=dcount(SignInActivityId)",
           "queryLanguage": "kusto"
@@ -147,7 +147,7 @@
         {
           "title": "SignInActivityId formats",
           "text": "SignInActivityId can contain padded token identifiers and GUID-shaped values. Remove trailing Base64 padding when correlating token identifiers and preserve case. Padding removal does not convert GUID-shaped values into token identifiers. Inspect unmatched GUID-shaped values separately.",
-          "sourceLabel": "Invictus IR: The missing link \u2014 AADGraphActivityLogs finally arrives",
+          "sourceLabel": "Invictus IR: The missing link - AADGraphActivityLogs finally arrives",
           "sourceUrl": "https://www.invictus-ir.com/news/the-missing-link-aadgraphactivitylogs-finally-arrives",
           "query": "AADGraphActivityLogs\n| where TimeGenerated \u003E ago(90d)\n| summarize by SignInActivityId\n| summarize\n    Padded=countif(SignInActivityId endswith \u0022==\u0022),\n    GUID=countif(SignInActivityId matches regex @\u0022^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$\u0022),\n    TotalUnique=dcount(SignInActivityId)",
           "queryLanguage": "kusto"
@@ -856,7 +856,7 @@
         {
           "title": "SignInActivityId formats",
           "text": "SignInActivityId can contain padded token identifiers and GUID-shaped values. Remove trailing Base64 padding when correlating token identifiers and preserve case. Padding removal does not convert GUID-shaped values into token identifiers. Inspect unmatched GUID-shaped values separately.",
-          "sourceLabel": "Cloudbrothers: Now You See Me \u2014 AADGraphActivityLogs",
+          "sourceLabel": "Cloudbrothers: Now You See Me - AADGraphActivityLogs",
           "sourceUrl": "https://cloudbrothers.info/aadgraphactivitylogs/",
           "query": "AADGraphActivityLogs\n| where TimeGenerated \u003E ago(90d)\n| summarize by SignInActivityId\n| summarize\n    Padded=countif(SignInActivityId endswith \u0022==\u0022),\n    GUID=countif(SignInActivityId matches regex @\u0022^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$\u0022),\n    TotalUnique=dcount(SignInActivityId)",
           "queryLanguage": "kusto"
@@ -864,7 +864,7 @@
         {
           "title": "SignInActivityId formats",
           "text": "SignInActivityId can contain padded token identifiers and GUID-shaped values. Remove trailing Base64 padding when correlating token identifiers and preserve case. Padding removal does not convert GUID-shaped values into token identifiers. Inspect unmatched GUID-shaped values separately.",
-          "sourceLabel": "Invictus IR: The missing link \u2014 AADGraphActivityLogs finally arrives",
+          "sourceLabel": "Invictus IR: The missing link - AADGraphActivityLogs finally arrives",
           "sourceUrl": "https://www.invictus-ir.com/news/the-missing-link-aadgraphactivitylogs-finally-arrives",
           "query": "AADGraphActivityLogs\n| where TimeGenerated \u003E ago(90d)\n| summarize by SignInActivityId\n| summarize\n    Padded=countif(SignInActivityId endswith \u0022==\u0022),\n    GUID=countif(SignInActivityId matches regex @\u0022^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$\u0022),\n    TotalUnique=dcount(SignInActivityId)",
           "queryLanguage": "kusto"
@@ -1135,7 +1135,7 @@
         {
           "title": "SignInActivityId formats",
           "text": "SignInActivityId can contain padded token identifiers and GUID-shaped values. Remove trailing Base64 padding when correlating token identifiers and preserve case. Padding removal does not convert GUID-shaped values into token identifiers. Inspect unmatched GUID-shaped values separately.",
-          "sourceLabel": "Cloudbrothers: Now You See Me \u2014 AADGraphActivityLogs",
+          "sourceLabel": "Cloudbrothers: Now You See Me - AADGraphActivityLogs",
           "sourceUrl": "https://cloudbrothers.info/aadgraphactivitylogs/",
           "query": "AADGraphActivityLogs\n| where TimeGenerated \u003E ago(90d)\n| summarize by SignInActivityId\n| summarize\n    Padded=countif(SignInActivityId endswith \u0022==\u0022),\n    GUID=countif(SignInActivityId matches regex @\u0022^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$\u0022),\n    TotalUnique=dcount(SignInActivityId)",
           "queryLanguage": "kusto"
@@ -1143,7 +1143,7 @@
         {
           "title": "SignInActivityId formats",
           "text": "SignInActivityId can contain padded token identifiers and GUID-shaped values. Remove trailing Base64 padding when correlating token identifiers and preserve case. Padding removal does not convert GUID-shaped values into token identifiers. Inspect unmatched GUID-shaped values separately.",
-          "sourceLabel": "Invictus IR: The missing link \u2014 AADGraphActivityLogs finally arrives",
+          "sourceLabel": "Invictus IR: The missing link - AADGraphActivityLogs finally arrives",
           "sourceUrl": "https://www.invictus-ir.com/news/the-missing-link-aadgraphactivitylogs-finally-arrives",
           "query": "AADGraphActivityLogs\n| where TimeGenerated \u003E ago(90d)\n| summarize by SignInActivityId\n| summarize\n    Padded=countif(SignInActivityId endswith \u0022==\u0022),\n    GUID=countif(SignInActivityId matches regex @\u0022^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$\u0022),\n    TotalUnique=dcount(SignInActivityId)",
           "queryLanguage": "kusto"
@@ -1396,7 +1396,7 @@
         {
           "title": "SignInActivityId formats",
           "text": "SignInActivityId can contain padded token identifiers and GUID-shaped values. Remove trailing Base64 padding when correlating token identifiers and preserve case. Padding removal does not convert GUID-shaped values into token identifiers. Inspect unmatched GUID-shaped values separately.",
-          "sourceLabel": "Cloudbrothers: Now You See Me \u2014 AADGraphActivityLogs",
+          "sourceLabel": "Cloudbrothers: Now You See Me - AADGraphActivityLogs",
           "sourceUrl": "https://cloudbrothers.info/aadgraphactivitylogs/",
           "query": "AADGraphActivityLogs\n| where TimeGenerated \u003E ago(90d)\n| summarize by SignInActivityId\n| summarize\n    Padded=countif(SignInActivityId endswith \u0022==\u0022),\n    GUID=countif(SignInActivityId matches regex @\u0022^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$\u0022),\n    TotalUnique=dcount(SignInActivityId)",
           "queryLanguage": "kusto"
@@ -1404,7 +1404,7 @@
         {
           "title": "SignInActivityId formats",
           "text": "SignInActivityId can contain padded token identifiers and GUID-shaped values. Remove trailing Base64 padding when correlating token identifiers and preserve case. Padding removal does not convert GUID-shaped values into token identifiers. Inspect unmatched GUID-shaped values separately.",
-          "sourceLabel": "Invictus IR: The missing link \u2014 AADGraphActivityLogs finally arrives",
+          "sourceLabel": "Invictus IR: The missing link - AADGraphActivityLogs finally arrives",
           "sourceUrl": "https://www.invictus-ir.com/news/the-missing-link-aadgraphactivitylogs-finally-arrives",
           "query": "AADGraphActivityLogs\n| where TimeGenerated \u003E ago(90d)\n| summarize by SignInActivityId\n| summarize\n    Padded=countif(SignInActivityId endswith \u0022==\u0022),\n    GUID=countif(SignInActivityId matches regex @\u0022^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$\u0022),\n    TotalUnique=dcount(SignInActivityId)",
           "queryLanguage": "kusto"
@@ -1607,7 +1607,7 @@
         {
           "title": "SignInActivityId formats",
           "text": "SignInActivityId can contain padded token identifiers and GUID-shaped values. Remove trailing Base64 padding when correlating token identifiers and preserve case. Padding removal does not convert GUID-shaped values into token identifiers. Inspect unmatched GUID-shaped values separately.",
-          "sourceLabel": "Cloudbrothers: Now You See Me \u2014 AADGraphActivityLogs",
+          "sourceLabel": "Cloudbrothers: Now You See Me - AADGraphActivityLogs",
           "sourceUrl": "https://cloudbrothers.info/aadgraphactivitylogs/",
           "query": "AADGraphActivityLogs\n| where TimeGenerated \u003E ago(90d)\n| summarize by SignInActivityId\n| summarize\n    Padded=countif(SignInActivityId endswith \u0022==\u0022),\n    GUID=countif(SignInActivityId matches regex @\u0022^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$\u0022),\n    TotalUnique=dcount(SignInActivityId)",
           "queryLanguage": "kusto"
@@ -1615,7 +1615,7 @@
         {
           "title": "SignInActivityId formats",
           "text": "SignInActivityId can contain padded token identifiers and GUID-shaped values. Remove trailing Base64 padding when correlating token identifiers and preserve case. Padding removal does not convert GUID-shaped values into token identifiers. Inspect unmatched GUID-shaped values separately.",
-          "sourceLabel": "Invictus IR: The missing link \u2014 AADGraphActivityLogs finally arrives",
+          "sourceLabel": "Invictus IR: The missing link - AADGraphActivityLogs finally arrives",
           "sourceUrl": "https://www.invictus-ir.com/news/the-missing-link-aadgraphactivitylogs-finally-arrives",
           "query": "AADGraphActivityLogs\n| where TimeGenerated \u003E ago(90d)\n| summarize by SignInActivityId\n| summarize\n    Padded=countif(SignInActivityId endswith \u0022==\u0022),\n    GUID=countif(SignInActivityId matches regex @\u0022^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$\u0022),\n    TotalUnique=dcount(SignInActivityId)",
           "queryLanguage": "kusto"
@@ -1818,7 +1818,7 @@
         {
           "title": "SignInActivityId formats",
           "text": "SignInActivityId can contain padded token identifiers and GUID-shaped values. Remove trailing Base64 padding when correlating token identifiers and preserve case. Padding removal does not convert GUID-shaped values into token identifiers. Inspect unmatched GUID-shaped values separately.",
-          "sourceLabel": "Cloudbrothers: Now You See Me \u2014 AADGraphActivityLogs",
+          "sourceLabel": "Cloudbrothers: Now You See Me - AADGraphActivityLogs",
           "sourceUrl": "https://cloudbrothers.info/aadgraphactivitylogs/",
           "query": "AADGraphActivityLogs\n| where TimeGenerated \u003E ago(90d)\n| summarize by SignInActivityId\n| summarize\n    Padded=countif(SignInActivityId endswith \u0022==\u0022),\n    GUID=countif(SignInActivityId matches regex @\u0022^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$\u0022),\n    TotalUnique=dcount(SignInActivityId)",
           "queryLanguage": "kusto"
@@ -1826,7 +1826,7 @@
         {
           "title": "SignInActivityId formats",
           "text": "SignInActivityId can contain padded token identifiers and GUID-shaped values. Remove trailing Base64 padding when correlating token identifiers and preserve case. Padding removal does not convert GUID-shaped values into token identifiers. Inspect unmatched GUID-shaped values separately.",
-          "sourceLabel": "Invictus IR: The missing link \u2014 AADGraphActivityLogs finally arrives",
+          "sourceLabel": "Invictus IR: The missing link - AADGraphActivityLogs finally arrives",
           "sourceUrl": "https://www.invictus-ir.com/news/the-missing-link-aadgraphactivitylogs-finally-arrives",
           "query": "AADGraphActivityLogs\n| where TimeGenerated \u003E ago(90d)\n| summarize by SignInActivityId\n| summarize\n    Padded=countif(SignInActivityId endswith \u0022==\u0022),\n    GUID=countif(SignInActivityId matches regex @\u0022^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$\u0022),\n    TotalUnique=dcount(SignInActivityId)",
           "queryLanguage": "kusto"
