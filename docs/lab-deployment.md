@@ -38,6 +38,14 @@ An incomplete pair is rejected before Azure changes. Leaving both unset or empty
 
 ## GitHub Actions deployment
 
+### Container releases
+
+Push a version tag such as `v1.0.0` on a commit merged into `main` to publish `ghcr.io/f-bader/kql-validator`. Release tags use `vMAJOR.MINOR.PATCH` with an optional prerelease suffix, such as `v1.1.0-rc.1`. CI builds a Linux amd64 image with the release version and source revision, scans it, runs the REST/MCP smoke checks, and transfers that image to the publishing job. The job uses `GITHUB_TOKEN` with `packages: write` to push the validated image. Pull requests do not publish images.
+
+After the first publication, set the container package visibility to **Public** in GitHub's package settings and verify an anonymous pull. The Dockerfile's source label links the package to this repository. Create the GitHub release after the tag workflow succeeds. See [self-hosting](self-hosting.md#local-docker) for image tags and usage.
+
+### Azure lab
+
 CI deploys after validation passes for pushes and manual runs from `main`, using the GitHub `lab` environment. Pull requests and other branches skip deployment. Configure required reviewers if repository policy requires approval.
 
 The workflow uses GitHub OIDC with an existing user-assigned managed identity. Store tenant, subscription, and client IDs as repository secrets to mask them in public logs; use variables for the remaining settings:
