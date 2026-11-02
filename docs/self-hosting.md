@@ -4,11 +4,20 @@ KQL Validator runs without authentication. External ingress exposes its REST, MC
 
 ## Local Docker
 
-Build and start the container:
+Pull and start the published Linux amd64 image:
+
+```bash
+docker pull ghcr.io/f-bader/kql-validator:1.0.0
+docker run --detach --name kql-validator --publish 127.0.0.1:8080:8080 ghcr.io/f-bader/kql-validator:1.0.0
+```
+
+Public images can be pulled without signing in to GitHub. Stable releases provide full version, minor, major, and `latest` tags, such as `1.0.0`, `1.0`, `1`, and `latest`. Major version zero omits the major alias. Prereleases use their explicit version tag. Every release also provides a `sha-<full-commit>` tag. Use an image digest when a deployment must keep the exact image contents.
+
+To build from source:
 
 ```bash
 docker build --tag kql-validator:local .
-docker run --detach --name kql-validator --publish 8080:8080 kql-validator:local
+docker run --detach --name kql-validator --publish 127.0.0.1:8080:8080 kql-validator:local
 ```
 
 Once `/health/ready` succeeds, run the smoke checks:
