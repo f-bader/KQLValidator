@@ -88,6 +88,25 @@ public sealed class ApiTests : IClassFixture<WebApplicationFactory<Program>>
     }
 
     [Fact]
+    public async Task Validate_endpoint_accepts_watchlist_aliases_and_quoted_csv_columns()
+    {
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var response = await client.PostAsJsonAsync("/api/v1/validate", new ValidateRequest(
+            "_GetWatchlist('wl-cert-ti-whitelisting') | project [\"Element ID\"]",
+            KqlEnvironment.Sentinel,
+            LintProfile.General,
+            new ValidationExtensions(Watchlists:
+            [
+                new WatchlistDeclaration("wl-cert-ti-whitelisting", [new ColumnDeclaration("Element ID", "string")])
+            ])), cancellationToken);
+        var result = await response.Content.ReadFromJsonAsync<ValidationResponse>(cancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.NotNull(result);
+        Assert.True(result.Valid, string.Join(Environment.NewLine, result.Diagnostics.Select(x => x.Message)));
+    }
+
+    [Fact]
     public async Task Schema_endpoints_support_search_and_lookup()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
