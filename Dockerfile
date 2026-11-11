@@ -19,7 +19,7 @@ RUN dotnet publish src/KqlValidator.Api/KqlValidator.Api.csproj \
     /p:SourceRevisionId=$SOURCE_REVISION \
     /p:EnableStatusSite=$ENABLE_STATUS_SITE
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0.14-noble-chiseled@sha256:c89a6a61f494f20a5ae302990e814627a8d91b332fd4a8e7c1707c2d4da9555d AS final
+FROM mcr.microsoft.com/dotnet/aspnet:10.0.15-noble-chiseled@sha256:7c625e44e5d588b4d7b2a913e94ca4bd5098ce47442da404829e4c7936a764e1 AS final
 ARG SOURCE_REVISION=unknown
 ARG VERSION=0.0.0-local
 LABEL org.opencontainers.image.title="kql-validator" \
