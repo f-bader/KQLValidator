@@ -172,7 +172,7 @@ internal sealed partial class CustomSchemaOverlay
             EnsureProperties(item, $"{owner}.columns[]", "name", "type");
             var name = RequiredString(item, "name", $"{owner}.columns[]");
             var type = RequiredString(item, "type", $"column '{name}'");
-            ValidateIdentifier(name, "column name", owner);
+            ValidateColumnName(name, owner);
             ValidateType(type, $"column '{name}'", owner);
             if (!names.Add(name)) throw Error(owner, $"The {owner} has duplicate column '{name}'.");
             result.Add(new SchemaColumn(name, type.ToLowerInvariant()));
@@ -184,6 +184,12 @@ internal sealed partial class CustomSchemaOverlay
     {
         if (value.Length > 128 || !Identifier().IsMatch(value))
             throw Error(location, $"'{value}' is not a valid {kind}.");
+    }
+
+    private static void ValidateColumnName(string value, string location)
+    {
+        if (value.Length > 128 || !KqlColumnName().IsMatch(value))
+            throw Error(location, $"'{value}' is not a valid column name.");
     }
 
     private static void ValidateType(string type, string field, string location)
@@ -239,6 +245,9 @@ internal sealed partial class CustomSchemaOverlay
 
     [GeneratedRegex(@"^[A-Za-z_][A-Za-z0-9_]*$")]
     private static partial Regex Identifier();
+
+    [GeneratedRegex(@"^[\p{L}\p{Nd}_ .-]+$")]
+    private static partial Regex KqlColumnName();
 }
 
 internal sealed record CatalogSection(IReadOnlyList<SchemaTable> Tables, IReadOnlyList<SchemaFunction> Functions);

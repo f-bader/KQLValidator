@@ -14,7 +14,7 @@ public sealed class CustomSchemaCatalogTests : IDisposable
     {
         var catalog = CreateCatalog("""
             {
-              "common":{"tables":[{"name":"Shared","columns":[{"name":"Common","type":"string"}]},{"name":"DeviceEvents","columns":[{"name":"TenantTag","type":"string"}]}],"functions":[{"name":"SharedFunction","parameters":[],"returns":{"kind":"scalar","type":"string"}}]},
+              "common":{"tables":[{"name":"Shared","columns":[{"name":"Common","type":"string"},{"name":"Asset FQDN","type":"string"}]},{"name":"DeviceEvents","columns":[{"name":"TenantTag","type":"string"}]}],"functions":[{"name":"SharedFunction","parameters":[],"returns":{"kind":"scalar","type":"string"}}]},
               "environments":{
                 "xdr":{"tables":[{"name":"Conflict","columns":[{"name":"Source","type":"string"}]},{"name":"DeviceEvents","columns":[{"name":"Timestamp","type":"string"}]}],"functions":[{"name":"SharedFunction","parameters":[],"returns":{"kind":"scalar","type":"long"}},{"name":"FileProfile","parameters":[],"returns":{"kind":"scalar","type":"string"}}]},
                 "sentinel":{"tables":[{"name":"Conflict","columns":[{"name":"Source","type":"long"}]}],"functions":[]},
@@ -33,6 +33,7 @@ public sealed class CustomSchemaCatalogTests : IDisposable
         Assert.Equal("string", xdr.Functions["FileProfile"].ScalarReturnType);
         Assert.Equal("string", unified.Tables["Conflict"].Columns.Single(x => x.Name == "Source").Type);
         Assert.Contains(unified.Tables["Shared"].Columns, x => x.Name == "Common");
+        Assert.Contains(unified.Tables["Shared"].Columns, x => x.Name == "Asset FQDN");
         Assert.Contains(unified.Tables["Shared"].Columns, x => x.Name == "Unified" && x.Type == "bool");
         Assert.NotEqual(new SchemaCatalog().Get(KqlEnvironment.Xdr).Version, xdr.Version);
         Assert.Equal("long", sentinel.Tables["Conflict"].Columns.Single(x => x.Name == "Source").Type);

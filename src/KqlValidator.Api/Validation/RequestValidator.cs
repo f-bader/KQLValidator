@@ -48,7 +48,7 @@ public sealed partial class RequestValidator(SchemaCatalog catalog, LintRuleCata
 
         foreach (var watchlist in watchlists)
         {
-            ValidateIdentifier(watchlist.Name, "watchlist alias");
+            ValidateWatchlistAlias(watchlist.Name);
             if (watchlist.Columns is null)
                 throw new RequestValidationException("extensions.watchlists", $"Watchlist '{watchlist.Name}' requires columns.");
             ValidateColumns(watchlist.Columns, $"watchlist '{watchlist.Name}'");
@@ -126,7 +126,7 @@ public sealed partial class RequestValidator(SchemaCatalog catalog, LintRuleCata
         var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach (var column in columns)
         {
-            ValidateIdentifier(column.Name, "column name");
+            ValidateColumnName(column.Name);
             if (!names.Add(column.Name))
                 throw new RequestValidationException("extensions", $"The {owner} has duplicate column '{column.Name}'.");
             ValidateType(column.Type, $"column '{column.Name}'");
@@ -137,6 +137,18 @@ public sealed partial class RequestValidator(SchemaCatalog catalog, LintRuleCata
     {
         if (string.IsNullOrWhiteSpace(value) || value.Length > MaxIdentifierLength || !Identifier().IsMatch(value))
             throw new RequestValidationException("extensions", $"'{value}' is not a valid {kind}.");
+    }
+
+    private static void ValidateColumnName(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value) || value.Length > MaxIdentifierLength || !KqlColumnName().IsMatch(value))
+            throw new RequestValidationException("extensions", $"'{value}' is not a valid column name.");
+    }
+
+    private static void ValidateWatchlistAlias(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value) || !WatchlistAlias().IsMatch(value))
+            throw new RequestValidationException("extensions", $"'{value}' is not a valid watchlist alias.");
     }
 
     private static void ValidateType(string? type, string field)
@@ -192,6 +204,12 @@ public sealed partial class RequestValidator(SchemaCatalog catalog, LintRuleCata
 
     [GeneratedRegex(@"^[A-Za-z_][A-Za-z0-9_]*$")]
     private static partial Regex Identifier();
+
+    [GeneratedRegex(@"^[\p{L}\p{Nd}_ .-]+$")]
+    private static partial Regex KqlColumnName();
+
+    [GeneratedRegex(@"^[A-Za-z0-9][A-Za-z0-9 _-]{1,62}[A-Za-z0-9]$")]
+    private static partial Regex WatchlistAlias();
 }
 
 public sealed class RequestValidationException(string field, string message) : Exception(message)

@@ -617,6 +617,34 @@ public sealed class ValidationTests
         Assert.True(result.Valid, Messages(result));
     }
 
+    [Theory]
+    [InlineData("Element ID", "_GetWatchlist('wl-cert-ti-whitelisting') | project [\"Element ID\"]")]
+    [InlineData("PUM.PUM", "_GetWatchlist('wl-cert-ti-whitelisting') | project [\"PUM.PUM\"]")]
+    public void Request_scoped_watchlists_accept_quoted_kql_column_names(string column, string query)
+    {
+        var extensions = new ValidationExtensions(Watchlists:
+        [
+            new WatchlistDeclaration("wl-cert-ti-whitelisting", [new ColumnDeclaration(column, "string")])
+        ]);
+
+        var result = Validate(query, KqlEnvironment.Sentinel, extensions: extensions);
+
+        Assert.True(result.Valid, Messages(result));
+    }
+
+    [Fact]
+    public void Request_scoped_tables_accept_quoted_kql_column_names()
+    {
+        var extensions = new ValidationExtensions(Tables:
+        [
+            new TableDeclaration("CustomEvents", [new ColumnDeclaration("A B", "string")])
+        ]);
+
+        var result = Validate("CustomEvents | project [\"A B\"]", extensions: extensions);
+
+        Assert.True(result.Valid, Messages(result));
+    }
+
     [Fact]
     public void Unknown_workspace_watchlist_column_explains_request_extension()
     {
@@ -1137,13 +1165,13 @@ public sealed class ValidationTests
     {
         var extensions = new ValidationExtensions(Watchlists:
         [
-            new("A", [new("OnlyA", "string"), new("Value", "string")]),
-            new("B", [new("Value", "long")]),
+            new("List-A", [new("OnlyA", "string"), new("Value", "string")]),
+            new("List-B", [new("Value", "long")]),
         ]);
-        var wrongAlias = Validate("_GetWatchlist('B') | project OnlyA", KqlEnvironment.Sentinel, extensions: extensions);
-        var correctAlias = Validate("let alias = 'B'; _GetWatchlist(alias) | project Value", KqlEnvironment.Sentinel, extensions: extensions);
-        var firstAlias = Validate("_GetWatchlist('A') | project Value", KqlEnvironment.Sentinel, extensions: extensions);
-        var noExtensions = Validate("_GetWatchlist('A') | project OnlyA", KqlEnvironment.Sentinel);
+        var wrongAlias = Validate("_GetWatchlist('List-B') | project OnlyA", KqlEnvironment.Sentinel, extensions: extensions);
+        var correctAlias = Validate("let alias = 'List-B'; _GetWatchlist(alias) | project Value", KqlEnvironment.Sentinel, extensions: extensions);
+        var firstAlias = Validate("_GetWatchlist('List-A') | project Value", KqlEnvironment.Sentinel, extensions: extensions);
+        var noExtensions = Validate("_GetWatchlist('List-A') | project OnlyA", KqlEnvironment.Sentinel);
 
         Assert.False(wrongAlias.Valid);
         Assert.True(correctAlias.Valid, Messages(correctAlias));
