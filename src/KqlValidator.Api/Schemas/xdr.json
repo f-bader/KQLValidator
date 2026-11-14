@@ -1173,7 +1173,15 @@
       "name": "CallActivityEvents",
       "columns": [
         {
+          "name": "ActivityDetail",
+          "type": "string"
+        },
+        {
           "name": "ActivityId",
+          "type": "string"
+        },
+        {
+          "name": "ActivityInitiatorAccountType",
           "type": "string"
         },
         {
@@ -1185,7 +1193,59 @@
           "type": "string"
         },
         {
+          "name": "ActivityInitiatorMembershipType",
+          "type": "string"
+        },
+        {
+          "name": "ActivityInitiatorPhoneNumber",
+          "type": "string"
+        },
+        {
+          "name": "ActivityInitiatorPlatformCategory",
+          "type": "string"
+        },
+        {
+          "name": "ActivityInitiatorPlatformName",
+          "type": "string"
+        },
+        {
+          "name": "ActivityInitiatorTenantDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "ActivityInitiatorTenantRegion",
+          "type": "string"
+        },
+        {
           "name": "ActivityInitiatorUpn",
+          "type": "string"
+        },
+        {
+          "name": "ActivityRecipientAccountType",
+          "type": "string"
+        },
+        {
+          "name": "ActivityRecipientDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "ActivityRecipientId",
+          "type": "string"
+        },
+        {
+          "name": "ActivityRecipientPhoneNumber",
+          "type": "string"
+        },
+        {
+          "name": "ActivityRecipientTenantDisplayName",
+          "type": "string"
+        },
+        {
+          "name": "ActivityRecipientUpn",
+          "type": "string"
+        },
+        {
+          "name": "ActivityStatus",
           "type": "string"
         },
         {
@@ -1205,7 +1265,27 @@
           "type": "string"
         },
         {
+          "name": "CallName",
+          "type": "string"
+        },
+        {
           "name": "CallSchedulingType",
+          "type": "string"
+        },
+        {
+          "name": "CallType",
+          "type": "string"
+        },
+        {
+          "name": "IsPerformedOnSelf",
+          "type": "bool"
+        },
+        {
+          "name": "OriginatorObjectId",
+          "type": "string"
+        },
+        {
+          "name": "OriginatorTenantId",
           "type": "string"
         },
         {
@@ -4091,7 +4171,27 @@
       "name": "DisruptionAndResponseEvents",
       "columns": [
         {
+          "name": "AccountObjectId",
+          "type": "string"
+        },
+        {
           "name": "ActionType",
+          "type": "string"
+        },
+        {
+          "name": "AdditionalFields",
+          "type": "string"
+        },
+        {
+          "name": "AlertId",
+          "type": "string"
+        },
+        {
+          "name": "ApplicationId",
+          "type": "string"
+        },
+        {
+          "name": "ApplicationObjectId",
           "type": "string"
         },
         {
@@ -4119,7 +4219,15 @@
           "type": "string"
         },
         {
+          "name": "FailureReason",
+          "type": "string"
+        },
+        {
           "name": "FileName",
+          "type": "string"
+        },
+        {
+          "name": "InitiatingProcessCommandLine",
           "type": "string"
         },
         {
@@ -4188,6 +4296,10 @@
         },
         {
           "name": "Service",
+          "type": "string"
+        },
+        {
+          "name": "ServicePrincipalObjectId",
           "type": "string"
         },
         {
