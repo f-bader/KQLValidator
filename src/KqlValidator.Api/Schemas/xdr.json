@@ -4605,7 +4605,19 @@
           "type": "string"
         },
         {
+          "name": "ReplyTo",
+          "type": "string"
+        },
+        {
           "name": "ReportId",
+          "type": "string"
+        },
+        {
+          "name": "ReturnPath",
+          "type": "string"
+        },
+        {
+          "name": "ReturnPathDomain",
           "type": "string"
         },
         {
