@@ -1,5 +1,5 @@
 {
-  "source": "Azure Log Analytics Metadata API",
+  "source": "XDRInternals FullSchema columns filtered by Microsoft Docs table inventory; existing tables retained",
   "tables": [
     {
       "name": "AACAudit",
@@ -2035,6 +2035,22 @@
       "name": "AADGraphActivityLogs",
       "columns": [
         {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
+          "name": "_ResourceId",
+          "type": "string"
+        },
+        {
+          "name": "_SubscriptionId",
+          "type": "string"
+        },
+        {
           "name": "AADTenantId",
           "type": "string"
         },
@@ -2165,7 +2181,12 @@
         {
           "name": "Wids",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "AADManagedIdentitySignInLogs",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -2174,19 +2195,6 @@
           "name": "_IsBillable",
           "type": "string"
         },
-        {
-          "name": "_ResourceId",
-          "type": "string"
-        },
-        {
-          "name": "_SubscriptionId",
-          "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "AADManagedIdentitySignInLogs",
-      "columns": [
         {
           "name": "AADTenantId",
           "type": "string"
@@ -2366,7 +2374,12 @@
         {
           "name": "UserAgent",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "AADNonInteractiveUserSignInLogs",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -2374,12 +2387,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "AADNonInteractiveUserSignInLogs",
-      "columns": [
+        },
         {
           "name": "AADTenantId",
           "type": "string"
@@ -2641,6 +2649,10 @@
           "type": "string"
         },
         {
+          "name": "RootActorID",
+          "type": "string"
+        },
+        {
           "name": "ServicePrincipalId",
           "type": "string"
         },
@@ -2714,14 +2726,6 @@
         },
         {
           "name": "UserType",
-          "type": "string"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
           "type": "string"
         }
       ]
@@ -3191,6 +3195,14 @@
       "name": "AADServicePrincipalSignInLogs",
       "columns": [
         {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
           "name": "AADTenantId",
           "type": "string"
         },
@@ -3365,14 +3377,6 @@
         {
           "name": "UserAgent",
           "type": "string"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
-          "type": "string"
         }
       ]
     },
@@ -3492,6 +3496,14 @@
     {
       "name": "ABAPAuditLog",
       "columns": [
+        {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
         {
           "name": "AbapProgramName",
           "type": "string"
@@ -3655,7 +3667,12 @@
         {
           "name": "Variable4",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "ABAPAuthorizationDetails",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -3663,12 +3680,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "ABAPAuthorizationDetails",
-      "columns": [
+        },
         {
           "name": "AgentId",
           "type": "string"
@@ -3748,7 +3760,12 @@
         {
           "name": "UpdatedOn",
           "type": "datetime"
-        },
+        }
+      ]
+    },
+    {
+      "name": "ABAPChangeDocsLog",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -3756,12 +3773,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "ABAPChangeDocsLog",
-      "columns": [
+        },
         {
           "name": "ActualChangeNumber",
           "type": "string"
@@ -3897,7 +3909,12 @@
         {
           "name": "Version",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "ABAPTableDataLog",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -3905,12 +3922,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "ABAPTableDataLog",
-      "columns": [
+        },
         {
           "name": "AgentId",
           "type": "string"
@@ -4010,7 +4022,12 @@
         {
           "name": "VersionNumber",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "ABAPUserDetails",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -4018,12 +4035,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "ABAPUserDetails",
-      "columns": [
+        },
         {
           "name": "AgentId",
           "type": "string"
@@ -4111,14 +4123,6 @@
         {
           "name": "ValidityDate",
           "type": "datetime"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
-          "type": "string"
         }
       ]
     },
@@ -12748,6 +12752,22 @@
       "name": "AggregatedSecurityAlert",
       "columns": [
         {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
+          "name": "_ResourceId",
+          "type": "string"
+        },
+        {
+          "name": "_SubscriptionId",
+          "type": "string"
+        },
+        {
           "name": "AggregatedSecurityAlertRuleIds",
           "type": "string"
         },
@@ -12881,22 +12901,6 @@
         },
         {
           "name": "VendorOriginalId",
-          "type": "string"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
-          "type": "string"
-        },
-        {
-          "name": "_ResourceId",
-          "type": "string"
-        },
-        {
-          "name": "_SubscriptionId",
           "type": "string"
         }
       ]
@@ -15256,6 +15260,22 @@
       "name": "Alert",
       "columns": [
         {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
+          "name": "_ResourceId",
+          "type": "string"
+        },
+        {
+          "name": "_SubscriptionId",
+          "type": "string"
+        },
+        {
           "name": "AlertContext",
           "type": "string"
         },
@@ -15529,22 +15549,6 @@
         },
         {
           "name": "ValueFlagsDescription",
-          "type": "string"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
-          "type": "string"
-        },
-        {
-          "name": "_ResourceId",
-          "type": "string"
-        },
-        {
-          "name": "_SubscriptionId",
           "type": "string"
         }
       ]
@@ -18406,6 +18410,14 @@
       "name": "Anomalies",
       "columns": [
         {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
           "name": "ActivityInsights",
           "type": "dynamic"
         },
@@ -18547,14 +18559,6 @@
         },
         {
           "name": "WorkspaceId",
-          "type": "string"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
           "type": "string"
         }
       ]
@@ -19937,6 +19941,14 @@
       "name": "AppCenterError",
       "columns": [
         {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
           "name": "Annotation",
           "type": "string"
         },
@@ -20026,14 +20038,6 @@
         },
         {
           "name": "UserString",
-          "type": "string"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
           "type": "string"
         }
       ]
@@ -23413,6 +23417,22 @@
       "name": "ASimAgentEventLogs",
       "columns": [
         {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
+          "name": "_ResourceId",
+          "type": "string"
+        },
+        {
+          "name": "_SubscriptionId",
+          "type": "string"
+        },
+        {
           "name": "ActingAppId",
           "type": "string"
         },
@@ -23715,7 +23735,12 @@
         {
           "name": "Type",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "ASimAlertEventLogs",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -23731,12 +23756,7 @@
         {
           "name": "_SubscriptionId",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "ASimAlertEventLogs",
-      "columns": [
+        },
         {
           "name": "AdditionalEntities",
           "type": "dynamic"
@@ -24148,7 +24168,12 @@
         {
           "name": "UserType",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "ASimAssetEntityLogs",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -24164,12 +24189,7 @@
         {
           "name": "_SubscriptionId",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "ASimAssetEntityLogs",
-      "columns": [
+        },
         {
           "name": "AADTenantId",
           "type": "string"
@@ -24429,7 +24449,12 @@
         {
           "name": "User",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "ASimAuditEventLogs",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -24445,12 +24470,7 @@
         {
           "name": "_SubscriptionId",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "ASimAuditEventLogs",
-      "columns": [
+        },
         {
           "name": "ActingAppId",
           "type": "string"
@@ -24978,7 +24998,12 @@
         {
           "name": "ValueType",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "ASimAuthenticationEventLogs",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -24994,12 +25019,7 @@
         {
           "name": "_SubscriptionId",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "ASimAuthenticationEventLogs",
-      "columns": [
+        },
         {
           "name": "ActingAppId",
           "type": "string"
@@ -25547,7 +25567,12 @@
         {
           "name": "Type",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "ASimDhcpEventLogs",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -25563,12 +25588,7 @@
         {
           "name": "_SubscriptionId",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "ASimDhcpEventLogs",
-      "columns": [
+        },
         {
           "name": "AdditionalEntities",
           "type": "dynamic"
@@ -25976,7 +25996,12 @@
         {
           "name": "Type",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "ASimDnsActivityLogs",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -25992,12 +26017,7 @@
         {
           "name": "_SubscriptionId",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "ASimDnsActivityLogs",
-      "columns": [
+        },
         {
           "name": "AdditionalEntities",
           "type": "dynamic"
@@ -26569,7 +26589,12 @@
         {
           "name": "UrlCategory",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "ASimFileEventLogs",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -26585,12 +26610,7 @@
         {
           "name": "_SubscriptionId",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "ASimFileEventLogs",
-      "columns": [
+        },
         {
           "name": "ActingApplicationEntityKey",
           "type": "string"
@@ -27126,7 +27146,12 @@
         {
           "name": "Type",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "ASimNetworkSessionLogs",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -27142,12 +27167,7 @@
         {
           "name": "_SubscriptionId",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "ASimNetworkSessionLogs",
-      "columns": [
+        },
         {
           "name": "AdditionalEntities",
           "type": "dynamic"
@@ -27755,7 +27775,12 @@
         {
           "name": "Type",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "ASimProcessEventLogs",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -27771,12 +27796,7 @@
         {
           "name": "_SubscriptionId",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "ASimProcessEventLogs",
-      "columns": [
+        },
         {
           "name": "ActingProcessCommandLine",
           "type": "string"
@@ -28360,7 +28380,12 @@
         {
           "name": "Type",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "ASimRegistryEventLogs",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -28376,12 +28401,7 @@
         {
           "name": "_SubscriptionId",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "ASimRegistryEventLogs",
-      "columns": [
+        },
         {
           "name": "ActingProcessCommandLine",
           "type": "string"
@@ -28737,7 +28757,12 @@
         {
           "name": "Type",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "ASimUserManagementActivityLogs",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -28753,12 +28778,7 @@
         {
           "name": "_SubscriptionId",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "ASimUserManagementActivityLogs",
-      "columns": [
+        },
         {
           "name": "ActingAppId",
           "type": "string"
@@ -29230,7 +29250,12 @@
         {
           "name": "Type",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "ASimWebSessionLogs",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -29246,12 +29271,7 @@
         {
           "name": "_SubscriptionId",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "ASimWebSessionLogs",
-      "columns": [
+        },
         {
           "name": "AdditionalEntities",
           "type": "dynamic"
@@ -29874,22 +29894,6 @@
         },
         {
           "name": "UrlOriginal",
-          "type": "string"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
-          "type": "string"
-        },
-        {
-          "name": "_ResourceId",
-          "type": "string"
-        },
-        {
-          "name": "_SubscriptionId",
           "type": "string"
         }
       ]
@@ -30981,6 +30985,14 @@
       "name": "AuditLogs",
       "columns": [
         {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
           "name": "AADOperationType",
           "type": "string"
         },
@@ -31094,14 +31106,6 @@
         },
         {
           "name": "Type",
-          "type": "string"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
           "type": "string"
         }
       ]
@@ -32126,6 +32130,14 @@
       "name": "AWSALBAccessLogs",
       "columns": [
         {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
           "name": "ActionsExecuted",
           "type": "string"
         },
@@ -32264,7 +32276,12 @@
         {
           "name": "UserAgent",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "AWSCloudTrail",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -32272,12 +32289,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "AWSCloudTrail",
-      "columns": [
+        },
         {
           "name": "AdditionalEventData",
           "type": "string"
@@ -32489,7 +32501,12 @@
         {
           "name": "VpcEndpointId",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "AWSCloudWatch",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -32497,12 +32514,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "AWSCloudWatch",
-      "columns": [
+        },
         {
           "name": "ExtractedTime",
           "type": "datetime"
@@ -32526,7 +32538,12 @@
         {
           "name": "Type",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "AWSEKSLogs",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -32534,12 +32551,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "AWSEKSLogs",
-      "columns": [
+        },
         {
           "name": "AuthDecision",
           "type": "string"
@@ -32603,7 +32615,12 @@
         {
           "name": "Verb",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "AWSELBFlowLogs",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -32611,12 +32628,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "AWSELBFlowLogs",
-      "columns": [
+        },
         {
           "name": "AccountId",
           "type": "string"
@@ -32692,7 +32704,12 @@
         {
           "name": "Version",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "AWSGuardDuty",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -32700,12 +32717,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "AWSGuardDuty",
-      "columns": [
+        },
         {
           "name": "AccountId",
           "type": "string"
@@ -32773,7 +32785,12 @@
         {
           "name": "Type",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "AWSNetworkFirewallAlert",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -32781,12 +32798,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "AWSNetworkFirewallAlert",
-      "columns": [
+        },
         {
           "name": "AlertAction",
           "type": "string"
@@ -32898,7 +32910,12 @@
         {
           "name": "Version",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "AWSNetworkFirewallFlow",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -32906,12 +32923,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "AWSNetworkFirewallFlow",
-      "columns": [
+        },
         {
           "name": "Ack",
           "type": "bool"
@@ -33031,7 +33043,12 @@
         {
           "name": "Type",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "AWSNetworkFirewallTls",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -33039,12 +33056,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "AWSNetworkFirewallTls",
-      "columns": [
+        },
         {
           "name": "Action",
           "type": "string"
@@ -33108,7 +33120,12 @@
         {
           "name": "Type",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "AWSNLBAccessLogs",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -33116,12 +33133,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "AWSNLBAccessLogs",
-      "columns": [
+        },
         {
           "name": "ALPNBEProtocol",
           "type": "string"
@@ -33221,7 +33233,12 @@
         {
           "name": "Version",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "AWSRoute53Resolver",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -33229,12 +33246,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "AWSRoute53Resolver",
-      "columns": [
+        },
         {
           "name": "AccountId",
           "type": "string"
@@ -33318,7 +33330,12 @@
         {
           "name": "VpcId",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "AWSS3ServerAccess",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -33326,12 +33343,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "AWSS3ServerAccess",
-      "columns": [
+        },
         {
           "name": "AccessPointARN",
           "type": "string"
@@ -33447,7 +33459,12 @@
         {
           "name": "VersionId",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "AWSSecurityHubFindings",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -33455,12 +33472,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "AWSSecurityHubFindings",
-      "columns": [
+        },
         {
           "name": "AwsAccountId",
           "type": "string"
@@ -33588,7 +33600,12 @@
         {
           "name": "WorkflowState",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "AWSVPCFlow",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -33596,12 +33613,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "AWSVPCFlow",
-      "columns": [
+        },
         {
           "name": "AccountId",
           "type": "string"
@@ -33773,7 +33785,12 @@
         {
           "name": "VpcId",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "AWSWAF",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -33781,12 +33798,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "AWSWAF",
-      "columns": [
+        },
         {
           "name": "Action",
           "type": "string"
@@ -33921,14 +33933,6 @@
         },
         {
           "name": "WebAclId",
-          "type": "string"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
           "type": "string"
         }
       ]
@@ -38002,6 +38006,22 @@
       "name": "BehaviorAnalytics",
       "columns": [
         {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
+          "name": "_ResourceId",
+          "type": "string"
+        },
+        {
+          "name": "_SubscriptionId",
+          "type": "string"
+        },
+        {
           "name": "ActionType",
           "type": "string"
         },
@@ -38116,22 +38136,6 @@
         {
           "name": "UsersInsights",
           "type": "dynamic"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
-          "type": "string"
-        },
-        {
-          "name": "_ResourceId",
-          "type": "string"
-        },
-        {
-          "name": "_SubscriptionId",
-          "type": "string"
         }
       ]
     },
@@ -41656,6 +41660,22 @@
       "name": "CommonSecurityLog",
       "columns": [
         {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
+          "name": "_ResourceId",
+          "type": "string"
+        },
+        {
+          "name": "_SubscriptionId",
+          "type": "string"
+        },
+        {
           "name": "Activity",
           "type": "string"
         },
@@ -42290,7 +42310,12 @@
         {
           "name": "Type",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "CommunicationComplianceActivity",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -42299,19 +42324,6 @@
           "name": "_IsBillable",
           "type": "string"
         },
-        {
-          "name": "_ResourceId",
-          "type": "string"
-        },
-        {
-          "name": "_SubscriptionId",
-          "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "CommunicationComplianceActivity",
-      "columns": [
         {
           "name": "ActorName",
           "type": "string"
@@ -42391,7 +42403,12 @@
         {
           "name": "Workload",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "ComputerGroup",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -42399,12 +42416,15 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "ComputerGroup",
-      "columns": [
+        },
+        {
+          "name": "_ResourceId",
+          "type": "string"
+        },
+        {
+          "name": "_SubscriptionId",
+          "type": "string"
+        },
         {
           "name": "Computer",
           "type": "string"
@@ -42440,28 +42460,36 @@
         {
           "name": "Type",
           "type": "string"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
-          "type": "string"
-        },
-        {
-          "name": "_ResourceId",
-          "type": "string"
-        },
-        {
-          "name": "_SubscriptionId",
-          "type": "string"
         }
       ]
     },
     {
       "name": "ConfidentialWatchlist",
       "columns": [
+        {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_DTItemId",
+          "type": "string"
+        },
+        {
+          "name": "_DTItemStatus",
+          "type": "string"
+        },
+        {
+          "name": "_DTItemType",
+          "type": "string"
+        },
+        {
+          "name": "_DTTimestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
         {
           "name": "AzureTenantId",
           "type": "string"
@@ -42556,30 +42584,6 @@
         },
         {
           "name": "WatchlistName",
-          "type": "string"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_DTItemId",
-          "type": "string"
-        },
-        {
-          "name": "_DTItemStatus",
-          "type": "string"
-        },
-        {
-          "name": "_DTItemType",
-          "type": "string"
-        },
-        {
-          "name": "_DTTimestamp",
-          "type": "datetime"
-        },
-        {
-          "name": "_IsBillable",
           "type": "string"
         }
       ]
@@ -43826,6 +43830,14 @@
       "name": "CopilotActivity",
       "columns": [
         {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
           "name": "ActorName",
           "type": "string"
         },
@@ -43911,14 +43923,6 @@
         },
         {
           "name": "Workload",
-          "type": "string"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
           "type": "string"
         }
       ]
@@ -44223,6 +44227,14 @@
     {
       "name": "CrowdStrikeAlerts",
       "columns": [
+        {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
         {
           "name": "AgentId",
           "type": "string"
@@ -44658,7 +44670,12 @@
         {
           "name": "XdrEventId",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "CrowdStrikeAuditEvents",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -44666,12 +44683,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "CrowdStrikeAuditEvents",
-      "columns": [
+        },
         {
           "name": "AccountId",
           "type": "string"
@@ -45467,7 +45479,12 @@
         {
           "name": "XdrType",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "CrowdStrikeCases",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -45475,12 +45492,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "CrowdStrikeCases",
-      "columns": [
+        },
         {
           "name": "AnalysisResults",
           "type": "dynamic"
@@ -45576,7 +45588,12 @@
         {
           "name": "Version",
           "type": "int"
-        },
+        }
+      ]
+    },
+    {
+      "name": "CrowdStrikeDetections",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -45584,12 +45601,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "CrowdStrikeDetections",
-      "columns": [
+        },
         {
           "name": "AddedPrivileges",
           "type": "dynamic"
@@ -46029,7 +46041,12 @@
         {
           "name": "XdrDetectionId",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "CrowdStrikeHosts",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -46037,12 +46054,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "CrowdStrikeHosts",
-      "columns": [
+        },
         {
           "name": "AgentLoadFlags",
           "type": "string"
@@ -46422,7 +46434,12 @@
         {
           "name": "Type",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "CrowdStrikeIncidents",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -46430,12 +46447,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "CrowdStrikeIncidents",
-      "columns": [
+        },
         {
           "name": "AssignedTo",
           "type": "string"
@@ -46571,7 +46583,12 @@
         {
           "name": "Users",
           "type": "dynamic"
-        },
+        }
+      ]
+    },
+    {
+      "name": "CrowdStrikeVulnerabilities",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -46579,12 +46596,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "CrowdStrikeVulnerabilities",
-      "columns": [
+        },
         {
           "name": "Aid",
           "type": "string"
@@ -46663,14 +46675,6 @@
         },
         {
           "name": "VulnerabilityId",
-          "type": "string"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
           "type": "string"
         }
       ]
@@ -51660,6 +51664,14 @@
       "name": "DataverseActivity",
       "columns": [
         {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
           "name": "ClientIp",
           "type": "string"
         },
@@ -51777,14 +51789,6 @@
         },
         {
           "name": "UserUpn",
-          "type": "string"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
           "type": "string"
         }
       ]
@@ -57020,6 +57024,22 @@
       "name": "DnsAuditEvents",
       "columns": [
         {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
+          "name": "_ResourceId",
+          "type": "string"
+        },
+        {
+          "name": "_SubscriptionId",
+          "type": "string"
+        },
+        {
           "name": "Action",
           "type": "string"
         },
@@ -57402,7 +57422,12 @@
         {
           "name": "ZoneSignatureValidityPeriod",
           "type": "int"
-        },
+        }
+      ]
+    },
+    {
+      "name": "DnsEvents",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -57418,12 +57443,7 @@
         {
           "name": "_SubscriptionId",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "DnsEvents",
-      "columns": [
+        },
         {
           "name": "ClientIP",
           "type": "string"
@@ -57511,7 +57531,12 @@
         {
           "name": "Type",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "DnsInventory",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -57527,12 +57552,7 @@
         {
           "name": "_SubscriptionId",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "DnsInventory",
-      "columns": [
+        },
         {
           "name": "Computer",
           "type": "string"
@@ -57587,22 +57607,6 @@
         },
         {
           "name": "ZoneName",
-          "type": "string"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
-          "type": "string"
-        },
-        {
-          "name": "_ResourceId",
-          "type": "string"
-        },
-        {
-          "name": "_SubscriptionId",
           "type": "string"
         }
       ]
@@ -58209,6 +58213,14 @@
       "name": "DynamicEventCollection",
       "columns": [
         {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
           "name": "AccountSid",
           "type": "string"
         },
@@ -58333,15 +58345,11 @@
           "type": "datetime"
         },
         {
+          "name": "Timestamp",
+          "type": "datetime"
+        },
+        {
           "name": "Type",
-          "type": "string"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
           "type": "string"
         }
       ]
@@ -58349,6 +58357,22 @@
     {
       "name": "Dynamics365Activity",
       "columns": [
+        {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
+          "name": "_ResourceId",
+          "type": "string"
+        },
+        {
+          "name": "_SubscriptionId",
+          "type": "string"
+        },
         {
           "name": "ClientIP",
           "type": "string"
@@ -58464,7 +58488,12 @@
         {
           "name": "UserType",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "DynamicSummary",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -58473,19 +58502,6 @@
           "name": "_IsBillable",
           "type": "string"
         },
-        {
-          "name": "_ResourceId",
-          "type": "string"
-        },
-        {
-          "name": "_SubscriptionId",
-          "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "DynamicSummary",
-      "columns": [
         {
           "name": "AzureTenantId",
           "type": "string"
@@ -58597,14 +58613,6 @@
         {
           "name": "UpdatedTimeUTC",
           "type": "datetime"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
-          "type": "string"
         }
       ]
     },
@@ -60397,12 +60405,24 @@
       "name": "GCPApigee",
       "columns": [
         {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
           "name": "GCPResource",
           "type": "dynamic"
         },
         {
           "name": "InsertId",
           "type": "string"
+        },
+        {
+          "name": "JsonPayload",
+          "type": "dynamic"
         },
         {
           "name": "LogName",
@@ -60443,7 +60463,12 @@
         {
           "name": "Type",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "GCPAuditLogs",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -60451,12 +60476,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "GCPAuditLogs",
-      "columns": [
+        },
         {
           "name": "AuthenticationInfo",
           "type": "dynamic"
@@ -60564,7 +60584,12 @@
         {
           "name": "Type",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "GCPCDN",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -60572,12 +60597,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "GCPCDN",
-      "columns": [
+        },
         {
           "name": "AuthenticationInfoPrincipalEmail",
           "type": "string"
@@ -61017,14 +61037,6 @@
         {
           "name": "Type",
           "type": "string"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
-          "type": "string"
         }
       ]
     },
@@ -61032,8 +61044,20 @@
       "name": "GCPCloudRun",
       "columns": [
         {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
           "name": "GCPResourceType",
           "type": "string"
+        },
+        {
+          "name": "HttpRequest",
+          "type": "dynamic"
         },
         {
           "name": "InsertId",
@@ -61380,19 +61404,15 @@
           "type": "string"
         },
         {
+          "name": "TextPayload",
+          "type": "string"
+        },
+        {
           "name": "TimeGenerated",
           "type": "datetime"
         },
         {
           "name": "Type",
-          "type": "string"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
           "type": "string"
         }
       ]
@@ -61400,6 +61420,14 @@
     {
       "name": "GCPCloudSQL",
       "columns": [
+        {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
         {
           "name": "AuthInfoPrincipalEmail",
           "type": "string"
@@ -61903,7 +61931,12 @@
         {
           "name": "Type",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "GCPComputeEngine",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -61911,12 +61944,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "GCPComputeEngine",
-      "columns": [
+        },
         {
           "name": "GCPResource",
           "type": "dynamic"
@@ -61964,7 +61992,12 @@
         {
           "name": "Type",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "GCPDNS",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -61972,12 +62005,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "GCPDNS",
-      "columns": [
+        },
         {
           "name": "AuthAnswer",
           "type": "bool"
@@ -62293,7 +62321,12 @@
         {
           "name": "VmZoneName",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "GCPFirewallLogs",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -62301,12 +62334,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "GCPFirewallLogs",
-      "columns": [
+        },
         {
           "name": "Action",
           "type": "string"
@@ -62446,7 +62474,12 @@
         {
           "name": "VpcSubnetworkName",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "GCPIAM",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -62454,12 +62487,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "GCPIAM",
-      "columns": [
+        },
         {
           "name": "AuthenticationInfoPrincipalSubject",
           "type": "string"
@@ -62839,7 +62867,12 @@
         {
           "name": "Type",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "GCPIDS",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -62847,12 +62880,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "GCPIDS",
-      "columns": [
+        },
         {
           "name": "AlertSeverity",
           "type": "string"
@@ -63140,7 +63168,12 @@
         {
           "name": "URIOrFilename",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "GCPLoadBalancer",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -63148,12 +63181,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "GCPLoadBalancer",
-      "columns": [
+        },
         {
           "name": "BackendServiceName",
           "type": "string"
@@ -63269,7 +63297,12 @@
         {
           "name": "Zone",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "GCPMonitoring",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -63277,12 +63310,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "GCPMonitoring",
-      "columns": [
+        },
         {
           "name": "GCPResource",
           "type": "dynamic"
@@ -63322,7 +63350,12 @@
         {
           "name": "ValueType",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "GCPNAT",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -63330,12 +63363,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "GCPNAT",
-      "columns": [
+        },
         {
           "name": "AllocationStatus",
           "type": "string"
@@ -63447,7 +63475,12 @@
         {
           "name": "VmName",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "GCPNATAudit",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -63455,12 +63488,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "GCPNATAudit",
-      "columns": [
+        },
         {
           "name": "AuthorizationInfo",
           "type": "string"
@@ -63680,7 +63708,12 @@
         {
           "name": "UserAgent",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "GCPResourceManager",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -63688,12 +63721,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "GCPResourceManager",
-      "columns": [
+        },
         {
           "name": "AuthenticationInfoPrincipalEmail",
           "type": "string"
@@ -64077,7 +64105,12 @@
         {
           "name": "Type",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "GCPVPCFlow",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -64085,12 +64118,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "GCPVPCFlow",
-      "columns": [
+        },
         {
           "name": "BytesSent",
           "type": "string"
@@ -64518,7 +64546,12 @@
         {
           "name": "Type",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "GKEAPIServer",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -64526,12 +64559,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "GKEAPIServer",
-      "columns": [
+        },
         {
           "name": "ApfAdditionalLatency",
           "type": "string"
@@ -64663,7 +64691,12 @@
         {
           "name": "UserAgent",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "GKEApplication",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -64671,12 +64704,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "GKEApplication",
-      "columns": [
+        },
         {
           "name": "ClusterName",
           "type": "string"
@@ -64748,7 +64776,12 @@
         {
           "name": "Type",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "GKEAudit",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -64756,12 +64789,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "GKEAudit",
-      "columns": [
+        },
         {
           "name": "InsertId",
           "type": "string"
@@ -64813,7 +64841,12 @@
         {
           "name": "Type",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "GKEControllerManager",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -64821,12 +64854,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "GKEControllerManager",
-      "columns": [
+        },
         {
           "name": "ClusterName",
           "type": "string"
@@ -64922,7 +64950,12 @@
         {
           "name": "Type",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "GKEHPADecision",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -64930,12 +64963,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "GKEHPADecision",
-      "columns": [
+        },
         {
           "name": "ActuationLatencySeconds",
           "type": "real"
@@ -65063,7 +65091,12 @@
         {
           "name": "Zone",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "GKEScheduler",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -65071,12 +65104,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "GKEScheduler",
-      "columns": [
+        },
         {
           "name": "AuditID",
           "type": "string"
@@ -65184,7 +65212,12 @@
         {
           "name": "UserAgent",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "GoogleCloudSCC",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -65192,12 +65225,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "GoogleCloudSCC",
-      "columns": [
+        },
         {
           "name": "Findings",
           "type": "dynamic"
@@ -65225,7 +65253,12 @@
         {
           "name": "Type",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "GoogleWorkspaceReports",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -65233,12 +65266,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "GoogleWorkspaceReports",
-      "columns": [
+        },
         {
           "name": "AccountState",
           "type": "string"
@@ -65636,12 +65664,12 @@
           "type": "string"
         },
         {
-          "name": "ResourceDetails",
-          "type": "dynamic"
-        },
-        {
           "name": "Resource_Id",
           "type": "string"
+        },
+        {
+          "name": "ResourceDetails",
+          "type": "dynamic"
         },
         {
           "name": "RoleName",
@@ -65769,14 +65797,6 @@
         },
         {
           "name": "VisibilityChange",
-          "type": "string"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
           "type": "string"
         }
       ]
@@ -69212,6 +69232,22 @@
       "name": "HuntingBookmark",
       "columns": [
         {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
+          "name": "_ResourceId",
+          "type": "string"
+        },
+        {
+          "name": "_SubscriptionId",
+          "type": "string"
+        },
+        {
           "name": "BookmarkId",
           "type": "string"
         },
@@ -69289,22 +69325,6 @@
         },
         {
           "name": "UpdatedBy",
-          "type": "string"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
-          "type": "string"
-        },
-        {
-          "name": "_ResourceId",
-          "type": "string"
-        },
-        {
-          "name": "_SubscriptionId",
           "type": "string"
         }
       ]
@@ -70235,6 +70255,14 @@
       "name": "IlumioInsights",
       "columns": [
         {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
           "name": "AzureResourceId",
           "type": "string"
         },
@@ -70381,14 +70409,6 @@
         {
           "name": "VEScore",
           "type": "real"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
-          "type": "string"
         }
       ]
     },
@@ -71982,6 +72002,22 @@
       "name": "LinuxAuditLog",
       "columns": [
         {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
+          "name": "_ResourceId",
+          "type": "string"
+        },
+        {
+          "name": "_SubscriptionId",
+          "type": "string"
+        },
+        {
           "name": "a0",
           "type": "string"
         },
@@ -72038,11 +72074,11 @@
           "type": "long"
         },
         {
-          "name": "AuditID",
+          "name": "audit_user",
           "type": "string"
         },
         {
-          "name": "audit_user",
+          "name": "AuditID",
           "type": "string"
         },
         {
@@ -72232,22 +72268,6 @@
         {
           "name": "vm",
           "type": "string"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
-          "type": "string"
-        },
-        {
-          "name": "_ResourceId",
-          "type": "string"
-        },
-        {
-          "name": "_SubscriptionId",
-          "type": "string"
         }
       ]
     },
@@ -72368,6 +72388,14 @@
       "name": "McasShadowItReporting",
       "columns": [
         {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
           "name": "AadTenantId",
           "type": "string"
         },
@@ -72465,14 +72493,6 @@
         },
         {
           "name": "UserName",
-          "type": "string"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
           "type": "string"
         }
       ]
@@ -74891,6 +74911,14 @@
       "name": "MicrosoftPurviewInformationProtection",
       "columns": [
         {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
           "name": "ActionSource",
           "type": "string"
         },
@@ -75200,14 +75228,6 @@
         },
         {
           "name": "WorkLoadItemId",
-          "type": "string"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
           "type": "string"
         }
       ]
@@ -77694,6 +77714,14 @@
       "name": "NetworkSessions",
       "columns": [
         {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
           "name": "AdditionalFields",
           "type": "dynamic"
         },
@@ -78191,14 +78219,6 @@
         },
         {
           "name": "UrlOriginal",
-          "type": "string"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
           "type": "string"
         }
       ]
@@ -81251,6 +81271,22 @@
       "name": "OfficeActivity",
       "columns": [
         {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
+          "name": "_ResourceId",
+          "type": "string"
+        },
+        {
+          "name": "_SubscriptionId",
+          "type": "string"
+        },
+        {
           "name": "AADGroupId",
           "type": "string"
         },
@@ -81355,6 +81391,10 @@
           "type": "string"
         },
         {
+          "name": "Client_IPAddress",
+          "type": "string"
+        },
+        {
           "name": "ClientAppId",
           "type": "string"
         },
@@ -81376,10 +81416,6 @@
         },
         {
           "name": "ClientVersion",
-          "type": "string"
-        },
-        {
-          "name": "Client_IPAddress",
           "type": "string"
         },
         {
@@ -81463,11 +81499,11 @@
           "type": "datetime"
         },
         {
-          "name": "EventSource",
+          "name": "Event_Data",
           "type": "string"
         },
         {
-          "name": "Event_Data",
+          "name": "EventSource",
           "type": "string"
         },
         {
@@ -81543,15 +81579,15 @@
           "type": "int"
         },
         {
+          "name": "Logon_Type",
+          "type": "string"
+        },
+        {
           "name": "LogonUserDisplayName",
           "type": "string"
         },
         {
           "name": "LogonUserSid",
-          "type": "string"
-        },
-        {
-          "name": "Logon_Type",
           "type": "string"
         },
         {
@@ -81699,6 +81735,10 @@
           "type": "string"
         },
         {
+          "name": "Source_Name",
+          "type": "string"
+        },
+        {
           "name": "SourceFileExtension",
           "type": "string"
         },
@@ -81716,10 +81756,6 @@
         },
         {
           "name": "SourceSystem",
-          "type": "string"
-        },
-        {
-          "name": "Source_Name",
           "type": "string"
         },
         {
@@ -81809,7 +81845,12 @@
         {
           "name": "UserType",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "OktaSystemLogs",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -81818,19 +81859,6 @@
           "name": "_IsBillable",
           "type": "string"
         },
-        {
-          "name": "_ResourceId",
-          "type": "string"
-        },
-        {
-          "name": "_SubscriptionId",
-          "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "OktaSystemLogs",
-      "columns": [
         {
           "name": "ActingAppName",
           "type": "string"
@@ -82070,14 +82098,6 @@
         {
           "name": "Version",
           "type": "string"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
-          "type": "string"
         }
       ]
     },
@@ -82247,6 +82267,22 @@
       "name": "Operation",
       "columns": [
         {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
+          "name": "_ResourceId",
+          "type": "string"
+        },
+        {
+          "name": "_SubscriptionId",
+          "type": "string"
+        },
+        {
           "name": "Computer",
           "type": "string"
         },
@@ -82300,22 +82336,6 @@
         },
         {
           "name": "Type",
-          "type": "string"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
-          "type": "string"
-        },
-        {
-          "name": "_ResourceId",
-          "type": "string"
-        },
-        {
-          "name": "_SubscriptionId",
           "type": "string"
         }
       ]
@@ -84308,6 +84328,14 @@
       "name": "PowerAppsActivity",
       "columns": [
         {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
           "name": "ActorName",
           "type": "string"
         },
@@ -84374,7 +84402,12 @@
         {
           "name": "Workload",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "PowerAutomateActivity",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -84382,12 +84415,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "PowerAutomateActivity",
-      "columns": [
+        },
         {
           "name": "ActorName",
           "type": "string"
@@ -84475,7 +84503,12 @@
         {
           "name": "Workload",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "PowerBIActivity",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -84483,12 +84516,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "PowerBIActivity",
-      "columns": [
+        },
         {
           "name": "Activity",
           "type": "string"
@@ -84643,14 +84671,6 @@
         },
         {
           "name": "WorkspaceId",
-          "type": "string"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
           "type": "string"
         }
       ]
@@ -84961,6 +84981,14 @@
       "name": "PowerPlatformAdminActivity",
       "columns": [
         {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
           "name": "ActorName",
           "type": "string"
         },
@@ -85027,7 +85055,12 @@
         {
           "name": "Workload",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "PowerPlatformConnectorActivity",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -85035,12 +85068,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "PowerPlatformConnectorActivity",
-      "columns": [
+        },
         {
           "name": "ActorName",
           "type": "string"
@@ -85108,7 +85136,12 @@
         {
           "name": "Workload",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "PowerPlatformDlpActivity",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -85116,12 +85149,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "PowerPlatformDlpActivity",
-      "columns": [
+        },
         {
           "name": "ActorName",
           "type": "string"
@@ -85188,14 +85216,6 @@
         },
         {
           "name": "Workload",
-          "type": "string"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
           "type": "string"
         }
       ]
@@ -85289,6 +85309,14 @@
       "name": "ProjectActivity",
       "columns": [
         {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
           "name": "ActorName",
           "type": "string"
         },
@@ -85374,14 +85402,6 @@
         },
         {
           "name": "Workload",
-          "type": "string"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
           "type": "string"
         }
       ]
@@ -85834,6 +85854,14 @@
       "name": "QualysKnowledgeBase",
       "columns": [
         {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
           "name": "Category",
           "type": "string"
         },
@@ -85935,14 +85963,6 @@
         },
         {
           "name": "VulnType",
-          "type": "string"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
           "type": "string"
         }
       ]
@@ -86380,6 +86400,14 @@
       "name": "Rapid7InsightVMCloudAssets",
       "columns": [
         {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
           "name": "AssessedForPolicies",
           "type": "bool"
         },
@@ -86518,7 +86546,12 @@
         {
           "name": "UniqueIdentifiers",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "Rapid7InsightVMCloudVulnerabilities",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -86526,12 +86559,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "Rapid7InsightVMCloudVulnerabilities",
-      "columns": [
+        },
         {
           "name": "Added",
           "type": "datetime"
@@ -86718,14 +86746,6 @@
         },
         {
           "name": "VulnerabilityTitle",
-          "type": "string"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
           "type": "string"
         }
       ]
@@ -87098,6 +87118,14 @@
       "name": "SalesforceAuditTrail",
       "columns": [
         {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
           "name": "Action",
           "type": "string"
         },
@@ -87164,7 +87192,12 @@
         {
           "name": "Type",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "SalesforceLoginHistory",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -87172,12 +87205,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "SalesforceLoginHistory",
-      "columns": [
+        },
         {
           "name": "ApiType",
           "type": "string"
@@ -87288,14 +87316,6 @@
         },
         {
           "name": "UserId",
-          "type": "string"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
           "type": "string"
         }
       ]
@@ -87806,6 +87826,14 @@
       "name": "SecurityAlert",
       "columns": [
         {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
           "name": "AlertLink",
           "type": "string"
         },
@@ -87935,14 +87963,6 @@
         },
         {
           "name": "WorkspaceSubscriptionId",
-          "type": "string"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
           "type": "string"
         }
       ]
@@ -88274,6 +88294,14 @@
       "name": "SecurityCaseEvent",
       "columns": [
         {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
           "name": "AadTenantId",
           "type": "string"
         },
@@ -88339,14 +88367,6 @@
         },
         {
           "name": "Type",
-          "type": "string"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
           "type": "string"
         }
       ]
@@ -88503,6 +88523,22 @@
     {
       "name": "SecurityEvent",
       "columns": [
+        {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
+          "name": "_ResourceId",
+          "type": "string"
+        },
+        {
+          "name": "_SubscriptionId",
+          "type": "string"
+        },
         {
           "name": "AccessMask",
           "type": "string"
@@ -89398,7 +89434,12 @@
         {
           "name": "WorkstationName",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "SecurityIncident",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -89407,19 +89448,6 @@
           "name": "_IsBillable",
           "type": "string"
         },
-        {
-          "name": "_ResourceId",
-          "type": "string"
-        },
-        {
-          "name": "_SubscriptionId",
-          "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "SecurityIncident",
-      "columns": [
         {
           "name": "AdditionalData",
           "type": "dynamic"
@@ -89542,14 +89570,6 @@
         },
         {
           "name": "Type",
-          "type": "string"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
           "type": "string"
         }
       ]
@@ -89873,6 +89893,14 @@
       "name": "SentinelAlibabaCloudAPIGatewayLogs",
       "columns": [
         {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
           "name": "ApiGroupName",
           "type": "string"
         },
@@ -90051,7 +90079,12 @@
         {
           "name": "Type",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "SentinelAlibabaCloudVPCFlowLogs",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -90059,12 +90092,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "SentinelAlibabaCloudVPCFlowLogs",
-      "columns": [
+        },
         {
           "name": "AccountId",
           "type": "string"
@@ -90184,7 +90212,12 @@
         {
           "name": "VswitchId",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "SentinelAlibabaCloudWAFLogs",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -90192,12 +90225,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "SentinelAlibabaCloudWAFLogs",
-      "columns": [
+        },
         {
           "name": "AccountAction",
           "type": "string"
@@ -90541,7 +90569,12 @@
         {
           "name": "WafTest",
           "type": "bool"
-        },
+        }
+      ]
+    },
+    {
+      "name": "SentinelAudit",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -90549,12 +90582,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "SentinelAudit",
-      "columns": [
+        },
         {
           "name": "CorrelationId",
           "type": "string"
@@ -90610,7 +90638,12 @@
         {
           "name": "WorkspaceId",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "SentinelBehaviorEntities",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -90618,12 +90651,15 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "SentinelBehaviorEntities",
-      "columns": [
+        },
+        {
+          "name": "_ResourceId",
+          "type": "string"
+        },
+        {
+          "name": "_SubscriptionId",
+          "type": "string"
+        },
         {
           "name": "AccountDomain",
           "type": "string"
@@ -90803,7 +90839,12 @@
         {
           "name": "Type",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "SentinelBehaviorInfo",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -90819,12 +90860,7 @@
         {
           "name": "_SubscriptionId",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "SentinelBehaviorInfo",
-      "columns": [
+        },
         {
           "name": "AccountObjectId",
           "type": "string"
@@ -90904,7 +90940,12 @@
         {
           "name": "Type",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "SentinelHealth",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -90913,19 +90954,6 @@
           "name": "_IsBillable",
           "type": "string"
         },
-        {
-          "name": "_ResourceId",
-          "type": "string"
-        },
-        {
-          "name": "_SubscriptionId",
-          "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "SentinelHealth",
-      "columns": [
         {
           "name": "Description",
           "type": "string"
@@ -90985,7 +91013,12 @@
         {
           "name": "WorkspaceId",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "SentinelImpervaWAFCloudV2Logs",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -90993,12 +91026,7 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "SentinelImpervaWAFCloudV2Logs",
-      "columns": [
+        },
         {
           "name": "Act",
           "type": "string"
@@ -91225,14 +91253,6 @@
         },
         {
           "name": "Xff",
-          "type": "string"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
           "type": "string"
         }
       ]
@@ -92044,6 +92064,14 @@
       "name": "SigninLogs",
       "columns": [
         {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
           "name": "AADTenantId",
           "type": "string"
         },
@@ -92129,6 +92157,10 @@
         },
         {
           "name": "ClientCredentialType",
+          "type": "string"
+        },
+        {
+          "name": "ClientSessionId",
           "type": "string"
         },
         {
@@ -92336,6 +92368,10 @@
           "type": "string"
         },
         {
+          "name": "RootActorID",
+          "type": "string"
+        },
+        {
           "name": "ServicePrincipalId",
           "type": "string"
         },
@@ -92413,14 +92449,6 @@
         },
         {
           "name": "UserType",
-          "type": "string"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
           "type": "string"
         }
       ]
@@ -96522,6 +96550,22 @@
       "name": "ThreatIntelExportOperation",
       "columns": [
         {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
+          "name": "_ResourceId",
+          "type": "string"
+        },
+        {
+          "name": "_SubscriptionId",
+          "type": "string"
+        },
+        {
           "name": "DestinationInfo",
           "type": "dynamic"
         },
@@ -96580,7 +96624,12 @@
         {
           "name": "Type",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "ThreatIntelIndicators",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -96596,12 +96645,7 @@
         {
           "name": "_SubscriptionId",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "ThreatIntelIndicators",
-      "columns": [
+        },
         {
           "name": "AdditionalFields",
           "type": "dynamic"
@@ -96689,7 +96733,12 @@
         {
           "name": "WorkspaceId",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "ThreatIntelligenceIndicator",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -96698,19 +96747,6 @@
           "name": "_IsBillable",
           "type": "string"
         },
-        {
-          "name": "_ResourceId",
-          "type": "string"
-        },
-        {
-          "name": "_SubscriptionId",
-          "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "ThreatIntelligenceIndicator",
-      "columns": [
         {
           "name": "Action",
           "type": "string"
@@ -96958,7 +96994,12 @@
         {
           "name": "UserAgent",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "ThreatIntelObjects",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -96966,12 +97007,15 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "ThreatIntelObjects",
-      "columns": [
+        },
+        {
+          "name": "_ResourceId",
+          "type": "string"
+        },
+        {
+          "name": "_SubscriptionId",
+          "type": "string"
+        },
         {
           "name": "AdditionalFields",
           "type": "dynamic"
@@ -97018,22 +97062,6 @@
         },
         {
           "name": "WorkspaceId",
-          "type": "string"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
-          "type": "string"
-        },
-        {
-          "name": "_ResourceId",
-          "type": "string"
-        },
-        {
-          "name": "_SubscriptionId",
           "type": "string"
         }
       ]
@@ -98856,6 +98884,14 @@
       "name": "Usage",
       "columns": [
         {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
           "name": "AvgLatencyInSeconds",
           "type": "real"
         },
@@ -98938,7 +98974,12 @@
         {
           "name": "Type",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "UserAccessAnalytics",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -98946,12 +98987,15 @@
         {
           "name": "_IsBillable",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "UserAccessAnalytics",
-      "columns": [
+        },
+        {
+          "name": "_ResourceId",
+          "type": "string"
+        },
+        {
+          "name": "_SubscriptionId",
+          "type": "string"
+        },
         {
           "name": "AADTenantId",
           "type": "string"
@@ -99019,7 +99063,12 @@
         {
           "name": "Type",
           "type": "string"
-        },
+        }
+      ]
+    },
+    {
+      "name": "UserPeerAnalytics",
+      "columns": [
         {
           "name": "_BilledSize",
           "type": "real"
@@ -99035,12 +99084,7 @@
         {
           "name": "_SubscriptionId",
           "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "UserPeerAnalytics",
-      "columns": [
+        },
         {
           "name": "AADTenantId",
           "type": "string"
@@ -99087,22 +99131,6 @@
         },
         {
           "name": "UserPrincipalName",
-          "type": "string"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
-          "type": "string"
-        },
-        {
-          "name": "_ResourceId",
-          "type": "string"
-        },
-        {
-          "name": "_SubscriptionId",
           "type": "string"
         }
       ]
@@ -100243,6 +100271,30 @@
       "name": "Watchlist",
       "columns": [
         {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_DTItemId",
+          "type": "string"
+        },
+        {
+          "name": "_DTItemStatus",
+          "type": "string"
+        },
+        {
+          "name": "_DTItemType",
+          "type": "string"
+        },
+        {
+          "name": "_DTTimestamp",
+          "type": "datetime"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
           "name": "AzureTenantId",
           "type": "string"
         },
@@ -100336,30 +100388,6 @@
         },
         {
           "name": "WatchlistName",
-          "type": "string"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_DTItemId",
-          "type": "string"
-        },
-        {
-          "name": "_DTItemStatus",
-          "type": "string"
-        },
-        {
-          "name": "_DTItemType",
-          "type": "string"
-        },
-        {
-          "name": "_DTTimestamp",
-          "type": "datetime"
-        },
-        {
-          "name": "_IsBillable",
           "type": "string"
         }
       ]
@@ -101073,6 +101101,22 @@
       "name": "WindowsEvent",
       "columns": [
         {
+          "name": "_BilledSize",
+          "type": "real"
+        },
+        {
+          "name": "_IsBillable",
+          "type": "string"
+        },
+        {
+          "name": "_ResourceId",
+          "type": "string"
+        },
+        {
+          "name": "_SubscriptionId",
+          "type": "string"
+        },
+        {
           "name": "Channel",
           "type": "string"
         },
@@ -101159,22 +101203,6 @@
         {
           "name": "Version",
           "type": "int"
-        },
-        {
-          "name": "_BilledSize",
-          "type": "real"
-        },
-        {
-          "name": "_IsBillable",
-          "type": "string"
-        },
-        {
-          "name": "_ResourceId",
-          "type": "string"
-        },
-        {
-          "name": "_SubscriptionId",
-          "type": "string"
         }
       ]
     },
