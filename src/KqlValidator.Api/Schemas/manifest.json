@@ -13,6 +13,14 @@
       "sha256": "b123422c85fa621ff3f5c02d1f5351af860cc3c735117d366134197cab112044"
     },
     {
+      "url": "https://xdrinternals.com/data/structured-columns/index.json",
+      "sha256": "e4be3ba01870c4e2f61b2d14e89306b8086ac5f11999c9a01658d474027e2f19"
+    },
+    {
+      "url": "https://xdrinternals.com/data/column-observations.json",
+      "sha256": "785c5191c633c3174e130f43ee7a4eab903dc19e3b185e410ace9b5f37f57db1"
+    },
+    {
       "url": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-aadsignineventsbeta-table",
       "sha256": "66a56e27dc746505f22a7f785dfc1a45d9123768d5503f129ed271b0e2fcf7b6"
     },
@@ -271,22 +279,6 @@
     {
       "url": "https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-urlclickevents-table",
       "sha256": "1975f592705fa11b5e827e895c13802368515c0f09db1b7e4ca29422f41aec04"
-    },
-    {
-      "url": "https://github.com/MicrosoftDocs/azure-monitor-docs/tree/main/articles/azure-monitor/reference/tables",
-      "sha256": "866af80e100cbcac6f91a3949ff6923e5067f873bcf372d41c154afabd553404"
-    },
-    {
-      "url": "https://xdrinternals.com/data/structured-columns/index.json",
-      "sha256": "e4be3ba01870c4e2f61b2d14e89306b8086ac5f11999c9a01658d474027e2f19"
-    },
-    {
-      "url": "https://xdrinternals.com/data/column-observations.json",
-      "sha256": "785c5191c633c3174e130f43ee7a4eab903dc19e3b185e410ace9b5f37f57db1"
-    },
-    {
-      "url": "https://xdrinternals.com/FullSchema-latest.json#sentinel",
-      "sha256": "6102f254de6e3a46abac7bfa79c657e93c38562789f15148872ab6fb13837798"
     }
   ]
 }

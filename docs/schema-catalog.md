@@ -4,7 +4,7 @@ Validation and discovery use the effective catalog: bundled schemas plus [mounte
 
 ## Sources and precedence
 
-The bundled XDRInternals snapshot takes precedence over Microsoft documentation for XDR tables; Microsoft documentation supplies missing tables. Sentinel table names are added when they appear in both the [XDRInternals FullSchema feed](https://xdrinternals.com/FullSchema-latest.json) and the Markdown table references in [MicrosoftDocs/azure-monitor-docs](https://github.com/MicrosoftDocs/azure-monitor-docs/tree/main/articles/azure-monitor/reference/tables). Sentinel columns come from the XDRInternals feed. Tables already present in the bundled Sentinel snapshot remain available. Unified combines XDR and Sentinel, using the complete effective XDR definition for shared tables and adding Sentinel's `TimeGenerated` column when absent. See [custom catalog precedence](custom-schema-catalog.md#format-and-precedence) for overlays.
+The bundled XDRInternals snapshot takes precedence over Microsoft documentation for XDR tables; Microsoft documentation supplies missing tables. Unified combines XDR and Sentinel, using the complete effective XDR definition for shared tables and adding Sentinel's `TimeGenerated` column when absent. See [custom catalog precedence](custom-schema-catalog.md#format-and-precedence) for overlays.
 
 ## Find tables and functions
 
@@ -50,7 +50,7 @@ The bundled [XDRInternals relations](https://xdrinternals.com/data/column-relati
 
 ## Snapshot maintenance
 
-SchemaSync refreshes Sentinel tables by intersecting the XDRInternals FullSchema feed with the Microsoft Docs Markdown directory supplied with `--sentinel-dir`; the feed supplies columns and the docs supply the table inventory. Existing Sentinel declarations are retained. The manifest records digests for both sources. The scheduled workflow checks out the docs directory and downloads the published XDRInternals feed; it uses no Azure credentials. SchemaSync also refreshes relation and structured-column snapshots; structured columns refresh even with `--sentinel-only`. The refresh rejects malformed references and large drops in entries, combinations, or known actions before replacing the structured snapshot.
+SchemaSync refreshes relation and structured-column snapshots and records their digests in the manifest. Structured columns refresh even with `--sentinel-only`. The refresh rejects malformed references and large drops in entries, combinations, or known actions before replacing the structured snapshot.
 
 ## Column observations
 
