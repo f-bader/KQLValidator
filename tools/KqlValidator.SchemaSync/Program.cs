@@ -8,6 +8,8 @@ using KqlValidator.SchemaSync;
 
 const string xdrSchemaUrl = "https://xdrinternals.com/FullSchema-latest.json";
 const string actionTypesUrl = "https://xdrinternals.com/ActionTypeSchema-latest.json";
+const string sentinelDocsTablesUrl = "https://github.com/MicrosoftDocs/azure-monitor-docs/tree/main/articles/azure-monitor/reference/tables";
+const string sentinelXdrSchemaUrl = xdrSchemaUrl + "#sentinel";
 const string logAnalyticsEndpoint = "https://api.loganalytics.azure.com/v1";
 const string logAnalyticsResource = "https://api.loganalytics.io";
 const string defenderXdrContentsUrl = "https://api.github.com/repos/MicrosoftDocs/defender-docs/contents/defender-xdr?ref=public";
@@ -53,9 +55,19 @@ await WriteIfChanged(Path.Combine(outputDirectory, "structured-columns.json"), s
 JsonObject? relations = null;
 JsonObject? officialXdrTables = null;
 IReadOnlyList<OfficialXdrTableSource> officialXdrSources = [];
+JsonObject? upstreamSentinel = null;
+JsonObject? sentinelDocumentation = null;
+string? rawXdrSchema = null;
+if (arguments.ContainsKey("sentinel-dir"))
+{
+    rawXdrSchema = await http.GetStringAsync(xdrSchemaUrl);
+    upstreamSentinel = SentinelSchemaNormalizer.NormalizeUpstreamFeed(rawXdrSchema);
+    sentinelDocumentation = NormalizeSentinel(arguments["sentinel-dir"]);
+}
 if (!arguments.ContainsKey("sentinel-only"))
 {
-    var rawXdr = await http.GetStringAsync(xdrSchemaUrl);
+    rawXdrSchema ??= await http.GetStringAsync(xdrSchemaUrl);
+    var rawXdr = rawXdrSchema;
     var rawActions = await http.GetStringAsync(actionTypesUrl);
     xdr = XdrSchemaNormalizer.Normalize(rawXdr);
     actions = NormalizeActions(rawActions);
@@ -79,8 +91,14 @@ JsonObject? sentinel = null;
 string? sentinelManifestSource = null;
 if (arguments.TryGetValue("sentinel-dir", out var sentinelDirectory))
 {
-    sentinel = NormalizeSentinel(sentinelDirectory);
-    sentinelManifestSource = "https://github.com/MicrosoftDocs/azure-reference-other";
+    sentinelDocumentation ??= NormalizeSentinel(sentinelDirectory);
+    upstreamSentinel ??= SentinelSchemaNormalizer.NormalizeUpstreamFeed(await http.GetStringAsync(xdrSchemaUrl));
+    var priorSnapshotPath = Path.Combine(outputDirectory, "sentinel.json");
+    var priorSnapshot = File.Exists(priorSnapshotPath)
+        ? JsonNode.Parse(await File.ReadAllTextAsync(priorSnapshotPath))?.AsObject()
+        : null;
+    sentinel = SentinelSchemaNormalizer.MergeWithDocumentation(upstreamSentinel, sentinelDocumentation, priorSnapshot);
+    sentinelManifestSource = sentinelDocsTablesUrl;
 }
 else if (arguments.TryGetValue("sentinel-workspace-id", out var workspaceId))
 {
@@ -122,8 +140,11 @@ if (xdr is not null && actions is not null)
         foreach (var source in officialXdrSources)
             if (officialXdrTables["tables"]!.AsArray().FirstOrDefault(table => table!["name"]!.GetValue<string>().Equals(source.TableName, StringComparison.OrdinalIgnoreCase)) is JsonObject table)
                 sources.Add(Source(source.DocumentationUrl, table));
-    if (sentinel is not null && sentinelManifestSource is not null)
-        sources.Add(Source(sentinelManifestSource, sentinel));
+    if (sentinel is not null && sentinelManifestSource is not null && upstreamSentinel is not null && sentinelDocumentation is not null)
+    {
+        sources.Add(Source(sentinelManifestSource, sentinelDocumentation));
+        sources.Add(Source(sentinelXdrSchemaUrl, upstreamSentinel));
+    }
     var manifest = new JsonObject { ["sources"] = sources };
     await WriteIfChanged(Path.Combine(outputDirectory, "manifest.json"), manifest);
 }
@@ -136,6 +157,17 @@ else
     foreach (var source in sources.Where(n => n?["url"]?.GetValue<string>() is var url &&
         (url == StructuredColumnNormalizer.SourceUrl || url == ColumnObservationNormalizer.SourceUrl)).ToArray())
         sources.Remove(source);
+    if (sentinel is not null && sentinelManifestSource is not null)
+    {
+        foreach (var source in sources.Where(n => n?["url"]?.GetValue<string>() is var url &&
+            (url == sentinelManifestSource || url == sentinelXdrSchemaUrl || url == "https://github.com/MicrosoftDocs/azure-reference-other")).ToArray())
+            sources.Remove(source);
+        if (upstreamSentinel is not null && sentinelDocumentation is not null)
+        {
+            sources.Add(Source(sentinelManifestSource, sentinelDocumentation));
+            sources.Add(Source(sentinelXdrSchemaUrl, upstreamSentinel));
+        }
+    }
     sources.Add(Source(StructuredColumnNormalizer.SourceUrl, structures));
     sources.Add(Source(ColumnObservationNormalizer.SourceUrl, observations));
     if (sources.Parent is null) manifest["sources"] = sources;
@@ -307,31 +339,54 @@ static JsonObject NormalizeSentinel(string directory)
         {
             var line = rawLine.Trim();
             if (line.StartsWith("# ", StringComparison.Ordinal)) name = line[2..].Split(' ', StringSplitOptions.RemoveEmptyEntries)[0].Trim('`');
-            if (line.StartsWith("## ", StringComparison.Ordinal)) inColumns = line.Contains("column", StringComparison.OrdinalIgnoreCase);
+            if (line.StartsWith("## ", StringComparison.Ordinal))
+                inColumns = line.Equals("## Columns", StringComparison.OrdinalIgnoreCase) ||
+                    line.EndsWith(" table columns", StringComparison.OrdinalIgnoreCase);
             if (!inColumns || !line.StartsWith('|')) continue;
-            var cells = line.Split('|').Select(x => x.Trim().Trim('`')).Where(x => x.Length > 0).ToArray();
-            if (cells.Length < 2 || cells[0].Contains("---", StringComparison.Ordinal) || cells[0].Contains("Column", StringComparison.OrdinalIgnoreCase)) continue;
-            columns.Add(new JsonObject { ["name"] = cells[0], ["type"] = NormalizeType(cells[1]) });
+            var cells = line.Split('|').Skip(1).Take(2).Select(x => x.Trim().Trim('`')).ToArray();
+            if (cells.Length < 2 || cells[0].Contains("---", StringComparison.Ordinal) || cells[0].Equals("Column", StringComparison.OrdinalIgnoreCase)) continue;
+            // The AzureDiagnostics reference describes this column as dynamic but leaves its type cell blank.
+            var type = cells[0].Equals("AdditionalFields", StringComparison.OrdinalIgnoreCase) && string.IsNullOrWhiteSpace(cells[1])
+                ? "dynamic"
+                : NormalizeType(cells[1]);
+            columns.Add(new JsonObject { ["name"] = cells[0], ["type"] = type });
         }
         if (columns.Count > 0)
-            tables.Add(new JsonObject { ["name"] = name, ["columns"] = new JsonArray(columns.OrderBy(x => x!["name"]!.GetValue<string>(), StringComparer.OrdinalIgnoreCase).ToArray()) });
+        {
+            var normalizedColumns = new List<JsonNode>();
+            var hasConflictingTypes = false;
+            foreach (var group in columns.GroupBy(x => x["name"]!.GetValue<string>(), StringComparer.OrdinalIgnoreCase))
+            {
+                if (group.Select(x => x["type"]!.GetValue<string>()).Distinct(StringComparer.OrdinalIgnoreCase).Skip(1).Any())
+                {
+                    hasConflictingTypes = true;
+                    break;
+                }
+                normalizedColumns.Add(group.OrderBy(x => x["name"]!.GetValue<string>(), StringComparer.Ordinal).First());
+            }
+            if (hasConflictingTypes)
+            {
+                Console.Error.WriteLine($"Skipping Sentinel table '{name}' because its documentation contains conflicting column types.");
+                continue;
+            }
+            tables.Add(new JsonObject { ["name"] = name, ["columns"] = new JsonArray(normalizedColumns.OrderBy(x => x!["name"]!.GetValue<string>(), StringComparer.OrdinalIgnoreCase).ToArray()) });
+        }
     }
     var ordered = tables.OrderBy(x => x!["name"]!.GetValue<string>(), StringComparer.OrdinalIgnoreCase).ToArray();
     ValidateTables(ordered);
-    return new JsonObject { ["source"] = "https://github.com/MicrosoftDocs/azure-reference-other", ["tables"] = new JsonArray(ordered) };
+    return new JsonObject { ["source"] = sentinelDocsTablesUrl, ["tables"] = new JsonArray(ordered) };
 }
 
 static string NormalizeType(string type) => type.Trim().ToLowerInvariant() switch
 {
-    "int16" or "int32" or "integer" => "int",
-    "int64" or "bigint" => "long",
-    "boolean" => "bool",
-    "object" or "array" => "dynamic",
-    "float" or "double" or "decimal" => "real",
+    "int" or "int16" or "int32" or "integer" => "int",
+    "long" or "int64" or "bigint" => "long",
+    "bool" or "boolean" => "bool",
+    "object" or "array" or "dynamic" => "dynamic",
+    "real" or "float" or "double" or "decimal" => "real",
     "date" or "datetime" => "datetime",
     "guid" => "guid",
     "timespan" => "timespan",
-    "dynamic" => "dynamic",
     _ => "string",
 };
 
